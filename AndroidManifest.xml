@@ -10,6 +10,7 @@
 
     <!--为了能够更改actionbar的颜色 需要自定义主题  -->
     <application
+        android:name="com.oterman.njubbs.BaseApplication"
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
