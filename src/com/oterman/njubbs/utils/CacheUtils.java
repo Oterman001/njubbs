@@ -13,7 +13,7 @@ import android.os.Environment;
 import android.os.SystemClock;
 
 public class CacheUtils {
-	static  String basePath=Environment.getExternalStorageDirectory().getAbsolutePath()+"/CoolMarket/";
+	static  String basePath=Environment.getExternalStorageDirectory().getAbsolutePath()+"/njubbs/";
 	static  String cachePath=basePath+"cache/";
 	
 	public static void saveToLocal(String fileName,String data){

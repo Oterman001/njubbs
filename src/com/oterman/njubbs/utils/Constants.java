@@ -2,6 +2,7 @@ package com.oterman.njubbs.utils;
 
 public class Constants {
 	public static final String SERVER_URL="http://127.0.0.1:8090";
+	public static final String TOP_TEN_URL = "http://bbs.nju.edu.cn/bbstop10";
 	
 	public static String getHomeUrl(int index){
 		

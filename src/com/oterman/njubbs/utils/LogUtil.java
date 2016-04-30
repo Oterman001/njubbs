@@ -8,7 +8,7 @@ import android.util.Log;
  */
 public class LogUtil {
 	
-	public static final String TAG="com.oterman.coolweather";
+	public static final String TAG="com.oterman.njubbs";
 	public static final int LEVEL_ALL=0;
 	
 	public static final int LEVEL_VERBOSE=1;

@@ -6,5 +6,10 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="gen"/>
 	<classpathentry exported="true" kind="lib" path="E:/Develop/adt-bundle-windows-x86_64-20140321/sdk/extras/android/support/v4/android-support-v4.jar" sourcepath="E:/Develop/adt-bundle-windows-x86_64-20140321/sdk/extras/android/support/v4/src"/>
+	<classpathentry exported="true" kind="lib" path="E:/0学习/2开源项目/jsoup/jsoup-1.9.1.jar" sourcepath="E:/0学习/2开源项目/jsoup/jsoup-1.9.1-sources.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:file:/E:/0学习/2开源项目/jsoup/jsoup-1.9.1-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>
