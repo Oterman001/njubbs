@@ -58,7 +58,7 @@ public class TopTenFragment extends BaseFragment {
 				Intent intent=new Intent(getContext(),TopicDetailActivity.class);
 				
 				intent.putExtra("contentUrl", contentUrl);
-				
+				intent.putExtra("topTenInfo", info);
 				startActivity(intent);
 				
 			}

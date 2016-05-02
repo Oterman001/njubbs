@@ -1,7 +1,8 @@
 package com.oterman.njubbs.bean;
 
+import java.io.Serializable;
 
-public class TopTenInfo {
+public class TopTenInfo implements Serializable{
 	public String rankth;//ÅÅÃû
 	public String board;//°æ¿é
 	public String author;//×÷Õß
@@ -16,8 +17,6 @@ public class TopTenInfo {
 	public TopTenInfo() {
 		super();
 	}
-
-	
 	
 
 	public TopTenInfo(String rankth, String board, String author, String title,

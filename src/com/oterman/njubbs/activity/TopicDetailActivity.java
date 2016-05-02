@@ -17,9 +17,11 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.oterman.njubbs.R;
+import com.oterman.njubbs.bean.TopTenInfo;
 import com.oterman.njubbs.bean.TopicDetailInfo;
 import com.oterman.njubbs.protocol.TopicDetailProtocol;
 import com.oterman.njubbs.utils.LogUtil;
+import com.oterman.njubbs.utils.UiUtils;
 import com.oterman.njubbs.view.LoadingView;
 import com.oterman.njubbs.view.LoadingView.LoadingState;
 
@@ -29,6 +31,8 @@ public class TopicDetailActivity extends FragmentActivity {
 	LoadingView loadingView;
 	private List<TopicDetailInfo> list;
 	private TopicDetailAdapter adapter;
+	
+	private TopTenInfo topTenInfo;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -61,16 +65,35 @@ public class TopicDetailActivity extends FragmentActivity {
 
 	protected View createSuccessView() {
 		ListView lv=new ListView(getApplicationContext());
-//		lv.setDivider(new ColorDrawable(Color.GRAY));  
-//		lv.setDividerHeight(1); 
+		View headerView=initHeaderView();
+		lv.addHeaderView(headerView);
+		
+		lv.setDivider(new ColorDrawable(Color.GRAY));  
+		lv.setDividerHeight(UiUtils.dip2px(1)); 
 		lv.setDividerHeight(0);
 		adapter = new TopicDetailAdapter();
 		lv.setAdapter(adapter);
+		
 		return lv;
 	}
 
+	//初始化头布局
+	private View initHeaderView() {
+		View view=View.inflate(getApplicationContext(), R.layout.topic_detail_header, null);
+		TextView tvTitle=(TextView) view.findViewById(R.id.tv_topic_titile);
+		TextView tvReplyeCount=(TextView) view.findViewById(R.id.tv_topic_replycount);
+		tvTitle.setText(topTenInfo.title);
+		tvReplyeCount.setText("共"+topTenInfo.replyCount+"回复");
+		
+		return view;
+	}
+
+	/*
+	 * 从服务器中加载数据
+	 */
 	protected LoadingState loadDataFromServer() {
 		String url=getIntent().getStringExtra("contentUrl");
+		topTenInfo=(TopTenInfo) getIntent().getSerializableExtra("topTenInfo");
 		
 		TopicDetailProtocol protocol=new TopicDetailProtocol();
 		list = protocol.loadFromServer(url);
@@ -121,7 +144,7 @@ public class TopicDetailActivity extends FragmentActivity {
 			if(position%2==0){
 				convertView.setBackgroundColor(0xFFEBEBEB);
 			}else{
-				convertView.setBackgroundColor(0x88D0D0E0);
+				convertView.setBackgroundColor(0xAAD0D0E0);
 			}
 			return convertView;
 		}

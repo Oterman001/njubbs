@@ -35,7 +35,7 @@ public class TopicDetailProtocol {
 	}
 
 	/**
-	 * 解析html
+	 * 解析html   
 	 * @param doc
 	 * @return
 	 */
@@ -51,7 +51,7 @@ public class TopicDetailProtocol {
 			String str=tdEles.get(2).text();
 			
 			//指定.可以匹配所有字符 包括行结束符
-			Pattern p1=Pattern.compile("发信人:(.+),.*小百合站 \\((.+)\\)(.+)--.*",Pattern.DOTALL);
+			Pattern p1=Pattern.compile("发信人:(.+),.*小百合站 \\((.+\\d{4})\\)(.+)--.*",Pattern.DOTALL);
 //			Pattern p1=Pattern.compile("发信人:(.+),[^.]*小百合站 \\((.+)\\)([^.]+)--[^.]*");
 			Matcher matcher = p1.matcher(str);
 			if(matcher.find()){
