@@ -1,4 +1,4 @@
-package com.oterman.njubbs;
+package com.oterman.njubbs.activity;
 
 import android.annotation.SuppressLint;
 import android.os.Build;
@@ -16,6 +16,11 @@ import android.view.WindowManager;
 import android.widget.RadioGroup;
 import android.widget.RadioGroup.OnCheckedChangeListener;
 
+import com.oterman.njubbs.R;
+import com.oterman.njubbs.R.color;
+import com.oterman.njubbs.R.id;
+import com.oterman.njubbs.R.layout;
+import com.oterman.njubbs.R.menu;
 import com.oterman.njubbs.fragment.BaseFragment;
 import com.oterman.njubbs.fragment.factory.FragmentFactory;
 

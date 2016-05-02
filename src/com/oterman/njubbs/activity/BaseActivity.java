@@ -1,4 +1,4 @@
-package com.oterman.njubbs;
+package com.oterman.njubbs.activity;
 
 import java.util.LinkedList;
 import java.util.List;

@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="#EBEBEB"
-    tools:context="com.oterman.njubbs.MainActivity" >
+    tools:context="com.oterman.njubbs.activity.MainActivity" >
     
     
     <android.support.v4.view.ViewPager

@@ -4,19 +4,25 @@ package com.oterman.njubbs.fragment;
 import java.util.List;
 import java.util.Random;
 
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.oterman.njubbs.R;
-import com.oterman.njubbs.R.drawable;
+import com.oterman.njubbs.activity.TopicDetailActivity;
 import com.oterman.njubbs.bean.TopTenInfo;
 import com.oterman.njubbs.protocol.TopTenProtocol;
+import com.oterman.njubbs.utils.Constants;
+import com.oterman.njubbs.utils.LogUtil;
 import com.oterman.njubbs.view.LoadingView.LoadingState;
 
 public class TopTenFragment extends BaseFragment {
@@ -39,6 +45,24 @@ public class TopTenFragment extends BaseFragment {
 		
 		
 		lv.setAdapter(new TopTenAdatper());
+		
+		lv.setOnItemClickListener(new OnItemClickListener() {
+
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view,
+					int position, long id) {
+				TopTenInfo info = dataList.get(position);
+				Toast.makeText(getContext(), info.title+":"+info.contentUrl, 0).show();
+				String contentUrl=Constants.getContentUrl(info.contentUrl);
+				LogUtil.d("contentUrl:"+contentUrl);
+				Intent intent=new Intent(getContext(),TopicDetailActivity.class);
+				
+				intent.putExtra("contentUrl", contentUrl);
+				
+				startActivity(intent);
+				
+			}
+		});
 		return lv;
 	}
 	
@@ -51,7 +75,7 @@ public class TopTenFragment extends BaseFragment {
 	}
 
 	class TopTenAdatper extends BaseAdapter{
-
+		Random r=new Random();
 		@Override
 		public int getCount() {
 			return dataList.size();
@@ -96,15 +120,15 @@ public class TopTenFragment extends BaseFragment {
 			holder.tvRank.setText(info.rankth);
 			Drawable drawable;
 			
-			Random r=new Random();
+			
 			if(r.nextInt(3)%3!=0){
 				drawable=getResources().getDrawable(R.drawable.ic_gender_female);
 			}else{
 				drawable=getResources().getDrawable(R.drawable.ic_gender_male);
 			}
 			
+			//随机设置左边的图标
 			drawable.setBounds(0,0,drawable.getMinimumWidth(),drawable.getMinimumHeight());
-			
 			holder.tvAuthor.setCompoundDrawables(drawable, null, null, null);
 			
 			return view;

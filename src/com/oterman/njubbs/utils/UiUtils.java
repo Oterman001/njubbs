@@ -6,8 +6,8 @@ import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 
-import com.oterman.njubbs.BaseActivity;
 import com.oterman.njubbs.BaseApplication;
+import com.oterman.njubbs.activity.BaseActivity;
 
 
 public class UiUtils {
