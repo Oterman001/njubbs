@@ -23,6 +23,7 @@ import com.oterman.njubbs.bean.TopTenInfo;
 import com.oterman.njubbs.protocol.TopTenProtocol;
 import com.oterman.njubbs.utils.Constants;
 import com.oterman.njubbs.utils.LogUtil;
+import com.oterman.njubbs.utils.MyToast;
 import com.oterman.njubbs.view.LoadingView.LoadingState;
 
 public class TopTenFragment extends BaseFragment {
@@ -52,7 +53,6 @@ public class TopTenFragment extends BaseFragment {
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {
 				TopTenInfo info = dataList.get(position);
-				Toast.makeText(getContext(), info.title+":"+info.contentUrl, 0).show();
 				String contentUrl=Constants.getContentUrl(info.contentUrl);
 				LogUtil.d("contentUrl:"+contentUrl);
 				Intent intent=new Intent(getContext(),TopicDetailActivity.class);

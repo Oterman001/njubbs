@@ -45,6 +45,9 @@ public class TopicDetailActivity extends FragmentActivity {
 			window.setStatusBarColor(this.getResources().getColor(R.color.green));
 		}
 		
+		topTenInfo=(TopTenInfo) getIntent().getSerializableExtra("topTenInfo");
+		getActionBar().setTitle(topTenInfo.board);
+		
 		if(loadingView==null){
 			loadingView=new LoadingView(getApplicationContext()){
 
@@ -59,6 +62,7 @@ public class TopicDetailActivity extends FragmentActivity {
 				}
 			};
 		}
+		
 		loadingView.showViewFromServer();
 		setContentView(loadingView);
 	}
@@ -83,7 +87,9 @@ public class TopicDetailActivity extends FragmentActivity {
 		TextView tvTitle=(TextView) view.findViewById(R.id.tv_topic_titile);
 		TextView tvReplyeCount=(TextView) view.findViewById(R.id.tv_topic_replycount);
 		tvTitle.setText(topTenInfo.title);
-		tvReplyeCount.setText("共"+topTenInfo.replyCount+"回复");
+//		tvReplyeCount.setText("共"+topTenInfo.replyCount+"回复");
+		tvReplyeCount.setText("共"+(list.size()-1)+"条回复");
+		
 		
 		return view;
 	}
@@ -93,11 +99,9 @@ public class TopicDetailActivity extends FragmentActivity {
 	 */
 	protected LoadingState loadDataFromServer() {
 		String url=getIntent().getStringExtra("contentUrl");
-		topTenInfo=(TopTenInfo) getIntent().getSerializableExtra("topTenInfo");
 		
 		TopicDetailProtocol protocol=new TopicDetailProtocol();
 		list = protocol.loadFromServer(url);
-		LogUtil.d("结果："+list.toString());
 		return list==null?LoadingState.LOAD_FAILED:LoadingState.LOAD_SUCCESS;
 	}
 	

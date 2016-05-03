@@ -52,22 +52,34 @@ public class TopicDetailProtocol {
 			
 			//指定.可以匹配所有字符 包括行结束符
 			Pattern p1=Pattern.compile("发信人:(.+),.*小百合站 \\((.+\\d{4})\\)(.+)--.*",Pattern.DOTALL);
-//			Pattern p1=Pattern.compile("发信人:(.+),[^.]*小百合站 \\((.+)\\)([^.]+)--[^.]*");
 			Matcher matcher = p1.matcher(str);
 			if(matcher.find()){
-				String author=matcher.group(1).trim();
-				String pubTime=matcher.group(2).trim();
-				pubTime=dateFormat.format(new Date(pubTime));
+				handleData(list, dateFormat, floorth, matcher);
+			}else{//帖子有修改 格式变化
+				p1=Pattern.compile("发信人:(.+),.*小百合站 \\((.+\\d{4})\\)(.+)",Pattern.DOTALL);
+				matcher = p1.matcher(str);
 				
-				String content=matcher.group(3).replaceAll("\\[/*uid\\]", "").trim();
-				
-				TopicDetailInfo info=new TopicDetailInfo(author, floorth+"", pubTime, content);
-				list.add(info);
+				if(matcher.find()){
+					handleData(list, dateFormat, floorth, matcher);
+				}
 			}
 		}
 		
 		return list;
+	}
+
+	private void handleData(
+			List<TopicDetailInfo> list,
+			SimpleDateFormat dateFormat, 
+			int floorth, Matcher matcher) {
+		String author=matcher.group(1).trim();
+		String pubTime=matcher.group(2).trim();
+		pubTime=dateFormat.format(new Date(pubTime));
 		
+		String content=matcher.group(3).replaceAll("\\[/*uid\\]", "").trim();
+		content=content.replaceAll("\\[.*?m", "");
+		TopicDetailInfo info=new TopicDetailInfo(author, floorth+"", pubTime, content);
+		list.add(info);
 	}
 
 

@@ -3,30 +3,17 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:background="#00ff0000"
+    android:paddingTop="5dp"
     android:paddingLeft="5dp"
-    android:paddingRight="5dp"
-    android:paddingTop="5dp" >
-
-    <!-- 时间 -->
-
-    <TextView
-        android:id="@+id/tv_topic_detail_item_pubtime"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:text="05-02 18:50"
-        android:textColor="#7000" />
+    android:paddingRight="5dp" >
 
     <TextView
         android:id="@+id/tv_topic_detail_item_content"
-        android:layout_width="wrap_content"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/tv_topic_detail_item_pubtime"
-        android:layout_marginBottom="5dp"
-        android:layout_marginTop="5dp"
-        android:layout_marginLeft="8dp"
-        android:text="这是回复内容"
+        android:layout_margin="8dp"
         android:textColor="#000"
+        android:text="这是回复内容"
         android:textSize="16sp" />
 
     <!-- 作者 -->
@@ -39,16 +26,22 @@
         android:drawableLeft="@drawable/ic_gender_female"
         android:text="Oterman" />
 
+    <!-- 回复时间 -->
+
+    <TextView
+        android:id="@+id/tv_topic_detail_item_pubtime"
+        style="@style/item_topten_style"
+        android:layout_below="@id/tv_topic_detail_item_content"
+        android:layout_toRightOf="@id/tv_topic_detail_item_author"
+        android:text="05-02 18:50" />
+
     <!-- 楼层 -->
 
     <TextView
         android:id="@+id/tv_topic_detail_item_floorth"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@id/tv_topic_detail_item_content"
-        android:layout_alignParentLeft="true"
-        android:layout_marginLeft="8dp"
-        android:textColor="#7000"
+        style="@style/item_topten_style"
+        android:layout_alignParentRight="true"
+        android:layout_below="@id/tv_topic_detail_item_content"
         android:text="第 1楼" />
 
 </RelativeLayout>
