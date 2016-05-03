@@ -8,4 +8,10 @@ public class Constants {
 	public static String getContentUrl(String contentUrl) {
 		return NJU_BBS_BASE_URL+contentUrl;
 	}
+
+
+	public static String getBoardUrl(String boardUrl) {
+		boardUrl=boardUrl.replaceAll("bbsdoc", "bbstdoc");
+		return NJU_BBS_BASE_URL+boardUrl;
+	}
 }

@@ -42,11 +42,10 @@ public class MainActivity extends FragmentActivity {
 			window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
 			window.setStatusBarColor(this.getResources().getColor(R.color.green));
 		}
-		
 		initViews();
 	}
 
-	private void initViews() {
+	public void initViews() {
 		//≥ı ºªØviewpager
 		vpPages = (ViewPager) this.findViewById(R.id.vp_pages);
 		vpPages.setAdapter(new MyPageAdapter(getSupportFragmentManager()));

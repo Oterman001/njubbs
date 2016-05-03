@@ -16,7 +16,7 @@ import android.text.TextUtils;
 import com.lidroid.xutils.HttpUtils;
 import com.lidroid.xutils.http.ResponseStream;
 import com.lidroid.xutils.http.client.HttpRequest.HttpMethod;
-import com.oterman.njubbs.bean.TopTenInfo;
+import com.oterman.njubbs.bean.TopicInfo;
 import com.oterman.njubbs.utils.CacheUtils;
 import com.oterman.njubbs.utils.Constants;
 import com.oterman.njubbs.utils.LogUtil;
@@ -31,8 +31,8 @@ public class TopTenProtocol {
 	/**
 	 * 从服务器加载十大数据，解析并返回
 	 */
-	public List<TopTenInfo> loadFromServer() {
-		List<TopTenInfo> list = null;
+	public List<TopicInfo> loadFromServer() {
+		List<TopicInfo> list = null;
 		try {
 
 			Document doc = Jsoup.connect(Constants.TOP_TEN_URL).get();
@@ -54,7 +54,7 @@ public class TopTenProtocol {
 	/**
 	 * 从本地加载数据
 	 */
-	public List<TopTenInfo> loadFromCache() {
+	public List<TopicInfo> loadFromCache() {
 		String html = CacheUtils.loadFromLocal("topten");
 		
 		if(!TextUtils.isEmpty(html)){
@@ -72,8 +72,8 @@ public class TopTenProtocol {
 	 * @param doc
 	 * @return
 	 */
-	public List<TopTenInfo> parseHtml(Document doc) {
-		List<TopTenInfo> list = new ArrayList<>();
+	public List<TopicInfo> parseHtml(Document doc) {
+		List<TopicInfo> list = new ArrayList<>();
 		Elements trEles = doc.select("tr");
 		for (int i = 1; i < trEles.size(); i++) {
 			Element trEle = trEles.get(i);
@@ -90,10 +90,8 @@ public class TopTenProtocol {
 			String authorUrl = tdEles.get(3).select("a").get(0).attr("href");
 
 			String replyCount = tdEles.get(4).text();
-
-			TopTenInfo info = new TopTenInfo(rankth, board, author, title,
-					Integer.parseInt(replyCount), boardUrl, contentUrl,
-					authorUrl);
+			
+			TopicInfo info=new TopicInfo(board, author, title, replyCount, boardUrl, contentUrl, authorUrl, rankth);
 
 			list.add(info);
 		}

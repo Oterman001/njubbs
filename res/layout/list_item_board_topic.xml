@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="#00ff0000"
+    android:paddingLeft="5dp"
+    android:paddingRight="5dp"
+    android:paddingTop="5dp" >
+
+    <TextView
+        android:id="@+id/tv_board_topic_item_title"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+		android:layout_margin="8dp"
+		android:textColor="#000"
+        android:text="这是标题这是标题"
+        android:textSize="18sp" />
+
+    <!-- 作者 -->
+    <TextView
+        android:id="@+id/tv_board_topic_item_author"
+        style="@style/item_topten_style"
+        android:layout_marginLeft="8dp"
+        android:layout_below="@id/tv_board_topic_item_title"
+        android:drawableLeft="@drawable/ic_gender_female"
+        android:text="Oterman" />
+
+    <!-- 回帖数 -->
+    <TextView
+        android:id="@+id/tv_board_topic_item_replycount"
+        style="@style/item_topten_style"
+        android:drawablePadding="0dp"
+        android:layout_below="@id/tv_board_topic_item_title"
+        android:layout_toRightOf="@id/tv_board_topic_item_author"
+        android:drawableLeft="@drawable/ic_item_comment2"
+        android:text="40" />
+
+    <!-- 时间 -->
+    <TextView
+        android:id="@+id/tv_board_topic_item_pubtime"
+        style="@style/item_topten_style"
+        android:layout_alignParentRight="true"
+        android:layout_below="@id/tv_board_topic_item_title"
+        android:text="05-02 18:12" />
+
+</RelativeLayout>

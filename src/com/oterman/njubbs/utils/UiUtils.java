@@ -58,21 +58,5 @@ public class UiUtils {
 	public static Drawable getDrawalbe(int id) {
 		return getResource().getDrawable(id);
 	}
-
-	/**
-	 * 启动activity，要判断是否是从一个activity中去启动，否则要加标记
-	 * @param intent
-	 */
-	public static void startActivity(Intent intent) {
-		
-		if(BaseActivity.activity==null){
-			intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);//新的任务栈
-			UiUtils.getContext().startActivity(intent);
-		}else{
-			BaseActivity.activity.startActivity(intent);
-		}
-		
-	
-	}
 	
 }

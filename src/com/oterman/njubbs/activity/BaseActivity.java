@@ -1,108 +1,84 @@
 package com.oterman.njubbs.activity;
 
-import java.util.LinkedList;
 import java.util.List;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
+import android.annotation.SuppressLint;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.os.Build;
 import android.os.Bundle;
-import android.os.Process;
-import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
+import android.widget.BaseAdapter;
+import android.widget.ListView;
+import android.widget.TextView;
 
-/*
- *	公共的activity
- *  初始化控件
- *  初始化actionbar
- *  管理所有的activity  在退出的时候，能够一键退出应用程序
- *
- */
-public class BaseActivity extends FragmentActivity {
+import com.oterman.njubbs.R;
+import com.oterman.njubbs.bean.TopicDetailInfo;
+import com.oterman.njubbs.protocol.TopicDetailProtocol;
+import com.oterman.njubbs.utils.LogUtil;
+import com.oterman.njubbs.utils.MyToast;
+import com.oterman.njubbs.utils.UiUtils;
+import com.oterman.njubbs.view.LoadingView;
+import com.oterman.njubbs.view.LoadingView.LoadingState;
 
-	public static List<BaseActivity> activities=new LinkedList<BaseActivity>();
-	private FinishAllReceiver receiver;
-	
-	public static BaseActivity activity;//定义一个成员变量  当启动一个新的阿成vitity时，判断是否需要加入新的任务栈的标记
-	
+@SuppressLint("NewApi")
+public abstract class BaseActivity extends FragmentActivity {
+
+	LoadingView loadingView;
+
 	@Override
-	protected void onResume() {
-		super.onResume();
-		activity=this;
-	}
-	
-	@Override
-	protected void onCreate(@Nullable Bundle savedInstanceState) {
+	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		//往activity集合中添加
-		activities.add(this);
-		
-		//注册广播接收者，必须在结束的时候取消注册
-		IntentFilter filter=new IntentFilter("com.oterman.receiver.finishAll");
-		
-		receiver = new FinishAllReceiver();
-		registerReceiver(receiver, filter);
-		
-		init();//初始化
-		initView();// 初始化控件
-		initActionBar();// 初始化actionbar
-	}
-	
-	protected void init() {
-		
-	}
-
-	@Override
-	protected void onDestroy() {
-		super.onDestroy();
-		//取消注册广播
-		if(receiver!=null){
-			unregisterReceiver(receiver);
+		// 更改状态栏的颜色
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+			Window window = this.getWindow();
+			window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+			window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+			window.setStatusBarColor(this.getResources()
+					.getColor(R.color.green));
 		}
 		
-		//从集合中移除数据
-		activities.remove(this);
-		finish();
-	}
-	/**
-	 * 结束所有的activity
-	 */
-	public void finishAllActivity(){
-		//由于集合在遍历的时候，不能移除,所以得备份一下
-		List<BaseActivity> backUP=new LinkedList<>(activities);
-		for (BaseActivity baseActivity : backUP) {
-			baseActivity.finish();
-			activities.remove(baseActivity);
+		initViews();
+		
+		if (loadingView == null) {
+			loadingView = new LoadingView(getApplicationContext()) {
+				@Override
+				protected LoadingState loadDataFromServer() {
+					return BaseActivity.this.loadDataFromServer();
+				}
+
+				@Override
+				protected View createSuccessView() {
+					return BaseActivity.this.createSuccessView();
+				}
+			};
 		}
-		
-		//杀死进程
-		Process.killProcess(Process.myPid());
+
+		loadingView.showViewFromServer();
+		setContentView(loadingView);
+	}
+
+	/**
+	 * 初始化view
+	 */
+	public void initViews() {
 		
 	}
 
 	/**
-	 * 结束程序的另一种方法  定义一个广播接收者，当接收到广播的时候，结束activity
+	 * 加载数据成功后 创建视图
+	 * @return
 	 */
-	class FinishAllReceiver extends BroadcastReceiver{
-		@Override
-		public void onReceive(Context context, Intent intent) {
-			
-			finish();
-		}
-	}
-	
-	/**
-	 * 初始化控件
-	 */
-	protected void initView() {
+	public abstract View createSuccessView();
 
-	}
-
-	/**
-	 * 初始化actionbar
+	/*
+	 * 从服务器中加载数据
 	 */
-	protected void initActionBar() {
-		
-	}
+	public abstract LoadingState loadDataFromServer();
+
+
 }

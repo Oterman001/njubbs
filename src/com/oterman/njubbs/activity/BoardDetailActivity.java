@@ -1,14 +1,12 @@
-package com.oterman.njubbs.fragment;
-
+package com.oterman.njubbs.activity;
 
 import java.util.List;
 import java.util.Random;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -16,37 +14,37 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.oterman.njubbs.R;
-import com.oterman.njubbs.activity.TopicDetailActivity;
 import com.oterman.njubbs.bean.TopicInfo;
-import com.oterman.njubbs.protocol.TopTenProtocol;
+import com.oterman.njubbs.protocol.BoardTopicProtocol;
 import com.oterman.njubbs.utils.Constants;
-import com.oterman.njubbs.utils.LogUtil;
-import com.oterman.njubbs.utils.MyToast;
 import com.oterman.njubbs.utils.UiUtils;
 import com.oterman.njubbs.view.LoadingView.LoadingState;
 
-public class TopTenFragment extends BaseFragment {
-
-
+/**
+ * 版面详情
+ *
+ */
+public class BoardDetailActivity extends BaseActivity {
+	
+	TopicInfo topicInfo;
 	private List<TopicInfo> dataList;
 	private ListView lv;
-
+	
 	@Override
-	public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-		super.onActivityCreated(savedInstanceState);
-		
-		//初始化第一页
-		showViewFromServer();
+	public void initViews() {
+		topicInfo = (TopicInfo) getIntent().getSerializableExtra("topicInfo");
+		getActionBar().setTitle(topicInfo.board+"(帖子列表)");
 	}
 	
 	@Override
 	public View createSuccessView() {
-		lv = new ListView(getContext());
-		lv.setDivider(new ColorDrawable(0x55888888));  
+		lv = new ListView(getApplicationContext());
+		
+		lv.setDivider(new ColorDrawable(0x77888888));  
 		lv.setDividerHeight(1);
+		
 		lv.setAdapter(new TopTenAdatper());
 		
 		lv.setOnItemClickListener(new OnItemClickListener() {
@@ -55,20 +53,19 @@ public class TopTenFragment extends BaseFragment {
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {
 				TopicInfo info = dataList.get(position);
-				Intent intent=new Intent(getContext(),TopicDetailActivity.class);
-				
+				Intent intent=new Intent(getApplicationContext(),TopicDetailActivity.class);
+				info.board=topicInfo.board;
+				info.boardUrl=topicInfo.boardUrl;
 				intent.putExtra("topicInfo", info);
 				startActivity(intent);
-				
 			}
 		});
 		return lv;
 	}
 	
-	@Override
 	public LoadingState loadDataFromServer() {
-		TopTenProtocol protocol=new TopTenProtocol();
-		dataList = protocol.loadFromCache();
+		BoardTopicProtocol protocol=new BoardTopicProtocol();
+		dataList = protocol.loadFromServer(Constants.getBoardUrl(topicInfo.boardUrl));
 		
 		return dataList==null?LoadingState.LOAD_FAILED:LoadingState.LOAD_SUCCESS;
 	}
@@ -96,13 +93,12 @@ public class TopTenFragment extends BaseFragment {
 			View view=null;
 			ViewHolder holder=null;
 			if(convertView==null){
-				view=View.inflate(getContext(), R.layout.list_item_topten, null);
+				view=View.inflate(getApplicationContext(), R.layout.list_item_board_topic, null);
 				holder=new ViewHolder();
-				holder.tvTitle=(TextView) view.findViewById(R.id.tv_top_item_title);
-				holder.tvBoard=(TextView) view.findViewById(R.id.tv_top_item_board);
-				holder.tvAuthor=(TextView) view.findViewById(R.id.tv_top_item_author);
-				holder.tvRank=(TextView) view.findViewById(R.id.tv_top_item_rankth);
-				holder.tvReplyCount=(TextView) view.findViewById(R.id.tv_top_item_replycount);
+				holder.tvTitle=(TextView) view.findViewById(R.id.tv_board_topic_item_title);
+				holder.tvAuthor=(TextView) view.findViewById(R.id.tv_board_topic_item_author);
+				holder.tvPubTime=(TextView) view.findViewById(R.id.tv_board_topic_item_pubtime);
+				holder.tvReplyCount=(TextView) view.findViewById(R.id.tv_board_topic_item_replycount);
 				
 				view.setTag(holder);
 			}else{
@@ -113,12 +109,10 @@ public class TopTenFragment extends BaseFragment {
 			TopicInfo info = dataList.get(position);
 			
 			holder.tvTitle.setText(info.title);
-			holder.tvBoard.setText(info.board);
 			holder.tvAuthor.setText(info.author);
-			holder.tvReplyCount.setText(info.replyCount);
-			holder.tvRank.setText(info.rankth);
+			holder.tvReplyCount.setText(info.replyCount+"");
+			holder.tvPubTime.setText(info.pubTime);
 			Drawable drawable;
-			
 			
 			if(r.nextInt(3)%3!=0){
 				drawable=getResources().getDrawable(R.drawable.ic_gender_female);
@@ -135,10 +129,9 @@ public class TopTenFragment extends BaseFragment {
 		
 		class ViewHolder{
 			TextView tvTitle;
-			TextView tvBoard;
 			TextView tvAuthor;
 			TextView tvReplyCount;
-			TextView tvRank;
+			TextView tvPubTime;
 		}
 		
 	}
