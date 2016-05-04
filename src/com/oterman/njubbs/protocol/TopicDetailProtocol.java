@@ -9,13 +9,14 @@ import java.util.regex.Pattern;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import com.oterman.njubbs.bean.TopicDetailInfo;
 
 
 public class TopicDetailProtocol  extends BaseProtocol<TopicDetailInfo>{
-
+	String loadMoreUrl;
 
 	/**
 	 * 解析html   
@@ -24,6 +25,16 @@ public class TopicDetailProtocol  extends BaseProtocol<TopicDetailInfo>{
 	 */
 	public List<TopicDetailInfo> parseHtml(Document doc,String url) {
 		List<TopicDetailInfo> list = new ArrayList<>();
+		
+		loadMoreUrl=null;
+		Elements aEles = doc.select("a");
+		for (int i = aEles.size()-1; i >0 ; i--) {
+			Element aEle=aEles.get(i);
+			if("本主题下30篇".equals(aEle.text())){
+				loadMoreUrl=aEle.attr("href");
+			}
+		}
+
 		Elements tableEles = doc.select("tbody");
 		SimpleDateFormat dateFormat=new SimpleDateFormat("MM-dd HH:mm");
 		for (int i = 0; i < tableEles.size(); i++) {
@@ -61,7 +72,7 @@ public class TopicDetailProtocol  extends BaseProtocol<TopicDetailInfo>{
 		
 		String content=matcher.group(3).replaceAll("\\[/*uid\\]", "").trim();
 		content=content.replaceAll("\\[.*?m", "");
-		TopicDetailInfo info=new TopicDetailInfo(author, floorth+"", pubTime, content);
+		TopicDetailInfo info=new TopicDetailInfo(author, floorth+"", pubTime, content, loadMoreUrl);
 		list.add(info);
 	}
 

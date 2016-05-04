@@ -72,7 +72,7 @@ public class BoardDetailActivity extends BaseActivity {
 	public LoadingState loadDataFromServer() {
 		BoardTopicProtocol protocol = new BoardTopicProtocol();
 		dataList = protocol.loadFromServer(Constants
-				.getBoardUrl(boardUrl));
+				.getBoardUrl(boardUrl),false);
 
 		return dataList == null ? LoadingState.LOAD_FAILED
 				: LoadingState.LOAD_SUCCESS;

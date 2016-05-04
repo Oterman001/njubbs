@@ -24,17 +24,22 @@ import com.oterman.njubbs.protocol.TopicDetailProtocol;
 import com.oterman.njubbs.utils.Constants;
 import com.oterman.njubbs.utils.LogUtil;
 import com.oterman.njubbs.utils.MyToast;
+import com.oterman.njubbs.utils.ThreadManager;
 import com.oterman.njubbs.utils.UiUtils;
+import com.oterman.njubbs.view.LoadMoreListView;
+import com.oterman.njubbs.view.LoadMoreListView.OnLoadMoreListener;
 import com.oterman.njubbs.view.LoadingView;
 import com.oterman.njubbs.view.LoadingView.LoadingState;
 
 @SuppressLint("NewApi")
-public class TopicDetailActivity extends BaseActivity {
+public class TopicDetailActivity extends BaseActivity implements OnLoadMoreListener {
 
 	private List<TopicDetailInfo> list;
 	private TopicDetailAdapter adapter;
 
 	private TopicInfo topicInfo;
+	private TopicDetailProtocol protocol;
+	private LoadMoreListView lv;
 
 	@Override
 	public void initViews() {
@@ -60,7 +65,8 @@ public class TopicDetailActivity extends BaseActivity {
 	}
 	
 	public View createSuccessView() {
-		ListView lv = new ListView(getApplicationContext());
+		lv = new LoadMoreListView(getApplicationContext());
+		
 		View headerView = initHeaderView();
 		lv.addHeaderView(headerView);
 
@@ -69,6 +75,9 @@ public class TopicDetailActivity extends BaseActivity {
 		lv.setDividerHeight(0);
 		adapter = new TopicDetailAdapter();
 		lv.setAdapter(adapter);
+		
+		lv.setOnLoadMoreListener(this);
+		
 
 		return lv;
 	}
@@ -92,10 +101,53 @@ public class TopicDetailActivity extends BaseActivity {
 	public LoadingState loadDataFromServer() {
 		String url = Constants.getContentUrl(topicInfo.contentUrl);
 		
-		TopicDetailProtocol protocol = new TopicDetailProtocol();
-		list = protocol.loadFromServer(url);
+		protocol = new TopicDetailProtocol();
+		list = protocol.loadFromServer(url,false);
 		return list == null ? LoadingState.LOAD_FAILED
 				: LoadingState.LOAD_SUCCESS;
+	}
+
+	/**
+	 * 加载下一页数据
+	 */
+	@Override
+	public void onLoadingMore() {
+		
+		ThreadManager.getInstance().createLongPool().execute(new Runnable() {
+			private List<TopicDetailInfo> moreList;
+
+			@Override
+			public void run() {
+				if(protocol==null){
+					protocol = new TopicDetailProtocol();
+				}
+				
+				String loadMoreUrl = list.get(list.size()-1).loadMoreUrl;
+				if(loadMoreUrl!=null){
+					moreList = protocol.loadFromServer(Constants.getContentUrl(loadMoreUrl), false);
+				}
+				
+				UiUtils.runOnUiThread(new Runnable() {
+					
+					@Override
+					public void run() {
+						if(moreList!=null&&moreList.size()!=0){
+							moreList.remove(0);
+							list.addAll(moreList);
+							adapter.notifyDataSetChanged();
+							MyToast.toast("加载下一页成功！");
+						}else{//没有更多
+							MyToast.toast("没有更多了");
+							lv.OnLoaingMoreCompelete();
+						}
+						
+						
+					}
+				});
+				
+			}
+		});
+		
 	}
 
 	class TopicDetailAdapter extends BaseAdapter {

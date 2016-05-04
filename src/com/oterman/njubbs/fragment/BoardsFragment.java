@@ -5,7 +5,9 @@ import java.util.Random;
 
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
+import android.os.Handler;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -16,13 +18,14 @@ import android.widget.TextView;
 
 import com.oterman.njubbs.R;
 import com.oterman.njubbs.activity.BoardDetailActivity;
-import com.oterman.njubbs.activity.TopicDetailActivity;
 import com.oterman.njubbs.bean.BoardInfo;
 import com.oterman.njubbs.bean.TopicInfo;
 import com.oterman.njubbs.protocol.HotBoardProtocol;
 import com.oterman.njubbs.protocol.TopTenProtocol;
 import com.oterman.njubbs.utils.Constants;
 import com.oterman.njubbs.utils.MyToast;
+import com.oterman.njubbs.utils.ThreadManager;
+import com.oterman.njubbs.utils.UiUtils;
 import com.oterman.njubbs.view.LoadingView.LoadingState;
 
 public class BoardsFragment extends BaseFragment {
@@ -31,13 +34,19 @@ public class BoardsFragment extends BaseFragment {
 
 	private List<BoardInfo> dataList;
 	private ListView lv;
+	private SwipeRefreshLayout srl;
+	private HotBoardProtocol protocol;
+	private BoardAdapter adapter;
 	
 	@Override
 	public View createSuccessView() {
+		srl = new SwipeRefreshLayout(getContext());
+		
 		lv = new ListView(getContext());
 		lv.setDivider(new ColorDrawable(0x55888888));  
 		lv.setDividerHeight(1);
-		lv.setAdapter(new BoardAdapter());
+		adapter = new BoardAdapter();
+		lv.setAdapter(adapter);
 		
 		lv.setOnItemClickListener(new OnItemClickListener() {
 
@@ -52,13 +61,57 @@ public class BoardsFragment extends BaseFragment {
 				startActivity(intent);
 			}
 		});
-		return lv;
+		
+		srl.addView(lv);
+		
+		srl.setOnRefreshListener(new OnRefreshListener() {
+			@Override
+			public void onRefresh() {
+				ThreadManager.getInstance().createLongPool().execute(new Runnable() {
+					@Override
+					public void run() {
+						//重新加载数据
+						final boolean result=updateData();
+						
+						UiUtils.runOnUiThread(new Runnable() {
+							
+							@Override
+							public void run() {
+								if(result){
+									adapter.notifyDataSetChanged();
+									MyToast.toast("刷新成功!");
+								}else{
+									MyToast.toast("刷新失败，请检查网络!");
+								}
+								
+								srl.setRefreshing(false);
+							}
+						});
+						
+					}
+
+
+				});
+			}
+		});
+		return srl;
+	}
+	private boolean updateData() {
+		if(protocol==null){
+			protocol = new HotBoardProtocol();
+		}
+		List<BoardInfo> list = protocol.loadFromServer(Constants.HOT_BOARD_ULR,true);
+		if(list==null||list.size()==0){
+			return false;
+		}
+		dataList=list;
+		return true;
 	}
 	
 	@Override
 	public LoadingState loadDataFromServer() {
-		HotBoardProtocol protocol=new HotBoardProtocol();
-		dataList = protocol.loadFromServer(Constants.HOT_BOARD_ULR);
+		protocol = new HotBoardProtocol();
+		dataList = protocol.loadFromCache(Constants.HOT_BOARD_ULR);
 		
 		return dataList==null?LoadingState.LOAD_FAILED:LoadingState.LOAD_SUCCESS;
 	}
@@ -89,6 +142,7 @@ public class BoardsFragment extends BaseFragment {
 				view=View.inflate(getContext(), R.layout.list_item_board, null);
 				holder=new ViewHolder();
 				holder.tvBoard=(TextView) view.findViewById(R.id.tv_board);
+				holder.tvPeopleCount=(TextView) view.findViewById(R.id.tv_peopleCount);
 				view.setTag(holder);
 			}else{
 				view=convertView;
@@ -97,13 +151,14 @@ public class BoardsFragment extends BaseFragment {
 			
 			BoardInfo info = dataList.get(position);
 			
-			holder.tvBoard.setText(info.boardName+"("+info.chineseName+")");
-			
+			holder.tvBoard.setText(info.rankth+". "+info.boardName+"("+info.chineseName+")");
+			holder.tvPeopleCount.setText(info.peopleCount);
 			return view;
 		}
 		
 		class ViewHolder{
 			TextView tvBoard;
+			TextView tvPeopleCount;
 		}
 		
 	}

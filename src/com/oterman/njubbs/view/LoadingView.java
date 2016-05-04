@@ -106,9 +106,7 @@ public abstract class LoadingView extends FrameLayout{
 				});
 			}
 		});
-		
 		updateViewVisibilty();
-
 	}
 
 	//创建加载失败视图

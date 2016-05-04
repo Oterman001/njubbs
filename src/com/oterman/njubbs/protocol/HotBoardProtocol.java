@@ -12,6 +12,11 @@ import com.oterman.njubbs.bean.BoardInfo;
 public class HotBoardProtocol extends BaseProtocol<BoardInfo> {
 
 	@Override
+	public String getSaveKey() {
+		return "hotboard";
+	}
+	
+	@Override
 	public List<BoardInfo> parseHtml(Document doc, String url) {
 		List<BoardInfo> list=new ArrayList<>();
 		
