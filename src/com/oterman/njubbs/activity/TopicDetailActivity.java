@@ -39,7 +39,7 @@ public class TopicDetailActivity extends BaseActivity {
 	@Override
 	public void initViews() {
 		topicInfo = (TopicInfo) getIntent().getSerializableExtra("topicInfo");
-		getActionBar().setTitle(topicInfo.board+"(帖子详情)");
+		getActionBar().setTitle(topicInfo.board+"(点击进入)");
 		//给actionbar添加点击事件  点击后进入到对应的版面
 		final int abTitleId = getResources().getIdentifier("action_bar_title","id", "android");
 		findViewById(abTitleId).setOnClickListener(new View.OnClickListener() {
@@ -47,7 +47,9 @@ public class TopicDetailActivity extends BaseActivity {
 			public void onClick(View v) {
 				Intent intent=new Intent(getApplicationContext(), BoardDetailActivity.class);
 				
-				intent.putExtra("topicInfo", topicInfo);
+//				intent.putExtra("topicInfo", topicInfo);
+				
+				intent.putExtra("boardUrl", topicInfo.boardUrl);
 				
 				startActivity(intent);
 				//结束掉

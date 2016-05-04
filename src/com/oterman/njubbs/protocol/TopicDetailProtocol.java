@@ -14,32 +14,15 @@ import org.jsoup.select.Elements;
 import com.oterman.njubbs.bean.TopicDetailInfo;
 
 
-public class TopicDetailProtocol {
+public class TopicDetailProtocol  extends BaseProtocol<TopicDetailInfo>{
 
-	/**
-	 * 从服务器加载十大数据，解析并返回
-	 */
-	public List<TopicDetailInfo> loadFromServer(String url) {
-		List<TopicDetailInfo> list = null;
-		try {
-			Document doc = Jsoup.connect(url).get();
-
-			if(doc!=null){
-				list=parseHtml(doc);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-		return list;
-	}
 
 	/**
 	 * 解析html   
 	 * @param doc
 	 * @return
 	 */
-	public List<TopicDetailInfo> parseHtml(Document doc) {
+	public List<TopicDetailInfo> parseHtml(Document doc,String url) {
 		List<TopicDetailInfo> list = new ArrayList<>();
 		Elements tableEles = doc.select("tbody");
 		SimpleDateFormat dateFormat=new SimpleDateFormat("MM-dd HH:mm");

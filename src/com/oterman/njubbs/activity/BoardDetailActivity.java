@@ -24,54 +24,63 @@ import com.oterman.njubbs.view.LoadingView.LoadingState;
 
 /**
  * 版面详情
- *
+ * 
  */
 public class BoardDetailActivity extends BaseActivity {
-	
-	TopicInfo topicInfo;
+
+	// TopicInfo topicInfo;
 	private List<TopicInfo> dataList;
 	private ListView lv;
-	
+	private String boardUrl;
+	private String board;
+
 	@Override
 	public void initViews() {
-		topicInfo = (TopicInfo) getIntent().getSerializableExtra("topicInfo");
-		getActionBar().setTitle(topicInfo.board+"(帖子列表)");
+		boardUrl = getIntent().getStringExtra("boardUrl");
+		
+		board = boardUrl.substring(boardUrl.indexOf("=")+1);
+
+		getActionBar().setTitle(board + "(帖子列表)");
 	}
-	
+
 	@Override
 	public View createSuccessView() {
 		lv = new ListView(getApplicationContext());
-		
-		lv.setDivider(new ColorDrawable(0x77888888));  
+
+		lv.setDivider(new ColorDrawable(0x77888888));
 		lv.setDividerHeight(1);
-		
+
 		lv.setAdapter(new TopTenAdatper());
-		
+
 		lv.setOnItemClickListener(new OnItemClickListener() {
 
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {
 				TopicInfo info = dataList.get(position);
-				Intent intent=new Intent(getApplicationContext(),TopicDetailActivity.class);
-				info.board=topicInfo.board;
-				info.boardUrl=topicInfo.boardUrl;
+				Intent intent = new Intent(getApplicationContext(),
+						TopicDetailActivity.class);
+				info.board =board;
+				info.boardUrl = boardUrl;
 				intent.putExtra("topicInfo", info);
 				startActivity(intent);
 			}
 		});
 		return lv;
 	}
-	
+
 	public LoadingState loadDataFromServer() {
-		BoardTopicProtocol protocol=new BoardTopicProtocol();
-		dataList = protocol.loadFromServer(Constants.getBoardUrl(topicInfo.boardUrl));
-		
-		return dataList==null?LoadingState.LOAD_FAILED:LoadingState.LOAD_SUCCESS;
+		BoardTopicProtocol protocol = new BoardTopicProtocol();
+		dataList = protocol.loadFromServer(Constants
+				.getBoardUrl(boardUrl));
+
+		return dataList == null ? LoadingState.LOAD_FAILED
+				: LoadingState.LOAD_SUCCESS;
 	}
 
-	class TopTenAdatper extends BaseAdapter{
-		Random r=new Random();
+	class TopTenAdatper extends BaseAdapter {
+		Random r = new Random();
+
 		@Override
 		public int getCount() {
 			return dataList.size();
@@ -87,53 +96,60 @@ public class BoardDetailActivity extends BaseActivity {
 			return position;
 		}
 
-		
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
-			View view=null;
-			ViewHolder holder=null;
-			if(convertView==null){
-				view=View.inflate(getApplicationContext(), R.layout.list_item_board_topic, null);
-				holder=new ViewHolder();
-				holder.tvTitle=(TextView) view.findViewById(R.id.tv_board_topic_item_title);
-				holder.tvAuthor=(TextView) view.findViewById(R.id.tv_board_topic_item_author);
-				holder.tvPubTime=(TextView) view.findViewById(R.id.tv_board_topic_item_pubtime);
-				holder.tvReplyCount=(TextView) view.findViewById(R.id.tv_board_topic_item_replycount);
-				
+			View view = null;
+			ViewHolder holder = null;
+			if (convertView == null) {
+				view = View.inflate(getApplicationContext(),
+						R.layout.list_item_board_topic, null);
+				holder = new ViewHolder();
+				holder.tvTitle = (TextView) view
+						.findViewById(R.id.tv_board_topic_item_title);
+				holder.tvAuthor = (TextView) view
+						.findViewById(R.id.tv_board_topic_item_author);
+				holder.tvPubTime = (TextView) view
+						.findViewById(R.id.tv_board_topic_item_pubtime);
+				holder.tvReplyCount = (TextView) view
+						.findViewById(R.id.tv_board_topic_item_replycount);
+
 				view.setTag(holder);
-			}else{
-				view=convertView;
-				holder=(ViewHolder) view.getTag();
+			} else {
+				view = convertView;
+				holder = (ViewHolder) view.getTag();
 			}
-			
+
 			TopicInfo info = dataList.get(position);
-			
+
 			holder.tvTitle.setText(info.title);
 			holder.tvAuthor.setText(info.author);
-			holder.tvReplyCount.setText(info.replyCount+"");
+			holder.tvReplyCount.setText(info.replyCount + "");
 			holder.tvPubTime.setText(info.pubTime);
 			Drawable drawable;
-			
-			if(r.nextInt(3)%3!=0){
-				drawable=getResources().getDrawable(R.drawable.ic_gender_female);
-			}else{
-				drawable=getResources().getDrawable(R.drawable.ic_gender_male);
+
+			if (r.nextInt(3) % 3 != 0) {
+				drawable = getResources().getDrawable(
+						R.drawable.ic_gender_female);
+			} else {
+				drawable = getResources()
+						.getDrawable(R.drawable.ic_gender_male);
 			}
-			
-			//随机设置左边的图标
-			drawable.setBounds(0,0,drawable.getMinimumWidth(),drawable.getMinimumHeight());
+
+			// 随机设置左边的图标
+			drawable.setBounds(0, 0, drawable.getMinimumWidth(),
+					drawable.getMinimumHeight());
 			holder.tvAuthor.setCompoundDrawables(drawable, null, null, null);
-			
+
 			return view;
 		}
-		
-		class ViewHolder{
+
+		class ViewHolder {
 			TextView tvTitle;
 			TextView tvAuthor;
 			TextView tvReplyCount;
 			TextView tvPubTime;
 		}
-		
+
 	}
 
 }

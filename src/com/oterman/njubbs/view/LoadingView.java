@@ -89,7 +89,7 @@ public abstract class LoadingView extends FrameLayout{
 		ThreadManager.getInstance().createLongPool().execute(new Runnable() {
 			@Override
 			public void run() {
-				SystemClock.sleep(500);
+				//SystemClock.sleep(500);
 				LogUtil.i("1 当前线程："+Thread.currentThread().getName());
 				// 获取结果
 				final LoadingState result = loadDataFromServer();

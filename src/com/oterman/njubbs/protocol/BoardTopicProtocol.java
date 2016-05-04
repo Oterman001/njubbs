@@ -13,30 +13,8 @@ import org.jsoup.select.Elements;
 import com.oterman.njubbs.bean.TopicInfo;
 
 
-public class BoardTopicProtocol {
+public class BoardTopicProtocol extends BaseProtocol<TopicInfo>{
 
-	/**
-	 * 从服务器加载十大数据，解析并返回
-	 */
-	public List<TopicInfo> loadFromServer(String url) {
-		List<TopicInfo> list = null;
-		try {
-			Document doc = Jsoup.connect(url).get();
-
-			if(doc!=null){
-				list=parseHtml(doc,url);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return list;
-	}
-
-	/**
-	 * 解析html   
-	 * @param doc
-	 * @return
-	 */
 	public List<TopicInfo> parseHtml(Document doc,String url) {
 		List<TopicInfo> list = new ArrayList<>();
 		Elements aEles = doc.select("a");

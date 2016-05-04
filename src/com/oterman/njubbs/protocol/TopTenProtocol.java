@@ -26,7 +26,7 @@ import com.oterman.njubbs.utils.LogUtil;
  * 
  * @author oterman
  */
-public class TopTenProtocol {
+public class TopTenProtocol  {
 
 	/**
 	 * 从服务器加载十大数据，解析并返回
