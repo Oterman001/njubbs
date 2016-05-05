@@ -68,14 +68,24 @@ public class TopicInfo  implements Serializable{
 		super();
 	}
 
+	
+	
+	public TopicInfo(String board, String title, String boardUrl,
+			String contentUrl) {
+		super();
+		this.board = board;
+		this.title = title;
+		this.boardUrl = boardUrl;
+		this.contentUrl = contentUrl;
+	}
+
 	@Override
 	public String toString() {
-		return "BoardTopicInfo [board=" + board + ", author=" + author
-				+ ", title=" + title + ", replyCount=" + replyCount
-				+ ", boardUrl=" + boardUrl + ", contentUrl=" + contentUrl
-				+ ", authorUrl=" + authorUrl + ", rankth=" + rankth
-				+ ", shouldTop=" + shouldTop + ", pubTime=" + pubTime + ", id="
-				+ id + ", loadMoreUrl=" + loadMoreUrl + "]";
+		return "TopicInfo [board=" + board + ", title=" + title + ", boardUrl="
+				+ boardUrl + ", contentUrl=" + contentUrl + "]";
 	}
+	
+	
+
 
 }
