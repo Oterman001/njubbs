@@ -6,29 +6,27 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.os.Build;
-import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
-import android.view.WindowManager;
+import android.widget.AbsListView;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.handmark.pulltorefresh.library.PullToRefreshBase;
+import com.handmark.pulltorefresh.library.PullToRefreshBase.Mode;
+import com.handmark.pulltorefresh.library.PullToRefreshBase.OnRefreshListener;
+import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import com.oterman.njubbs.R;
-import com.oterman.njubbs.bean.TopicInfo;
 import com.oterman.njubbs.bean.TopicDetailInfo;
+import com.oterman.njubbs.bean.TopicInfo;
 import com.oterman.njubbs.protocol.TopicDetailProtocol;
 import com.oterman.njubbs.utils.Constants;
-import com.oterman.njubbs.utils.LogUtil;
 import com.oterman.njubbs.utils.MyToast;
 import com.oterman.njubbs.utils.ThreadManager;
 import com.oterman.njubbs.utils.UiUtils;
 import com.oterman.njubbs.view.LoadMoreListView;
 import com.oterman.njubbs.view.LoadMoreListView.OnLoadMoreListener;
-import com.oterman.njubbs.view.LoadingView;
 import com.oterman.njubbs.view.LoadingView.LoadingState;
 
 @SuppressLint("NewApi")
@@ -40,6 +38,8 @@ public class TopicDetailActivity extends BaseActivity implements OnLoadMoreListe
 	private TopicInfo topicInfo;
 	private TopicDetailProtocol protocol;
 	private LoadMoreListView lv;
+	private PullToRefreshListView pLv;
+	private View view;
 
 	@Override
 	public void initViews() {
@@ -64,7 +64,8 @@ public class TopicDetailActivity extends BaseActivity implements OnLoadMoreListe
 		
 	}
 	
-	public View createSuccessView() {
+	public View createSuccessView2() {
+		
 		lv = new LoadMoreListView(getApplicationContext());
 		
 		View headerView = initHeaderView();
@@ -77,9 +78,37 @@ public class TopicDetailActivity extends BaseActivity implements OnLoadMoreListe
 		lv.setAdapter(adapter);
 		
 		lv.setOnLoadMoreListener(this);
-		
 
 		return lv;
+	}
+	public View createSuccessView() {
+		view = View.inflate(getApplicationContext(), R.layout.topic_detail_plv, null);
+		pLv=(PullToRefreshListView) view.findViewById(R.id.pLv);
+		
+		pLv.setMode(Mode.PULL_FROM_END);//上拉加载更多
+		
+        AbsListView.LayoutParams layoutParams = new AbsListView.LayoutParams(AbsListView.LayoutParams.MATCH_PARENT, AbsListView.LayoutParams.WRAP_CONTENT);
+        View headerView = initHeaderView();
+        headerView.setLayoutParams(layoutParams);
+        ListView lv = pLv.getRefreshableView();
+        lv.addHeaderView(headerView);
+		
+		adapter = new TopicDetailAdapter();
+		pLv.setAdapter(adapter);
+		pLv.setOnRefreshListener(new OnRefreshListener<ListView>() {
+
+			@Override
+			public void onRefresh(PullToRefreshBase<ListView> refreshView) {
+				pLv.getLoadingLayoutProxy().setRefreshingLabel("正在加载...嘿咻嘿咻");
+				pLv.getLoadingLayoutProxy().setPullLabel("上拉加载更多");
+				pLv.getLoadingLayoutProxy().setReleaseLabel("松手开始加载");
+				
+				onLoadingMore();
+				
+			}
+		});
+		
+		return view;
 	}
 
 	// 初始化头布局
@@ -90,7 +119,7 @@ public class TopicDetailActivity extends BaseActivity implements OnLoadMoreListe
 		TextView tvReplyeCount = (TextView) view
 				.findViewById(R.id.tv_topic_replycount);
 		tvTitle.setText(topicInfo.title);
-		tvReplyeCount.setText("共" + (list.size() - 1) + "条回复");
+		tvReplyeCount.setText("共" + topicInfo.replyCount + "条回复");
 
 		return view;
 	}
@@ -135,13 +164,12 @@ public class TopicDetailActivity extends BaseActivity implements OnLoadMoreListe
 							moreList.remove(0);
 							list.addAll(moreList);
 							adapter.notifyDataSetChanged();
-							MyToast.toast("加载下一页成功！");
+							MyToast.toast("加载成功！");
 						}else{//没有更多
-							MyToast.toast("没有更多了");
-							lv.OnLoaingMoreCompelete();
+							MyToast.toast("欧哦，没有更多了");
 						}
-						
-						
+						//加载完成，通知回掉
+						pLv.onRefreshComplete();
 					}
 				});
 				
