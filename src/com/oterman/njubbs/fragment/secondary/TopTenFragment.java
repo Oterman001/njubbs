@@ -1,4 +1,4 @@
-package com.oterman.njubbs.fragment;
+package com.oterman.njubbs.fragment.secondary;
 
 
 import java.util.ArrayList;
@@ -24,6 +24,7 @@ import android.widget.TextView;
 import com.oterman.njubbs.R;
 import com.oterman.njubbs.activity.TopicDetailActivity;
 import com.oterman.njubbs.bean.TopicInfo;
+import com.oterman.njubbs.fragment.BaseFragment;
 import com.oterman.njubbs.protocol.TopTenProtocol;
 import com.oterman.njubbs.utils.Constants;
 import com.oterman.njubbs.utils.MyToast;

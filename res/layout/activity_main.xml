@@ -26,17 +26,17 @@
         android:orientation="horizontal" >
 
         <RadioButton
-            android:id="@+id/rb_topten"
+            android:id="@+id/rb_hottopic"
             style="@style/BtttomTabStyle"
             android:drawableTop="@drawable/tab_top_ten_selector"
-            android:text="十大"
+            android:text="热帖"
             android:textColor="@drawable/btn_tab_text_selector" />
 
         <RadioButton
             android:id="@+id/rb_boards"
             style="@style/BtttomTabStyle"
             android:drawableTop="@drawable/tab_boards_selector"
-            android:text="板块"
+            android:text="版块"
             android:textColor="@drawable/btn_tab_text_selector" />
 
         <RadioButton

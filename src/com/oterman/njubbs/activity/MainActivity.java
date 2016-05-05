@@ -53,7 +53,7 @@ public class MainActivity extends FragmentActivity {
 		//初始化radiogroup
 		rgGroup = (RadioGroup) this.findViewById(R.id.rg_bottom_group);
 		
-		rgGroup.check(R.id.rb_topten);
+		rgGroup.check(R.id.rb_hottopic);
 		
 		//设置监听 同步viewpager
 		rgGroup.setOnCheckedChangeListener(new OnCheckedChangeListener() {
@@ -61,7 +61,7 @@ public class MainActivity extends FragmentActivity {
 			@Override
 			public void onCheckedChanged(RadioGroup group, int checkedId) {
 				switch (checkedId) {
-				case R.id.rb_topten:
+				case R.id.rb_hottopic:
 					vpPages.setCurrentItem(0);
 					break;
 				case R.id.rb_boards:
@@ -72,7 +72,6 @@ public class MainActivity extends FragmentActivity {
 					break;
 				case R.id.rb_me:
 					vpPages.setCurrentItem(3);
-					
 					break;
 				}
 			}
@@ -83,11 +82,15 @@ public class MainActivity extends FragmentActivity {
 			@Override
 			public void onPageSelected(int position) {
 				//加载数据
-				FragmentFactory.creatFragment(position).showViewFromServer();
+
+				Fragment fragment = FragmentFactory.creatFragment(position);
+				if(fragment instanceof BaseFragment){
+					((BaseFragment)fragment).showViewFromServer();
+				}
 				//选中页面时，切换到对应的radiobutton;
 				switch (position) {
 				case 0:
-					rgGroup.check(R.id.rb_topten);
+					rgGroup.check(R.id.rb_hottopic);
 					break;
 				case 1:
 					rgGroup.check(R.id.rb_boards);
@@ -128,7 +131,7 @@ public class MainActivity extends FragmentActivity {
 		@Override
 		public Fragment getItem(int position) {
 			
-			BaseFragment fragment = FragmentFactory.creatFragment(position);
+			Fragment fragment = FragmentFactory.creatFragment(position);
 			
 			return fragment;
 		}
