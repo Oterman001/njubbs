@@ -30,7 +30,7 @@ import com.oterman.njubbs.view.LoadMoreListView.OnLoadMoreListener;
 import com.oterman.njubbs.view.LoadingView.LoadingState;
 
 @SuppressLint("NewApi")
-public class TopicDetailActivity extends BaseActivity implements OnLoadMoreListener {
+public class TopicDetailActivity extends BaseActivity  {
 
 	private List<TopicDetailInfo> list;
 	private TopicDetailAdapter adapter;
@@ -63,7 +63,7 @@ public class TopicDetailActivity extends BaseActivity implements OnLoadMoreListe
 		});
 		
 	}
-	
+	//自定义的
 	public View createSuccessView2() {
 		
 		lv = new LoadMoreListView(getApplicationContext());
@@ -77,21 +77,28 @@ public class TopicDetailActivity extends BaseActivity implements OnLoadMoreListe
 		adapter = new TopicDetailAdapter();
 		lv.setAdapter(adapter);
 		
-		lv.setOnLoadMoreListener(this);
+		//lv.setOnLoadMoreListener(this);
 
 		return lv;
 	}
+	
 	public View createSuccessView() {
-		view = View.inflate(getApplicationContext(), R.layout.topic_detail_plv, null);
+		view = View.inflate(getApplicationContext(), R.layout.topic_plv, null);
 		pLv=(PullToRefreshListView) view.findViewById(R.id.pLv);
 		
 		pLv.setMode(Mode.PULL_FROM_END);//上拉加载更多
 		
+		//添加头布局
         AbsListView.LayoutParams layoutParams = new AbsListView.LayoutParams(AbsListView.LayoutParams.MATCH_PARENT, AbsListView.LayoutParams.WRAP_CONTENT);
         View headerView = initHeaderView();
         headerView.setLayoutParams(layoutParams);
+        
         ListView lv = pLv.getRefreshableView();
         lv.addHeaderView(headerView);
+        
+		lv.setDivider(new ColorDrawable(Color.GRAY));
+		lv.setDividerHeight(UiUtils.dip2px(1));
+		lv.setDividerHeight(0);
 		
 		adapter = new TopicDetailAdapter();
 		pLv.setAdapter(adapter);
@@ -139,7 +146,6 @@ public class TopicDetailActivity extends BaseActivity implements OnLoadMoreListe
 	/**
 	 * 加载下一页数据
 	 */
-	@Override
 	public void onLoadingMore() {
 		
 		ThreadManager.getInstance().createLongPool().execute(new Runnable() {

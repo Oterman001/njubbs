@@ -15,10 +15,18 @@ import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.handmark.pulltorefresh.library.PullToRefreshBase;
+import com.handmark.pulltorefresh.library.PullToRefreshBase.Mode;
+import com.handmark.pulltorefresh.library.PullToRefreshBase.OnRefreshListener;
+import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import com.oterman.njubbs.R;
+import com.oterman.njubbs.bean.TopicDetailInfo;
 import com.oterman.njubbs.bean.TopicInfo;
 import com.oterman.njubbs.protocol.BoardTopicProtocol;
+import com.oterman.njubbs.protocol.TopicDetailProtocol;
 import com.oterman.njubbs.utils.Constants;
+import com.oterman.njubbs.utils.MyToast;
+import com.oterman.njubbs.utils.ThreadManager;
 import com.oterman.njubbs.utils.UiUtils;
 import com.oterman.njubbs.view.LoadingView.LoadingState;
 
@@ -33,6 +41,10 @@ public class BoardDetailActivity extends BaseActivity {
 	private ListView lv;
 	private String boardUrl;
 	private String board;
+	private PullToRefreshListView plv;
+	private View rootView;
+	private BoardAdapter adapter;
+	private BoardTopicProtocol protocol;
 
 	@Override
 	public void initViews() {
@@ -45,15 +57,91 @@ public class BoardDetailActivity extends BaseActivity {
 
 	@Override
 	public View createSuccessView() {
-		lv = new ListView(getApplicationContext());
+		rootView = View.inflate(getApplicationContext(), R.layout.topic_plv, null);
+		plv = (PullToRefreshListView) rootView.findViewById(R.id.pLv);
 
+		adapter = new BoardAdapter();
+		
+		plv.setAdapter(adapter);
+
+		plv.setMode(Mode.PULL_FROM_END);//设置模式为从底部加载更多
+		
+		//设置条目之间的分割线
+		lv=plv.getRefreshableView();
 		lv.setDivider(new ColorDrawable(0x77888888));
 		lv.setDividerHeight(1);
+		
+		plv.setOnItemClickListener(new OnItemClickListener() {
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view,
+					int position, long id) {
+				TopicInfo info = dataList.get(position-1);
+				Intent intent = new Intent(getApplicationContext(),TopicDetailActivity.class);
+				info.board =board;
+				info.boardUrl = boardUrl;
+				intent.putExtra("topicInfo", info);
+				startActivity(intent);
+			}
+		});
+		
+		//设置上拉加载更多刷新
+		plv.setOnRefreshListener(new OnRefreshListener<ListView>() {
 
-		lv.setAdapter(new TopTenAdatper());
+			@Override
+			public void onRefresh(PullToRefreshBase<ListView> refreshView) {
+				plv.getLoadingLayoutProxy().setRefreshingLabel("正在加载...嘿咻嘿咻");
+				plv.getLoadingLayoutProxy().setPullLabel("上拉加载更多");
+				plv.getLoadingLayoutProxy().setReleaseLabel("松手开始加载");
+				
+				ThreadManager.getInstance().createLongPool().execute(new Runnable() {
+					private List<TopicInfo> moreList;
 
+					@Override
+					public void run() {
+						if(protocol==null){
+							protocol = new BoardTopicProtocol();
+						}
+						
+						String loadMoreUrl = dataList.get(dataList.size()-1).loadMoreUrl;
+						if(loadMoreUrl!=null){
+							moreList = protocol.loadFromServer(Constants.getBoardUrl(loadMoreUrl), false);
+						}
+						//加载完后 更新主页面
+						UiUtils.runOnUiThread(new Runnable() {
+							@Override
+							public void run() {
+								if(moreList!=null&&moreList.size()!=0){
+									dataList.addAll(moreList);
+									adapter.notifyDataSetChanged();
+									MyToast.toast("加载成功！");
+								}else{//没有更多
+									MyToast.toast("欧哦，没有更多了");
+								}
+								//加载完成，通知回掉
+								plv.onRefreshComplete();
+							}
+						});
+						
+					}
+				});
+				
+				
+			}
+		});
+		
+		return rootView;
+	}
+	public View createSuccessView_old() {
+		
+		lv = new ListView(getApplicationContext());
+		
+		lv.setDivider(new ColorDrawable(0x77888888));
+		lv.setDividerHeight(1);
+		
+		lv.setAdapter(new BoardAdapter());
+		
 		lv.setOnItemClickListener(new OnItemClickListener() {
-
+			
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {
@@ -70,7 +158,9 @@ public class BoardDetailActivity extends BaseActivity {
 	}
 
 	public LoadingState loadDataFromServer() {
-		BoardTopicProtocol protocol = new BoardTopicProtocol();
+		if(protocol==null){
+			protocol = new BoardTopicProtocol();
+		}
 		dataList = protocol.loadFromServer(Constants
 				.getBoardUrl(boardUrl),false);
 
@@ -78,7 +168,7 @@ public class BoardDetailActivity extends BaseActivity {
 				: LoadingState.LOAD_SUCCESS;
 	}
 
-	class TopTenAdatper extends BaseAdapter {
+	class BoardAdapter extends BaseAdapter {
 		Random r = new Random();
 
 		@Override
