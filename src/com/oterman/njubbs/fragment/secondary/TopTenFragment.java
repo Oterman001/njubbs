@@ -88,11 +88,6 @@ public class TopTenFragment extends BaseFragment implements OnRefreshListener {
 		return srl;
 	}
 	
-	@Override
-	public void onResume() {
-		super.onResume();
-		//onRefresh();
-	}
 	
 	/**
 	 * Ë¢ÐÂÊý¾Ý
