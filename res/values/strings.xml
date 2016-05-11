@@ -5,5 +5,15 @@
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
     <string name="load_error">加载失败，点击重试</string>
+    
+    
+    <string name="id">id    ：</string>
+    <string name="nickname">昵称：</string>
+    <string name="biaoxian">表现值：</string>
+    <string name="jingyan">经验：</string>
+    <string name="life">生命力：</string>
+    <string name="xingzuo">星座：</string>
+    <string name="qianmingdang">签名档：</string>
+    
 
 </resources>

@@ -9,6 +9,7 @@ public class BaseApplication extends Application {
 	public static BaseApplication application;
 	private static int mainTid;
 	private static Handler handler;
+	public static boolean isLogin=false;//Ä¬ÈÏÎª·ÇµÇÂ½
 	@Override
 	public void onCreate() {
 		super.onCreate();

@@ -37,6 +37,9 @@
         <activity
             android:name="com.oterman.njubbs.activity.BoardDetailActivity"
             android:launchMode="singleTask" />
+        <activity
+            android:label="登陆"
+             android:name="com.oterman.njubbs.activity.LoginActivity"/>
     </application>
 
 </manifest>

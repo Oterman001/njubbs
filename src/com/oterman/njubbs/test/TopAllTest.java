@@ -9,7 +9,7 @@ import com.oterman.njubbs.utils.Constants;
 
 import android.test.AndroidTestCase;
 
-public class TopAllTest extends AndroidTestCase {
+public class TopAllTest  {
 
 	public void testMap(){
 		TopAllProtocol protocol=new TopAllProtocol();

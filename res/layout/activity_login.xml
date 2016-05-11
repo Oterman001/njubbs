@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <EditText
+        android:id="@+id/et_id"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="20dp"
+        android:hint="请输入id"
+        android:textSize="22sp" />
+
+    <EditText
+        android:id="@+id/et_passsword"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="20dp"
+        android:inputType="textPassword"
+        android:hint="请输入密码"
+        android:textSize="22sp" />
+
+    <CheckBox
+        android:text="自动登陆"
+        android:id="@+id/ch_auto_login"
+        android:textSize="20sp"
+        android:layout_margin="20dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <Button
+        android:id="@+id/btn_login"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="#fff"
+        android:layout_margin="20dp"
+        android:background="@color/main_green"
+        android:gravity="center"
+        android:text="登陆"
+        android:textSize="22sp" />
+
+</LinearLayout>
