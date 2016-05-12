@@ -40,6 +40,9 @@
         <activity
             android:label="登陆"
              android:name="com.oterman.njubbs.activity.LoginActivity"/>
+        <activity
+            android:label="图片"
+             android:name="com.oterman.njubbs.activity.BigImageActivity"/>
     </application>
 
 </manifest>

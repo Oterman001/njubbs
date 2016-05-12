@@ -72,6 +72,9 @@ public class TopicDetailProtocol  extends BaseProtocol<TopicDetailInfo>{
 		
 		String content=matcher.group(3).replaceAll("\\[/*uid\\]", "").trim();
 		content=content.replaceAll("\\[.*?m", "");
+		
+		content=content.replaceAll("http.*?(jpg|jpeg|png|JPG|JPEG|PNG|gif|GIF)", "<br><img src=\""+"$0"+"\"/><br>");
+		
 		TopicDetailInfo info=new TopicDetailInfo(author, floorth+"", pubTime, content, loadMoreUrl);
 		list.add(info);
 	}

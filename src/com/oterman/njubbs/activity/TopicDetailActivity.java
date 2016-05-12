@@ -6,6 +6,10 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.text.Html;
+import android.text.Spanned;
+import android.text.method.LinkMovementMethod;
+import android.text.method.ScrollingMovementMethod;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
@@ -17,6 +21,7 @@ import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshBase.Mode;
 import com.handmark.pulltorefresh.library.PullToRefreshBase.OnRefreshListener;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
+import com.lidroid.xutils.BitmapUtils;
 import com.oterman.njubbs.R;
 import com.oterman.njubbs.bean.TopicDetailInfo;
 import com.oterman.njubbs.bean.TopicInfo;
@@ -26,8 +31,10 @@ import com.oterman.njubbs.utils.MyToast;
 import com.oterman.njubbs.utils.ThreadManager;
 import com.oterman.njubbs.utils.UiUtils;
 import com.oterman.njubbs.view.LoadMoreListView;
-import com.oterman.njubbs.view.LoadMoreListView.OnLoadMoreListener;
 import com.oterman.njubbs.view.LoadingView.LoadingState;
+import com.oterman.njubbs.view.URLImageParser;
+import com.oterman.njubbs.view.MyTagHandler;
+
 
 @SuppressLint("NewApi")
 public class TopicDetailActivity extends BaseActivity  {
@@ -210,6 +217,7 @@ public class TopicDetailActivity extends BaseActivity  {
 
 				holder.tvAuthor = (TextView) convertView
 						.findViewById(R.id.tv_topic_detail_item_author);
+				
 				holder.tvContent = (TextView) convertView
 						.findViewById(R.id.tv_topic_detail_item_content);
 				holder.tvFloorth = (TextView) convertView
@@ -224,7 +232,18 @@ public class TopicDetailActivity extends BaseActivity  {
 			}
 			TopicDetailInfo info = list.get(position);
 			holder.tvAuthor.setText(info.author);
-			holder.tvContent.setText(info.content);
+			
+			BitmapUtils bu=new BitmapUtils(getApplicationContext());
+			
+			holder.tvContent.setMovementMethod(ScrollingMovementMethod.getInstance());// 设置可滚动
+			holder.tvContent.setMovementMethod(LinkMovementMethod.getInstance());// 设置超链接可以打开网页
+			
+			Spanned spanned = Html.fromHtml(info.content,new URLImageParser(holder.tvContent),new MyTagHandler(getApplicationContext()));
+			
+			holder.tvContent.setText(spanned);
+			holder.tvContent.invalidate();
+//			holder.tvContent.setText(holder.tvContent.getText());
+			
 			holder.tvFloorth.setText("第" + info.floorth + "楼");
 			holder.tvPubTime.setText(info.pubTime);
 
@@ -243,6 +262,8 @@ public class TopicDetailActivity extends BaseActivity  {
 			public TextView tvFloorth;
 		}
 
+		
 	}
 
 }
+

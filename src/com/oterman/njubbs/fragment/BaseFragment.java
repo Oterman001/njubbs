@@ -48,7 +48,9 @@ public abstract class BaseFragment extends Fragment {
 	}
 	
 	public void showViewFromServer(){
-		loadingView.showViewFromServer();
+		if(loadingView!=null){
+			loadingView.showViewFromServer();
+		}
 	}
 
 
