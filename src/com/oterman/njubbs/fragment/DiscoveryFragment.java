@@ -9,10 +9,12 @@ public class DiscoveryFragment extends BaseFragment {
 	@Override
 	public View createSuccessView() {
 		TextView tv=new TextView(getActivity());
-		String str="njubbs_v0.3  更新日志：" +
-				"\n 1.更优雅的实现了版面帖子加载下一页以及帖子内容加载下一页；" +
-				"\n 2.实现了各区热点，重新设计了布局。";
+		String str="njubbs_v0.4 \n " +
+				"更新日志：" +
+				"\n 1.实现了登陆注销" +
+				"\n 2.实现了加载图片";
 		tv.setText(str);
+		tv.setTextSize(22f);
 		return tv;
 	}
 	

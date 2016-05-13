@@ -48,9 +48,23 @@ public abstract class BaseFragment extends Fragment {
 	}
 	
 	public void showViewFromServer(){
-		if(loadingView!=null){
-			loadingView.showViewFromServer();
+		if(loadingView==null){
+			loadingView=new LoadingView(getContext()){
+
+				@Override
+				protected LoadingState loadDataFromServer() {
+					return BaseFragment.this.loadDataFromServer();
+				}
+
+				@Override
+				protected View createSuccessView() {
+					return BaseFragment.this.createSuccessView();
+				}
+				
+			};
 		}
+		
+		loadingView.showViewFromServer();
 	}
 
 

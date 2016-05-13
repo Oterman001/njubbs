@@ -75,6 +75,11 @@ public class TopicDetailProtocol  extends BaseProtocol<TopicDetailInfo>{
 		
 		content=content.replaceAll("http.*?(jpg|jpeg|png|JPG|JPEG|PNG|gif|GIF)", "<br><img src=\""+"$0"+"\"/><br>");
 		
+		content=content.replaceAll("\\n", "<br>");
+//		content=content.replaceAll("\\s+<br>","");
+		
+		System.out.println("content:================\n"+content);
+		
 		TopicDetailInfo info=new TopicDetailInfo(author, floorth+"", pubTime, content, loadMoreUrl);
 		list.add(info);
 	}

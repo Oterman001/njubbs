@@ -28,6 +28,7 @@ import com.oterman.njubbs.bean.TopicInfo;
 import com.oterman.njubbs.protocol.TopicDetailProtocol;
 import com.oterman.njubbs.utils.Constants;
 import com.oterman.njubbs.utils.MyToast;
+import com.oterman.njubbs.utils.SmileyParser;
 import com.oterman.njubbs.utils.ThreadManager;
 import com.oterman.njubbs.utils.UiUtils;
 import com.oterman.njubbs.view.LoadMoreListView;
@@ -192,6 +193,8 @@ public class TopicDetailActivity extends BaseActivity  {
 	}
 
 	class TopicDetailAdapter extends BaseAdapter {
+		SmileyParser sp=SmileyParser.getInstance(getApplicationContext());
+		
 		@Override
 		public int getCount() {
 			return list.size();
@@ -239,8 +242,7 @@ public class TopicDetailActivity extends BaseActivity  {
 			holder.tvContent.setMovementMethod(LinkMovementMethod.getInstance());// 设置超链接可以打开网页
 			
 			Spanned spanned = Html.fromHtml(info.content,new URLImageParser(holder.tvContent),new MyTagHandler(getApplicationContext()));
-			
-			holder.tvContent.setText(spanned);
+			holder.tvContent.setText(sp.strToSmiley(spanned));
 			holder.tvContent.invalidate();
 //			holder.tvContent.setText(holder.tvContent.getText());
 			

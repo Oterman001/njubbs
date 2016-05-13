@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--
+
+
+
+  
+    
+    
+      -->
+    <string-array name="smiley_array">
+        <!--第一组  -->
+        <item>[:s]</item>
+        <item>[:O]</item>
+        <item>[:|]</item>
+        <item>[:$]</item>
+        <item>[:X]</item>
+        <item>[:\'(]</item>
+        <item>[:-|]</item>
+        <item>[:@]</item>
+        <item>[:P]</item>
+
+        <!--第二组 
+        
+         -->
+        <item>[:D]</item>
+        <item>[:)]</item>
+        <item>[:(]</item>
+        <item>[:Q]</item>
+        <item>[:T]</item>
+        <item>[;P]</item>
+        <item>[;-D]</item>
+        <item>[:!]</item>
+        <item>[:L]</item>
+
+        <!--第三组
+          -->
+        <item>[:?]</item>
+        <item>[:U]</item>
+        <item>[:K]</item>
+        <item>[:C-]</item>
+        <item>[;X]</item>
+        <item>[:H]</item>
+        <item>[;bye]</item>
+        <item>[;cool]</item>
+        <item>[:-b]</item>
+
+        <!--第四组  
+        -->
+        <item>[:-8]</item>
+        <item>[;PT]</item>
+        <item>[:hx]</item>
+        <item>[;K]</item>
+        <item>[:E]</item>
+        <item>[:-(]</item>
+        <item>[;hx]</item>
+        <item>[:-v]</item>
+        <item>[;xx]</item>
+        
+    </string-array>
+    
+</resources>
