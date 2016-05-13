@@ -7,6 +7,7 @@ public class Constants {
 	public static final String TOP_ALL_URL = "http://bbs.nju.edu.cn/bbstopall";
 	public static final String LOGIN_URL = "http://bbs.nju.edu.cn/bbslogin?type=2";
 	public static final String USER_QUERY_URL = "http://bbs.nju.edu.cn/bbsqry?userid=";
+	public static final String BBSLEFT_URL = "http://bbs.nju.edu.cn/bbsleft";
 	
 	
 	public static String getContentUrl(String contentUrl) {

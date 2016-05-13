@@ -19,6 +19,11 @@ import com.oterman.njubbs.fragment.secondary.TopTenFragment;
 import com.oterman.njubbs.utils.LogUtil;
 import com.viewpagerindicator.TabPageIndicator;
 
+/**
+ * 热帖界面 包括十大和各区热点
+ * @author oterman
+ *
+ */
 public class HotTopicFragment extends Fragment implements OnPageChangeListener {
 	
 	TopTenFragment topTenFragment;
@@ -71,6 +76,7 @@ public class HotTopicFragment extends Fragment implements OnPageChangeListener {
 				if(topTenFragment==null){
 					topTenFragment=new TopTenFragment();
 				}
+				
 				return topTenFragment;
 				
 			}else{
@@ -100,6 +106,7 @@ public class HotTopicFragment extends Fragment implements OnPageChangeListener {
 
 	@Override
 	public void onPageSelected(int position) {
+		LogUtil.d("onPageSelected:"+position);
 		if(position==0){
 			if(topTenFragment!=null){
 				topTenFragment.showViewFromServer();

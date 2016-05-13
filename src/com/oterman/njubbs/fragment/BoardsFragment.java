@@ -1,165 +1,132 @@
 package com.oterman.njubbs.fragment;
 
-import java.util.List;
-import java.util.Random;
 
-import android.content.Intent;
-import android.graphics.drawable.ColorDrawable;
-import android.os.Handler;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
+
+import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.ViewPager;
+import android.support.v4.view.ViewPager.OnPageChangeListener;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.BaseAdapter;
-import android.widget.ListView;
-import android.widget.TextView;
 
 import com.oterman.njubbs.R;
-import com.oterman.njubbs.activity.BoardDetailActivity;
-import com.oterman.njubbs.bean.BoardInfo;
-import com.oterman.njubbs.bean.TopicInfo;
-import com.oterman.njubbs.protocol.HotBoardProtocol;
-import com.oterman.njubbs.protocol.TopTenProtocol;
-import com.oterman.njubbs.utils.Constants;
-import com.oterman.njubbs.utils.MyToast;
-import com.oterman.njubbs.utils.ThreadManager;
-import com.oterman.njubbs.utils.UiUtils;
-import com.oterman.njubbs.view.LoadingView.LoadingState;
+import com.oterman.njubbs.fragment.secondary.FavoriteFragment;
+import com.oterman.njubbs.fragment.secondary.HotBoardsFragment;
+import com.oterman.njubbs.fragment.secondary.TopAllFragment;
+import com.oterman.njubbs.fragment.secondary.TopTenFragment;
+import com.oterman.njubbs.utils.LogUtil;
+import com.viewpagerindicator.TabPageIndicator;
 
-public class BoardsFragment extends BaseFragment {
+/**
+ * 热帖界面 包括十大和各区热点
+ * @author oterman
+ *
+ */
+public class BoardsFragment extends Fragment implements OnPageChangeListener {
+	
+	HotBoardsFragment hotBoardsFragment;
+	FavoriteFragment favoriteFragment;
 
+	private View rootView;
+	private ViewPager vpPager;
+	private BoardsAdapter adapter;
+	private TabPageIndicator indicator;
 
-
-	private List<BoardInfo> dataList;
-	private ListView lv;
-	private SwipeRefreshLayout srl;
-	private HotBoardProtocol protocol;
-	private BoardAdapter adapter;
 	
 	@Override
-	public View createSuccessView() {
-		srl = new SwipeRefreshLayout(getContext());
+	public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+		super.onActivityCreated(savedInstanceState);
 		
-		lv = new ListView(getContext());
-		lv.setDivider(new ColorDrawable(0x55888888));  
-		lv.setDividerHeight(1);
-		adapter = new BoardAdapter();
-		lv.setAdapter(adapter);
-		
-		lv.setOnItemClickListener(new OnItemClickListener() {
-
-			@Override
-			public void onItemClick(AdapterView<?> parent, View view,
-					int position, long id) {
-				BoardInfo info = dataList.get(position);
-				
-				Intent intent=new Intent(getContext(),BoardDetailActivity.class);
-				
-				intent.putExtra("boardUrl", info.boardUrl);
-				startActivity(intent);
-			}
-		});
-		
-		srl.addView(lv);
-		
-		srl.setOnRefreshListener(new OnRefreshListener() {
-			@Override
-			public void onRefresh() {
-				ThreadManager.getInstance().createLongPool().execute(new Runnable() {
-					@Override
-					public void run() {
-						//重新加载数据
-						final boolean result=updateData();
-						
-						UiUtils.runOnUiThread(new Runnable() {
-							
-							@Override
-							public void run() {
-								if(result){
-									adapter.notifyDataSetChanged();
-									MyToast.toast("刷新成功!");
-								}else{
-									MyToast.toast("刷新失败，请检查网络!");
-								}
-								
-								srl.setRefreshing(false);
-							}
-						});
-						
-					}
-
-
-				});
-			}
-		});
-		return srl;
-	}
-	private boolean updateData() {
-		if(protocol==null){
-			protocol = new HotBoardProtocol();
-		}
-		List<BoardInfo> list = protocol.loadFromServer(Constants.HOT_BOARD_ULR,true);
-		if(list==null||list.size()==0){
-			return false;
-		}
-		dataList=list;
-		return true;
 	}
 	
+	
 	@Override
-	public LoadingState loadDataFromServer() {
-		protocol = new HotBoardProtocol();
-		dataList = protocol.loadFromCache(Constants.HOT_BOARD_ULR);
+	@Nullable
+	public View onCreateView(LayoutInflater inflater,
+			@Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 		
-		return dataList==null?LoadingState.LOAD_FAILED:LoadingState.LOAD_SUCCESS;
-	}
+		rootView = View.inflate(getContext(), R.layout.fragment_boards, null);
+		vpPager = (ViewPager) rootView.findViewById(R.id.vp_pages);		
+		
+		//fragment中嵌套fragment  必须使用getChildFragmentManager
+		adapter = new BoardsAdapter(getChildFragmentManager());
+		vpPager.setAdapter(adapter);
+		
+		indicator = (TabPageIndicator) rootView.findViewById(R.id.indicator);
+		indicator.setViewPager(vpPager);
+		
+		indicator.setOnPageChangeListener(this);
+		vpPager.setCurrentItem(0);
 
-	class BoardAdapter extends BaseAdapter{
-		Random r=new Random();
+		
+		return rootView;
+	}
+	
+	class BoardsAdapter extends FragmentPagerAdapter{
+
+		public BoardsAdapter(FragmentManager fm) {
+			super(fm);
+		}
+
+		@Override
+		public Fragment getItem(int position) {
+			if(position==0){
+				if(favoriteFragment==null){
+					favoriteFragment=new FavoriteFragment();
+				}
+				//favoriteFragment.showViewFromServer();
+
+				return favoriteFragment;
+				
+			}else{
+				if(hotBoardsFragment==null){
+					hotBoardsFragment=new HotBoardsFragment();
+				}
+				return hotBoardsFragment;
+			}
+		}
+		@Override
+		public CharSequence getPageTitle(int position) {
+			return position==0?"我的收藏":"热门版块";
+		}
+
 		@Override
 		public int getCount() {
-			return dataList.size();
-		}
-
-		@Override
-		public Object getItem(int position) {
-			return dataList.get(position);
-		}
-
-		@Override
-		public long getItemId(int position) {
-			return position;
-		}
-
-		
-		@Override
-		public View getView(int position, View convertView, ViewGroup parent) {
-			View view=null;
-			ViewHolder holder=null;
-			if(convertView==null){
-				view=View.inflate(getContext(), R.layout.list_item_board, null);
-				holder=new ViewHolder();
-				holder.tvBoard=(TextView) view.findViewById(R.id.tv_board);
-				holder.tvPeopleCount=(TextView) view.findViewById(R.id.tv_peopleCount);
-				view.setTag(holder);
-			}else{
-				view=convertView;
-				holder=(ViewHolder) view.getTag();
-			}
-			
-			BoardInfo info = dataList.get(position);
-			
-			holder.tvBoard.setText(info.rankth+". "+info.boardName+"("+info.chineseName+")");
-			holder.tvPeopleCount.setText(info.peopleCount);
-			return view;
-		}
-		
-		class ViewHolder{
-			TextView tvBoard;
-			TextView tvPeopleCount;
+			return 2;
 		}
 		
 	}
+
+	@Override
+	public void onPageScrolled(int position, float positionOffset,
+			int positionOffsetPixels) {
+		
+	}
+
+	@Override
+	public void onPageSelected(int position) {
+		LogUtil.d("onPageSelected:"+position);
+		if(position==0){
+			if(favoriteFragment==null){
+				favoriteFragment=new FavoriteFragment();
+			}
+			favoriteFragment.showViewFromServer();
+		}else{
+			if(hotBoardsFragment==null){
+				hotBoardsFragment=new HotBoardsFragment();
+			}
+			hotBoardsFragment.showViewFromServer();
+		}
+		
+	}
+
+	@Override
+	public void onPageScrollStateChanged(int state) {
+		
+	}
+
 }
