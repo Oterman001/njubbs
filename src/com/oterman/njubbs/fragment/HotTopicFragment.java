@@ -116,7 +116,6 @@ public class HotTopicFragment extends Fragment implements OnPageChangeListener {
 				topAllFragment.showViewFromServer();
 			}
 		}
-		
 	}
 
 	@Override

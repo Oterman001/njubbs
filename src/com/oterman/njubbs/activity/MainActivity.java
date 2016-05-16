@@ -1,6 +1,7 @@
 package com.oterman.njubbs.activity;
 
 import android.annotation.SuppressLint;
+import android.app.ActionBar;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -46,6 +47,13 @@ public class MainActivity extends FragmentActivity {
 	}
 
 	public void initViews() {
+		
+//		ActionBar actionBar = getActionBar();
+//		actionBar.setDisplayShowHomeEnabled(true);
+//        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
+//        actionBar.setDisplayShowTitleEnabled(true);
+//        actionBar.setTitle("haha  this is title.");
+		
 		//≥ı ºªØviewpager
 		vpPages = (ViewPager) this.findViewById(R.id.vp_pages);
 		vpPages.setAdapter(new MyPageAdapter(getSupportFragmentManager()));

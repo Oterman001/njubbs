@@ -3,11 +3,13 @@ package com.oterman.njubbs.activity;
 import java.util.List;
 import java.util.Random;
 
+import android.app.ActionBar;
+import android.app.ActionBar.LayoutParams;
 import android.content.Intent;
-import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -20,10 +22,8 @@ import com.handmark.pulltorefresh.library.PullToRefreshBase.Mode;
 import com.handmark.pulltorefresh.library.PullToRefreshBase.OnRefreshListener;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import com.oterman.njubbs.R;
-import com.oterman.njubbs.bean.TopicDetailInfo;
 import com.oterman.njubbs.bean.TopicInfo;
 import com.oterman.njubbs.protocol.BoardTopicProtocol;
-import com.oterman.njubbs.protocol.TopicDetailProtocol;
 import com.oterman.njubbs.utils.Constants;
 import com.oterman.njubbs.utils.MyToast;
 import com.oterman.njubbs.utils.ThreadManager;
@@ -45,14 +45,35 @@ public class BoardDetailActivity extends BaseActivity {
 	private View rootView;
 	private BoardAdapter adapter;
 	private BoardTopicProtocol protocol;
+	private ActionBar actionBar;
 
 	@Override
 	public void initViews() {
-		boardUrl = getIntent().getStringExtra("boardUrl");
+		//自定义actionbar
+		actionBar=getActionBar();
+		actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
 		
+		View view=View.inflate(getApplicationContext(), R.layout.actionbar_custom_backtitle, null);
+		
+		View back = view.findViewById(R.id.btn_back);
+        back.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
+        
+        TextView tvTitle=(TextView) view.findViewById(R.id.tv_actionbar_title);
+        LayoutParams params = new LayoutParams(LayoutParams.MATCH_PARENT,LayoutParams.MATCH_PARENT);
+        actionBar.setCustomView(view, params);
+        
+		boardUrl = getIntent().getStringExtra("boardUrl");
 		board = boardUrl.substring(boardUrl.indexOf("=")+1);
 
-		getActionBar().setTitle(board + "(帖子列表)");
+		tvTitle.setText(board + "(帖子列表)");
+		tvTitle.setTextSize(22);
+
+		//getActionBar().setTitle(board + "(帖子列表)");
 	}
 
 	@Override

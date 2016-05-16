@@ -3,6 +3,8 @@ package com.oterman.njubbs.activity;
 import java.util.List;
 
 import android.annotation.SuppressLint;
+import android.app.ActionBar;
+import android.app.ActionBar.LayoutParams;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -11,6 +13,7 @@ import android.text.Spanned;
 import android.text.method.LinkMovementMethod;
 import android.text.method.ScrollingMovementMethod;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.BaseAdapter;
@@ -33,8 +36,8 @@ import com.oterman.njubbs.utils.ThreadManager;
 import com.oterman.njubbs.utils.UiUtils;
 import com.oterman.njubbs.view.LoadMoreListView;
 import com.oterman.njubbs.view.LoadingView.LoadingState;
-import com.oterman.njubbs.view.URLImageParser;
 import com.oterman.njubbs.view.MyTagHandler;
+import com.oterman.njubbs.view.URLImageParser;
 
 
 @SuppressLint("NewApi")
@@ -48,19 +51,73 @@ public class TopicDetailActivity extends BaseActivity  {
 	private LoadMoreListView lv;
 	private PullToRefreshListView pLv;
 	private View view;
+	ActionBar actionBar;
 
+	
+	protected void initActionBar() {
+		actionBar=getActionBar();
+		actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
+		
+		View view=View.inflate(getApplicationContext(), R.layout.actionbar_custom_backtitle, null);
+		
+		View back = view.findViewById(R.id.btn_back);
+        if (back == null) {
+            throw new IllegalArgumentException(
+                    "can not find R.id.btn_back in customView");
+        }
+        back.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
+        
+        TextView tvTitle=(TextView) view.findViewById(R.id.tv_actionbar_title);
+        
+        
+        LayoutParams params = new LayoutParams(LayoutParams.MATCH_PARENT,LayoutParams.MATCH_PARENT);
+        actionBar.setCustomView(view, params);
+    }
+	
 	@Override
 	public void initViews() {
+		//显示返回箭头
+//		ActionBar actionBar = getActionBar();
+//		actionBar.setDisplayHomeAsUpEnabled(true);
+//		initActionBar();
+		
+		//自定义actionbar
+		actionBar=getActionBar();
+		actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
+		
+		View view=View.inflate(getApplicationContext(), R.layout.actionbar_custom_backtitle, null);
+		
+		View back = view.findViewById(R.id.btn_back);
+        back.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
+        
+        TextView tvTitle=(TextView) view.findViewById(R.id.tv_actionbar_title);
+        LayoutParams params = new LayoutParams(LayoutParams.MATCH_PARENT,LayoutParams.MATCH_PARENT);
+        actionBar.setCustomView(view, params);
+		
+        
+		
 		topicInfo = (TopicInfo) getIntent().getSerializableExtra("topicInfo");
-		getActionBar().setTitle(topicInfo.board+"(点击进入)");
+		tvTitle.setText(topicInfo.board+"(点击进入)");
+		tvTitle.setTextSize(22);
+		
 		//给actionbar添加点击事件  点击后进入到对应的版面
-		final int abTitleId = getResources().getIdentifier("action_bar_title","id", "android");
-		findViewById(abTitleId).setOnClickListener(new View.OnClickListener() {
+		tvTitle.setClickable(true);
+		tvTitle.setOnClickListener(new View.OnClickListener() {
+			
 			@Override
 			public void onClick(View v) {
 				Intent intent=new Intent(getApplicationContext(), BoardDetailActivity.class);
-				
-//				intent.putExtra("topicInfo", topicInfo);
 				
 				intent.putExtra("boardUrl", topicInfo.boardUrl);
 				
@@ -71,25 +128,6 @@ public class TopicDetailActivity extends BaseActivity  {
 		});
 		
 	}
-	//自定义的
-	public View createSuccessView2() {
-		
-		lv = new LoadMoreListView(getApplicationContext());
-		
-		View headerView = initHeaderView();
-		lv.addHeaderView(headerView);
-
-		lv.setDivider(new ColorDrawable(Color.GRAY));
-		lv.setDividerHeight(UiUtils.dip2px(1));
-		lv.setDividerHeight(0);
-		adapter = new TopicDetailAdapter();
-		lv.setAdapter(adapter);
-		
-		//lv.setOnLoadMoreListener(this);
-
-		return lv;
-	}
-	
 	public View createSuccessView() {
 		view = View.inflate(getApplicationContext(), R.layout.topic_plv, null);
 		pLv=(PullToRefreshListView) view.findViewById(R.id.pLv);
@@ -134,8 +172,17 @@ public class TopicDetailActivity extends BaseActivity  {
 		TextView tvReplyeCount = (TextView) view
 				.findViewById(R.id.tv_topic_replycount);
 		tvTitle.setText(topicInfo.title);
-		tvReplyeCount.setText("共" + topicInfo.replyCount + "条回复");
-
+		
+		if(topicInfo.replyCount==null){
+			tvReplyeCount.setText("共" + list.size() + "条回复");
+		}else{
+			String str = topicInfo.replyCount;
+			if(str.contains("/")){
+				str=str.split("/")[0];
+			}
+			
+			tvReplyeCount.setText("共" + str + "条回复");
+		}
 		return view;
 	}
 
@@ -234,7 +281,10 @@ public class TopicDetailActivity extends BaseActivity  {
 				holder = (ViewHolder) convertView.getTag();
 			}
 			TopicDetailInfo info = list.get(position);
-			holder.tvAuthor.setText(info.author);
+			//mmlover(mmlover)
+			String author=info.author;
+			//author=author.replaceFirst("\\(","\n(" );
+			holder.tvAuthor.setText(author);
 			
 			BitmapUtils bu=new BitmapUtils(getApplicationContext());
 			
@@ -244,7 +294,6 @@ public class TopicDetailActivity extends BaseActivity  {
 			Spanned spanned = Html.fromHtml(info.content,new URLImageParser(holder.tvContent),new MyTagHandler(getApplicationContext()));
 			holder.tvContent.setText(sp.strToSmiley(spanned));
 			holder.tvContent.invalidate();
-//			holder.tvContent.setText(holder.tvContent.getText());
 			
 			holder.tvFloorth.setText("第" + info.floorth + "楼");
 			holder.tvPubTime.setText(info.pubTime);
@@ -257,15 +306,15 @@ public class TopicDetailActivity extends BaseActivity  {
 			return convertView;
 		}
 
-		class ViewHolder {
+	  	class ViewHolder {
 			public TextView tvContent;
 			public TextView tvAuthor;
 			public TextView tvPubTime;
 			public TextView tvFloorth;
 		}
-
 		
 	}
+	
 
 }
 

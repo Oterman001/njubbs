@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Random;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Handler;
@@ -66,13 +67,18 @@ public class FavoriteFragment extends BaseFragment {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {
+				
 				String boardName= dataList.get(position);
 				
-				Intent intent=new Intent(getContext(),BoardDetailActivity.class);
-				
-				String boardUrl="bbstdoc?board="+boardName;
-				intent.putExtra("boardUrl", boardUrl);
-				startActivity(intent);
+				if(!boardName.equals("")){
+					Intent intent=new Intent(getContext(),BoardDetailActivity.class);
+					String boardUrl="bbstdoc?board="+boardName;
+					intent.putExtra("boardUrl", boardUrl);
+					startActivity(intent);
+				}else{
+					MyToast.toast("瞎点什么！");
+				}
+
 			}
 		});
 		
@@ -113,12 +119,14 @@ public class FavoriteFragment extends BaseFragment {
 		public View getView(int position, View convertView, ViewGroup parent) {
 			TextView tv=new TextView(getContext());
 			
-			tv.setTextSize(40);
-			if(dataList.size()==0){
-				tv.setText("当前未收藏版面");
+			tv.setTextSize(30);
+			
+			if(dataList.size()==1&&dataList.get(0).equals("")){
+				tv.setText("当前未登录！");
 			}else{
 				tv.setText(dataList.get(position));
 			}
+			
 			
 			return tv;
 		}

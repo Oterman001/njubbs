@@ -8,18 +8,16 @@ import java.io.UnsupportedEncodingException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.http.Header;
-import org.apache.http.HeaderElement;
-import org.apache.http.ParseException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import android.annotation.SuppressLint;
+import android.app.ActionBar;
+import android.app.ActionBar.LayoutParams;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
 import android.text.TextUtils;
@@ -30,10 +28,9 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.Toast;
+import android.widget.TextView;
 
 import com.lidroid.xutils.HttpUtils;
-import com.lidroid.xutils.exception.HttpException;
 import com.lidroid.xutils.http.RequestParams;
 import com.lidroid.xutils.http.ResponseStream;
 import com.lidroid.xutils.http.client.HttpRequest.HttpMethod;
@@ -60,6 +57,8 @@ public class LoginActivity extends FragmentActivity implements OnClickListener {
 	private HttpUtils httpUtil;
 	private UserInfo userInfo=null;
 
+	private  ActionBar actionBar;
+	
 	@Override
 	protected void onCreate(@Nullable Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -78,6 +77,28 @@ public class LoginActivity extends FragmentActivity implements OnClickListener {
 	}
 
 	private void initViews() {
+		//´¦Àíactionbar
+		actionBar=getActionBar();
+		actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
+		
+		View view=View.inflate(getApplicationContext(), R.layout.actionbar_custom_backtitle, null);
+		
+		View back = view.findViewById(R.id.btn_back);
+        back.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
+        
+        TextView tvTitle=(TextView) view.findViewById(R.id.tv_actionbar_title);
+        LayoutParams params = new LayoutParams(LayoutParams.MATCH_PARENT,LayoutParams.MATCH_PARENT);
+        actionBar.setCustomView(view, params);
+
+		tvTitle.setText("µÇÂ½");
+		tvTitle.setTextSize(22);
+		
+		
 		etId = (EditText) this.findViewById(R.id.et_id);
 		
 		etPwd = (EditText) this.findViewById(R.id.et_passsword);

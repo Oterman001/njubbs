@@ -6,22 +6,23 @@
     android:paddingLeft="5dp"
     android:paddingRight="5dp"
     android:paddingTop="5dp" >
+    
 
-    <!-- 时间 -->
-
+    <!-- 楼层 -->
     <TextView
-        android:id="@+id/tv_topic_detail_item_pubtime"
+        android:layout_marginTop="5dp"
+        android:id="@+id/tv_topic_detail_item_floorth"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
-        android:text="05-02 18:50"
+        android:text="第1楼"
         android:textColor="#7000" />
 
     <TextView
         android:id="@+id/tv_topic_detail_item_content"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/tv_topic_detail_item_pubtime"
+        android:layout_below="@id/tv_topic_detail_item_floorth"
         android:layout_marginBottom="5dp"
         android:layout_marginTop="5dp"
         android:layout_marginLeft="8dp"
@@ -29,26 +30,24 @@
         android:textColor="#000"
         android:textSize="17sp" />
 
-    <!-- 作者 -->
-
+    <!-- 时间 -->
     <TextView
-        android:id="@+id/tv_topic_detail_item_author"
+        android:id="@+id/tv_topic_detail_item_pubtime"
         style="@style/item_topten_style"
         android:layout_below="@id/tv_topic_detail_item_content"
         android:layout_marginLeft="8dp"
-        android:drawableLeft="@drawable/ic_gender_female"
-        android:text="Oterman" />
-
-    <!-- 楼层 -->
-
+        android:text="2016-02-02 18:50" />
+    <!-- 作者 -->
     <TextView
-        android:id="@+id/tv_topic_detail_item_floorth"
+        android:layout_marginTop="5dp"
+        android:id="@+id/tv_topic_detail_item_author"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_above="@id/tv_topic_detail_item_content"
         android:layout_alignParentLeft="true"
         android:layout_marginLeft="8dp"
+        android:drawableLeft="@drawable/ic_gender_female"
         android:textColor="#7000"
-        android:text="第 1楼" />
+        android:text="Oterman" />
 
 </RelativeLayout>
