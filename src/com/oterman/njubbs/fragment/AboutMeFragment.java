@@ -41,6 +41,7 @@ public class AboutMeFragment  extends Fragment implements OnClickListener {
 			@Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 		rootView = View.inflate(getContext(), R.layout.frag_about_me, null);
 		
+		userInfo=BaseApplication.userInfo;
 		btnLogin = (Button) rootView.findViewById(R.id.btn_login);
 		btnLogin.setOnClickListener(this);
 		

@@ -34,6 +34,7 @@ import com.lidroid.xutils.HttpUtils;
 import com.lidroid.xutils.http.RequestParams;
 import com.lidroid.xutils.http.ResponseStream;
 import com.lidroid.xutils.http.client.HttpRequest.HttpMethod;
+import com.oterman.njubbs.BaseApplication;
 import com.oterman.njubbs.R;
 import com.oterman.njubbs.bean.UserInfo;
 import com.oterman.njubbs.protocol.UserProtocol;
@@ -55,7 +56,7 @@ public class LoginActivity extends FragmentActivity implements OnClickListener {
 	private Button btnLogin;
 	private WaitDialog dialog;
 	private HttpUtils httpUtil;
-	private UserInfo userInfo=null;
+	private UserInfo userInfo=BaseApplication.userInfo;
 
 	private  ActionBar actionBar;
 	
@@ -183,9 +184,9 @@ public class LoginActivity extends FragmentActivity implements OnClickListener {
 							
 							String cookie="_U_NUM="+_U_NUM+";_U_UID="+_U_UID+";_U_KEY="+_U_KEY;
 							LogUtil.d("cookie:"+cookie);
+							BaseApplication.cookie=cookie;
 							
 							RequestParams rp=new RequestParams();
-							
 							rp.addHeader("Cookie", cookie);
 							
 							//∑¢ÀÕ«Î«Û

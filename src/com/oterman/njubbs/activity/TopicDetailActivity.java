@@ -17,6 +17,8 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.BaseAdapter;
+import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -75,7 +77,14 @@ public class TopicDetailActivity extends BaseActivity  {
         
         TextView tvTitle=(TextView) view.findViewById(R.id.tv_actionbar_title);
         
-        
+        ImageButton btnNewTopic = (ImageButton) view.findViewById(R.id.btn_new_topic);
+		btnNewTopic.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				MyToast.toast("发帖");
+			}
+		});
+		
         LayoutParams params = new LayoutParams(LayoutParams.MATCH_PARENT,LayoutParams.MATCH_PARENT);
         actionBar.setCustomView(view, params);
     }
@@ -110,6 +119,8 @@ public class TopicDetailActivity extends BaseActivity  {
 		topicInfo = (TopicInfo) getIntent().getSerializableExtra("topicInfo");
 		tvTitle.setText(topicInfo.board+"(点击进入)");
 		tvTitle.setTextSize(22);
+		
+
 		
 		//给actionbar添加点击事件  点击后进入到对应的版面
 		tvTitle.setClickable(true);

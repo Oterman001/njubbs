@@ -10,6 +10,8 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import android.text.TextUtils;
+
 import com.oterman.njubbs.bean.TopicInfo;
 
 
@@ -17,6 +19,7 @@ public class BoardTopicProtocol extends BaseProtocol<TopicInfo>{
 
 	public List<TopicInfo> parseHtml(Document doc,String url) {
 		List<TopicInfo> list = new ArrayList<>();
+		List<TopicInfo> topList = new ArrayList<>();
 		Elements aEles = doc.select("a");
 		String loadMoreUrl=null;
 		for (Element element : aEles) {
@@ -42,9 +45,14 @@ public class BoardTopicProtocol extends BaseProtocol<TopicInfo>{
 			String reply=tdEles.get(5).text();
 			
 			TopicInfo info=new TopicInfo(null, author, title, id, loadMoreUrl, pubTime, contentUrl, reply, url);
-			list.add(info);
+			if(!TextUtils.isEmpty(id)){
+				list.add(0,info);
+			}else{//idÎª¿Õ ÖÃ¶¥
+				topList.add(info);
+			}
 		}
 		
+		list.addAll(0, topList);
 		return list;
 	}
 

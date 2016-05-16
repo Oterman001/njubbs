@@ -36,13 +36,17 @@
         <activity android:name="com.oterman.njubbs.activity.TopicDetailActivity" />
         <activity
             android:name="com.oterman.njubbs.activity.BoardDetailActivity"
-            android:launchMode="singleTask" />
+            android:launchMode="singleTask"
+             />
+        <!--android:launchMode="singleTask"  -->
         <activity
             android:label="登陆"
              android:name="com.oterman.njubbs.activity.LoginActivity"/>
         <activity
             android:label="图片"
              android:name="com.oterman.njubbs.activity.BigImageActivity"/>
+        <activity
+             android:name="com.oterman.njubbs.activity.NewTopicActivity"/>
     </application>
 
 </manifest>

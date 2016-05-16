@@ -19,7 +19,7 @@ import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListene
 import com.oterman.njubbs.R;
 import com.oterman.njubbs.view.WaitDialog;
 @SuppressLint("NewApi")
-public class BigImageActivity  extends FragmentActivity {
+public class BigImageActivity  extends MyActionBarActivity {
 
 	private ImageView iv;
 	private PhotoViewAttacher attacher;
@@ -31,13 +31,6 @@ public class BigImageActivity  extends FragmentActivity {
 		super.onCreate(savedInstanceState);
 		
 		setContentView(R.layout.activity_big_image);
-		//更改状态栏的颜色
-		if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.LOLLIPOP){
-			Window window = this.getWindow();
-			window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-			window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-			window.setStatusBarColor(this.getResources().getColor(R.color.green));
-		}
 		
 		pbBar = (ProgressBar) this.findViewById(R.id.pb);
 		dialog = new WaitDialog(this);
@@ -79,6 +72,11 @@ public class BigImageActivity  extends FragmentActivity {
 			
 		});
 		
+	}
+	
+	@Override
+	protected String getBarTitle() {
+		return "图片";
 	}
 
 

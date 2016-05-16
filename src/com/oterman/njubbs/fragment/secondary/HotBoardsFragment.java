@@ -64,6 +64,8 @@ public class HotBoardsFragment extends BaseFragment {
 		});
 		
 		srl.addView(lv);
+		srl.setColorSchemeResources(android.R.color.holo_green_light,
+				android.R.color.holo_blue_light);
 		
 		srl.setOnRefreshListener(new OnRefreshListener() {
 			@Override

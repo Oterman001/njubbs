@@ -8,6 +8,7 @@ public class Constants {
 	public static final String LOGIN_URL = "http://bbs.nju.edu.cn/bbslogin?type=2";
 	public static final String USER_QUERY_URL = "http://bbs.nju.edu.cn/bbsqry?userid=";
 	public static final String BBSLEFT_URL = "http://bbs.nju.edu.cn/bbsleft";
+	public static final String BBS_NEW_TOPIC_URL = "http://bbs.nju.edu.cn/bbssnd?board=";
 	
 	
 	public static String getContentUrl(String contentUrl) {
@@ -20,7 +21,13 @@ public class Constants {
 		return NJU_BBS_BASE_URL+boardUrl;
 	}
 	
+	
 	public static String getUserUrl(String id) {
 		return USER_QUERY_URL+id;
 	}
+	
+	public static String getNewTopicUrl(String boardname){
+		return BBS_NEW_TOPIC_URL+boardname;
+	}
+	
 }

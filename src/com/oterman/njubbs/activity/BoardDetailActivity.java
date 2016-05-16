@@ -8,12 +8,14 @@ import android.app.ActionBar.LayoutParams;
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -29,6 +31,7 @@ import com.oterman.njubbs.utils.MyToast;
 import com.oterman.njubbs.utils.ThreadManager;
 import com.oterman.njubbs.utils.UiUtils;
 import com.oterman.njubbs.view.LoadingView.LoadingState;
+import com.oterman.njubbs.view.MySwipeRefreshLayout;
 
 /**
  * 版面详情
@@ -46,6 +49,7 @@ public class BoardDetailActivity extends BaseActivity {
 	private BoardAdapter adapter;
 	private BoardTopicProtocol protocol;
 	private ActionBar actionBar;
+	private MySwipeRefreshLayout sr;
 
 	@Override
 	public void initViews() {
@@ -63,28 +67,44 @@ public class BoardDetailActivity extends BaseActivity {
             }
         });
         
+		boardUrl = getIntent().getStringExtra("boardUrl");
+		board = boardUrl.substring(boardUrl.indexOf("=")+1);
+
+        //添加事件
+        ImageButton btnNewTopic = (ImageButton) view.findViewById(R.id.btn_new_topic);
+		btnNewTopic.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				Intent intent=new Intent(getApplicationContext(), NewTopicActivity.class);
+				intent.putExtra("board", board);
+				intent.putExtra("boardUrl", boardUrl);
+				startActivity(intent);
+			}
+		});
+        
+		btnNewTopic.setVisibility(View.VISIBLE);
+		
         TextView tvTitle=(TextView) view.findViewById(R.id.tv_actionbar_title);
         LayoutParams params = new LayoutParams(LayoutParams.MATCH_PARENT,LayoutParams.MATCH_PARENT);
         actionBar.setCustomView(view, params);
-        
-		boardUrl = getIntent().getStringExtra("boardUrl");
-		board = boardUrl.substring(boardUrl.indexOf("=")+1);
 
 		tvTitle.setText(board + "(帖子列表)");
 		tvTitle.setTextSize(22);
 
-		//getActionBar().setTitle(board + "(帖子列表)");
 	}
 
 	@Override
 	public View createSuccessView() {
+		sr=new MySwipeRefreshLayout(getApplicationContext());
+		
 		rootView = View.inflate(getApplicationContext(), R.layout.topic_plv, null);
 		plv = (PullToRefreshListView) rootView.findViewById(R.id.pLv);
-
+		
+		sr.setViewGroup(plv.getRefreshableView());
+		
 		adapter = new BoardAdapter();
 		
 		plv.setAdapter(adapter);
-
 		plv.setMode(Mode.PULL_FROM_END);//设置模式为从底部加载更多
 		
 		//设置条目之间的分割线
@@ -107,7 +127,6 @@ public class BoardDetailActivity extends BaseActivity {
 		
 		//设置上拉加载更多刷新
 		plv.setOnRefreshListener(new OnRefreshListener<ListView>() {
-
 			@Override
 			public void onRefresh(PullToRefreshBase<ListView> refreshView) {
 				plv.getLoadingLayoutProxy().setRefreshingLabel("正在加载...嘿咻嘿咻");
@@ -142,15 +161,45 @@ public class BoardDetailActivity extends BaseActivity {
 								plv.onRefreshComplete();
 							}
 						});
+					}
+				});
+			}
+		});
+		
+		sr.addView(rootView);
+		
+		sr.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+			
+			@Override
+			public void onRefresh() {
+				ThreadManager.getInstance().createLongPool().execute(new Runnable() {
+					
+					@Override
+					public void run() {
+						if(protocol==null){
+							protocol = new BoardTopicProtocol();
+						}
+						dataList = protocol.loadFromServer(Constants.getBoardUrl(boardUrl),false);
+						
+						runOnUiThread(new Runnable() {
+							public void run() {
+								sr.setRefreshing(false);
+								MyToast.toast("刷新成功!");
+								
+								adapter.notifyDataSetChanged();
+								
+							}
+						});
 						
 					}
 				});
 				
-				
 			}
 		});
 		
-		return rootView;
+		sr.setColorSchemeResources(android.R.color.holo_green_light,
+				android.R.color.holo_blue_light);
+		return sr;
 	}
 	public View createSuccessView_old() {
 		
