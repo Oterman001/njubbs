@@ -11,54 +11,53 @@
         android:layout_margin="10dp"
         android:hint="标题" />
 
-    <ScrollView
+    <EditText
+        android:id="@+id/et_content"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
+        android:layout_height="0dp"
+        android:layout_margin="10dp"
+        android:layout_weight="1"
+        android:gravity="top|left"
+        android:hint="亲，不要忘记输入内容哦"
+        android:textSize="18sp" >
+    </EditText>
 
-      <EditText
-            android:id="@+id/et_content"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            android:hint="内容"
-            android:lines="8" />
-    </ScrollView>
-
-    <ImageView
-        android:layout_marginLeft="10dp"
-        android:id="@+id/iv_pic"
-        android:src="@drawable/assic"
-        android:scaleType="fitXY"
-        android:layout_width="100dp"
-        android:layout_height="100dp" />
-
-    <LinearLayout
+    <View
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal" >
-
-        <Button
-            android:id="@+id/btn_chose_pic"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            android:layout_weight="1"
-            android:text="图片" />
-
-        <Button
-            android:id="@+id/btn_smiley"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            android:layout_weight="1"
-            android:text="表情" />
-    </LinearLayout>
-
+        android:layout_height="1px"
+        android:background="#22000000" />
+    
+    
     <Button
         android:id="@+id/btn_send"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="10dp"
+         android:layout_marginLeft="10dp"
+        android:visibility="visible"
         android:text="发送" />
+    
+    
+    <ImageButton
+        android:id="@+id/iv_pic"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="3dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="10dp"
+        android:background="@null"
+        android:scaleType="centerCrop"
+        android:src="@drawable/btn_emoji" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:background="#22000000" />
+
+    <!-- 表情 -->
+
+    <include
+        android:id="@+id/add_tool"
+        layout="@layout/send_msg_tool"
+        android:visibility="gone" />
 
 </LinearLayout>

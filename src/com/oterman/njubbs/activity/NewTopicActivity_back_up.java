@@ -1,43 +1,40 @@
 package com.oterman.njubbs.activity;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
-import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
-import android.text.SpannableString;
+import android.provider.MediaStore;
 import android.text.TextUtils;
-import android.util.Log;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.View.OnTouchListener;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
+import android.widget.ImageView;
 
 import com.lidroid.xutils.HttpUtils;
+import com.lidroid.xutils.exception.HttpException;
 import com.lidroid.xutils.http.RequestParams;
 import com.lidroid.xutils.http.ResponseStream;
 import com.lidroid.xutils.http.client.HttpRequest.HttpMethod;
+import com.nostra13.universalimageloader.core.ImageLoader;
 import com.oterman.njubbs.BaseApplication;
 import com.oterman.njubbs.R;
-import com.oterman.njubbs.smiley.SelectFaceHelper;
-import com.oterman.njubbs.smiley.SelectFaceHelper.OnFaceOprateListener;
 import com.oterman.njubbs.utils.Constants;
 import com.oterman.njubbs.utils.LogUtil;
 import com.oterman.njubbs.utils.MyToast;
 import com.oterman.njubbs.utils.ThreadManager;
 import com.oterman.njubbs.view.WaitDialog;
 
-public class NewTopicActivity extends MyActionBarActivity implements
+public class NewTopicActivity_back_up extends MyActionBarActivity implements
 		OnClickListener {
 
 	private Button btnSend;
@@ -46,48 +43,26 @@ public class NewTopicActivity extends MyActionBarActivity implements
 	private String board;
 	private WaitDialog dialog;
 	private String boardUrl;
-	private ImageButton ibSmiley;
-	private View addFaceToolView;
-	private SelectFaceHelper mFaceHelper;
-	boolean isVisbilityFace=false;
+	private Button btnChosePic;
+	private ImageView ivPic;
+	private String picturePath;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
 		setContentView(R.layout.activity_new_topic);
 
 		btnSend = (Button) this.findViewById(R.id.btn_send);
+		btnChosePic = (Button) this.findViewById(R.id.btn_chose_pic);
 
+		btnChosePic.setOnClickListener(this);
 		etTitle = (EditText) this.findViewById(R.id.et_titile);
 
 		etContent = (EditText) this.findViewById(R.id.et_content);
 		
-		ibSmiley = (ImageButton) this.findViewById(R.id.iv_pic);
-		
-		ibSmiley.setOnClickListener(faceClick);
-		
-		addFaceToolView=this.findViewById(R.id.add_tool);
+		ivPic = (ImageView) this.findViewById(R.id.iv_pic);
 
 		btnSend.setOnClickListener(this);
-		
-		etContent.setOnTouchListener(new OnTouchListener() {
-			@Override
-			public boolean onTouch(View v, MotionEvent event) {
-				isVisbilityFace = false;
-				addFaceToolView.setVisibility(View.GONE);
-				return false;
-			}
-		});	
-		
-		etTitle.setOnTouchListener(new OnTouchListener() {
-			@Override
-			public boolean onTouch(View v, MotionEvent event) {
-				isVisbilityFace = false;
-				addFaceToolView.setVisibility(View.GONE);
-				return false;
-			}
-		});	
 
 		Intent intent = getIntent();
 
@@ -95,62 +70,6 @@ public class NewTopicActivity extends MyActionBarActivity implements
 		boardUrl = intent.getStringExtra("boardUrl");
 	}
 
-	//点击脸表情，调出所有表情
-		View.OnClickListener faceClick = new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				if (null == mFaceHelper) {
-					mFaceHelper = new SelectFaceHelper(NewTopicActivity.this, addFaceToolView);
-					//点击表情时，设置监听
-					mFaceHelper.setFaceOpreateListener(mOnFaceOprateListener2);
-				}
-				if (isVisbilityFace) {
-					isVisbilityFace = false;
-					addFaceToolView.setVisibility(View.GONE);
-				} else {
-					isVisbilityFace = true;
-					addFaceToolView.setVisibility(View.VISIBLE);
-					hideInputManager(NewTopicActivity.this);//隐藏软键盘
-				}
-			}
-		};
-		
-		// 隐藏软键盘
-		public void hideInputManager(Context ct) {
-			try {
-				((InputMethodManager) getSystemService(INPUT_METHOD_SERVICE)).hideSoftInputFromWindow(((Activity) ct)
-						.getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-			} catch (Exception e) {
-				Log.e("", "hideInputManager Catch error,skip it!", e);
-			}
-		}
-		
-		//表情点击的监听事件
-		OnFaceOprateListener mOnFaceOprateListener2 = new OnFaceOprateListener() {
-			@Override
-			public void onFaceSelected(SpannableString spanEmojiStr) {
-				if (null != spanEmojiStr) {
-					etContent.append(spanEmojiStr);
-				}
-			}
-
-			@Override
-			public void onFaceDeleted() {
-				int selection = etContent.getSelectionStart();
-				String text = etContent.getText().toString();
-				if (selection > 0) {
-					String text2 = text.substring(selection - 1);
-					if ("]".equals(text2)) {
-						int start = text.lastIndexOf("[");
-						int end = selection;
-						etContent.getText().delete(start, end);
-						return;
-					}
-					etContent.getText().delete(selection - 1, selection);
-				}
-			}
-		};
-	
 	@Override
 	protected String getBarTitle() {
 		return "发帖";
@@ -181,10 +100,40 @@ public class NewTopicActivity extends MyActionBarActivity implements
 
 			break;
 			
+		case R.id.btn_chose_pic:
+			MyToast.toast("点击了选图");
+			
+			Intent i = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+			startActivityForResult(i, 100);
+			break;
 		default:
 			break;
 		}
 
+	}
+	
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+		 if(requestCode == 100 && resultCode == RESULT_OK && null != data) {
+		        Uri selectedImage = data.getData();
+		        String[] filePathColumn = { MediaStore.Images.Media.DATA };
+		 
+		        Cursor cursor = getContentResolver().query(selectedImage,filePathColumn, null, null, null);
+		        cursor.moveToFirst();
+		 
+		        int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+		        picturePath = cursor.getString(columnIndex);
+		        cursor.close();
+		        
+		        LogUtil.d("图片路径："+picturePath);
+		        
+		        ImageLoader imageLoader = ImageLoader.getInstance();
+		        
+		        imageLoader.displayImage("file://"+picturePath, ivPic);
+		        
+		 }
+		
 	}
 
 	/**
@@ -206,6 +155,10 @@ public class NewTopicActivity extends MyActionBarActivity implements
 			public void run() {
 
 				try {
+					//上传图片：
+					if(picturePath!=null){
+						uploadPic();
+					}
 					
 					if(httpUtils==null){
 						httpUtils=new HttpUtils();
@@ -275,6 +228,50 @@ public class NewTopicActivity extends MyActionBarActivity implements
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
+
+			}
+
+			//上传图片
+			private void uploadPic() {
+				String url=Constants.getUploadUrl();
+				
+				if(httpUtils==null){
+					httpUtils=new HttpUtils();
+				}
+				try {
+					
+					File file=new File(picturePath);
+					
+					RequestParams rp=new RequestParams();
+					
+					String cookie = BaseApplication.cookie;
+					if(cookie==null){//自动登陆
+						
+						BaseApplication.autoLogin();
+						cookie=BaseApplication.cookie;
+						if(cookie!=null){
+							runOnUiThread(new Runnable() {
+								@Override
+								public void run() {
+									MyToast.toast("自动登陆成功！");
+								}
+							});
+						}
+					}
+					
+					rp.addHeader("Cookie", cookie);
+					
+					rp.addBodyParameter("file", file,"image/jpeg");
+					
+					ResponseStream stream = httpUtils.sendSync(HttpMethod.POST, url, rp);
+					
+					String result = BaseApplication.StreamToStr(stream);
+					LogUtil.d("上传图片结果："+result);
+					
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				
 				
 			}
 		});
