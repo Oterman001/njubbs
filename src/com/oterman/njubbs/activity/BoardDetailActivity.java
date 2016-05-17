@@ -5,15 +5,19 @@ import java.util.Random;
 
 import android.app.ActionBar;
 import android.app.ActionBar.LayoutParams;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.SystemClock;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.BaseAdapter;
 import android.widget.ImageButton;
 import android.widget.ListView;
@@ -23,15 +27,23 @@ import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshBase.Mode;
 import com.handmark.pulltorefresh.library.PullToRefreshBase.OnRefreshListener;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
+import com.lidroid.xutils.HttpUtils;
+import com.lidroid.xutils.exception.HttpException;
+import com.lidroid.xutils.http.RequestParams;
+import com.lidroid.xutils.http.ResponseStream;
+import com.lidroid.xutils.http.client.HttpRequest.HttpMethod;
+import com.oterman.njubbs.BaseApplication;
 import com.oterman.njubbs.R;
 import com.oterman.njubbs.bean.TopicInfo;
 import com.oterman.njubbs.protocol.BoardTopicProtocol;
 import com.oterman.njubbs.utils.Constants;
+import com.oterman.njubbs.utils.LogUtil;
 import com.oterman.njubbs.utils.MyToast;
 import com.oterman.njubbs.utils.ThreadManager;
 import com.oterman.njubbs.utils.UiUtils;
 import com.oterman.njubbs.view.LoadingView.LoadingState;
 import com.oterman.njubbs.view.MySwipeRefreshLayout;
+import com.oterman.njubbs.view.WaitDialog;
 
 /**
  * 版面详情
@@ -70,7 +82,7 @@ public class BoardDetailActivity extends BaseActivity {
 		boardUrl = getIntent().getStringExtra("boardUrl");
 		board = boardUrl.substring(boardUrl.indexOf("=")+1);
 
-        //添加事件
+        //添加事件 新帖
         ImageButton btnNewTopic = (ImageButton) view.findViewById(R.id.btn_new_topic);
 		btnNewTopic.setOnClickListener(new OnClickListener() {
 			@Override
@@ -125,6 +137,141 @@ public class BoardDetailActivity extends BaseActivity {
 			}
 		});
 		
+		
+		lv.setOnItemLongClickListener(new OnItemLongClickListener() {
+			@Override
+			public boolean onItemLongClick(AdapterView<?> parent, View view,
+					int position, long id) {
+				
+				LogUtil.d("长按了哦.."+position);
+				
+				TopicInfo topicInfo = dataList.get(position-1);
+				
+				AlertDialog.Builder  builder=new AlertDialog.Builder(BoardDetailActivity.this);
+				
+				
+				View dialogView=View.inflate(getApplicationContext(), R.layout.item_long_click, null);
+				
+				
+				
+				builder.setTitle("请选择操作");
+				builder.setView(dialogView);
+				
+				builder.setNegativeButton("取消", new AlertDialog.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						dialog.dismiss();
+					}
+				});
+				
+				AlertDialog dialog = builder.create();
+				initDialogView(dialogView,topicInfo,dialog);
+				dialog.show();
+				
+				return true;
+			}
+
+			private void initDialogView(View dialogView, final TopicInfo topicInfo, final AlertDialog dialog) {
+				
+				TextView tvAuthurDetail=(TextView) dialogView.findViewById(R.id.tv_author_detail);
+				TextView tvModifyTopic=(TextView) dialogView.findViewById(R.id.tv_modify_topic);
+				TextView tvDeleteTopic=(TextView) dialogView.findViewById(R.id.tv_delete_topci);
+				TextView tvMessage=(TextView) dialogView.findViewById(R.id.tv_message_to_author);
+				
+				tvAuthurDetail.setOnClickListener(new OnClickListener() {
+					@Override
+					public void onClick(View v) {
+						MyToast.toast("作者详情"+topicInfo.authorUrl);
+						
+					}
+				});
+				
+				tvModifyTopic.setOnClickListener(new OnClickListener() {
+					
+					@Override
+					public void onClick(View v) {
+						MyToast.toast("修改帖子"+topicInfo.title);
+						
+					}
+				});
+				tvDeleteTopic.setOnClickListener(new OnClickListener() {
+					@Override
+					public void onClick(View v) {
+//						MyToast.toast("删除帖子"+topicInfo.contentUrl);
+//						LogUtil.d("帖子链接："+topicInfo.contentUrl);
+						
+						//删除帖子逻辑 /bbsdel?board=Pictures&file=M.1463450113.A
+						final String url = Constants.getTopicDelUrl(topicInfo.contentUrl);
+						
+						dialog.dismiss();
+						LogUtil.d("删除帖子链接"+url);
+						final WaitDialog waitDialog = new WaitDialog(BoardDetailActivity.this);
+						
+						waitDialog.setMessage("正在删除..");
+						waitDialog.show();
+						
+						ThreadManager.getInstance().createShortPool().execute(new Runnable() {
+							@Override
+							public void run() {
+								SystemClock.sleep(1000);
+								
+								HttpUtils httpUtils=new HttpUtils();
+								try {
+									RequestParams rp=new RequestParams();
+									String cookie=BaseApplication.cookie;
+									
+									if(cookie==null){
+										BaseApplication.autoLogin();
+										cookie=BaseApplication.cookie;
+										LogUtil.d("未登录，自动登陆。。："+cookie);
+									}
+									
+									rp.addHeader("Cookie", cookie);
+									
+									ResponseStream stream = httpUtils.sendSync(HttpMethod.GET, url,rp);
+									
+									final String result = BaseApplication.StreamToStr(stream);
+									
+									LogUtil.d("删除结果："+result);
+									if(result.contains("返回本讨论区")){
+										runOnUiThread(new  Runnable() {
+											public void run() {
+												MyToast.toast("删除成功");
+												
+												dataList.remove(topicInfo);
+												adapter.notifyDataSetChanged();
+												waitDialog.dismiss();
+												//dialog.dismiss();
+											}
+										});
+									}else{
+										runOnUiThread(new  Runnable() {
+											public void run() {
+												MyToast.toast("删除失败！无权删除该帖");
+												waitDialog.dismiss();
+											}
+										});
+									}
+								} catch (Exception e) {
+									e.printStackTrace();
+								}
+							}
+						});
+						
+					}
+				});
+				tvMessage.setOnClickListener(new OnClickListener() {
+					
+					@Override
+					public void onClick(View v) {
+						MyToast.toast("站内"+topicInfo.authorUrl);
+						
+					}
+				});
+				
+				
+			}
+		});
 		//设置上拉加载更多刷新
 		plv.setOnRefreshListener(new OnRefreshListener<ListView>() {
 			@Override

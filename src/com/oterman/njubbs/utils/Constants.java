@@ -12,6 +12,8 @@ public class Constants {
 	
 	
 	public static String getContentUrl(String contentUrl) {
+		//  /bbstcon?board=Pictures&file=M.1463379554.A
+		
 		return NJU_BBS_BASE_URL+contentUrl;
 	}
 
@@ -29,5 +31,14 @@ public class Constants {
 	public static String getNewTopicUrl(String boardname){
 		return BBS_NEW_TOPIC_URL+boardname;
 	}
+	
+	public static String getTopicDelUrl(String contentUrl){
+		//  /bbsdel?board=Pictures&file=M.1463450113.A
+		//contentUrl:/bbstcon?board=Pictures&file=M.1463379554.A   
+		String substring = contentUrl.substring(contentUrl.indexOf("?")+1);
+		
+		return NJU_BBS_BASE_URL+"bbsdel?"+substring;
+	}
+	
 	
 }
