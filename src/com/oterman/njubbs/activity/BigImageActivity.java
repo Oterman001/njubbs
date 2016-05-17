@@ -46,7 +46,6 @@ public class BigImageActivity  extends MyActionBarActivity {
 		String imgurl = intent.getStringExtra("imgurl");
 		
 		
-		
         //œ‘ æÕº∆¨µƒ≈‰÷√  
 //        DisplayImageOptions options = new DisplayImageOptions.Builder()  
 //                .showImageOnLoading(R.drawable.product_loading)  
@@ -69,7 +68,6 @@ public class BigImageActivity  extends MyActionBarActivity {
 				iv.setImageBitmap(loadedImage);
 				attacher.update();
 			}
-			
 		});
 		
 	}

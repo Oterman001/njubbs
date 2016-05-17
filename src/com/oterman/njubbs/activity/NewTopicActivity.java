@@ -1,28 +1,31 @@
 package com.oterman.njubbs.activity;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.entity.StringEntity;
-import org.json.JSONObject;
-
 import android.content.Intent;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 
 import com.lidroid.xutils.HttpUtils;
+import com.lidroid.xutils.exception.HttpException;
 import com.lidroid.xutils.http.RequestParams;
 import com.lidroid.xutils.http.ResponseStream;
 import com.lidroid.xutils.http.client.HttpRequest.HttpMethod;
+import com.nostra13.universalimageloader.core.ImageLoader;
 import com.oterman.njubbs.BaseApplication;
 import com.oterman.njubbs.R;
 import com.oterman.njubbs.utils.Constants;
@@ -40,6 +43,9 @@ public class NewTopicActivity extends MyActionBarActivity implements
 	private String board;
 	private WaitDialog dialog;
 	private String boardUrl;
+	private Button btnChosePic;
+	private ImageView ivPic;
+	private String picturePath;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -47,10 +53,14 @@ public class NewTopicActivity extends MyActionBarActivity implements
 		setContentView(R.layout.activity_new_topic);
 
 		btnSend = (Button) this.findViewById(R.id.btn_send);
+		btnChosePic = (Button) this.findViewById(R.id.btn_chose_pic);
 
+		btnChosePic.setOnClickListener(this);
 		etTitle = (EditText) this.findViewById(R.id.et_titile);
 
 		etContent = (EditText) this.findViewById(R.id.et_content);
+		
+		ivPic = (ImageView) this.findViewById(R.id.iv_pic);
 
 		btnSend.setOnClickListener(this);
 
@@ -58,7 +68,6 @@ public class NewTopicActivity extends MyActionBarActivity implements
 
 		board = intent.getStringExtra("board");
 		boardUrl = intent.getStringExtra("boardUrl");
-
 	}
 
 	@Override
@@ -90,11 +99,41 @@ public class NewTopicActivity extends MyActionBarActivity implements
 			// MyToast.toast("发帖："+board);
 
 			break;
-
+			
+		case R.id.btn_chose_pic:
+			MyToast.toast("点击了选图");
+			
+			Intent i = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+			startActivityForResult(i, 100);
+			break;
 		default:
 			break;
 		}
 
+	}
+	
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+		 if(requestCode == 100 && resultCode == RESULT_OK && null != data) {
+		        Uri selectedImage = data.getData();
+		        String[] filePathColumn = { MediaStore.Images.Media.DATA };
+		 
+		        Cursor cursor = getContentResolver().query(selectedImage,filePathColumn, null, null, null);
+		        cursor.moveToFirst();
+		 
+		        int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+		        picturePath = cursor.getString(columnIndex);
+		        cursor.close();
+		        
+		        LogUtil.d("图片路径："+picturePath);
+		        
+		        ImageLoader imageLoader = ImageLoader.getInstance();
+		        
+		        imageLoader.displayImage("file://"+picturePath, ivPic);
+		        
+		 }
+		
 	}
 
 	/**
@@ -110,11 +149,21 @@ public class NewTopicActivity extends MyActionBarActivity implements
 		dialog.show();
 
 		ThreadManager.getInstance().createLongPool().execute(new Runnable() {
+			HttpUtils httpUtils = null;
+			
 			@Override
 			public void run() {
 
 				try {
-					HttpUtils httpUtils = new HttpUtils();
+					//上传图片：
+					if(picturePath!=null){
+						uploadPic();
+					}
+					
+					if(httpUtils==null){
+						httpUtils=new HttpUtils();
+					}
+					
 					//服务器编码为gbk
 					RequestParams params = new RequestParams("gbk");
 					
@@ -127,30 +176,21 @@ public class NewTopicActivity extends MyActionBarActivity implements
 					params.addBodyParameter("signature", 1 + "");
 					params.addBodyParameter("autocr", "on");
 					
+//					params.addBodyParameter(key, file)
+//					params.addBodyParameter(key, file, fileName, mimeType, charset)
+					
 					String content2=URLEncoder.encode(content, "gbk");
 					params.addBodyParameter("text", content);
 				
-//					String str="title=%B2%E2%CA%D4&pid=0&reid=0&signature=1&autocr=on&text=%D6%D0%CE%C4%B7%A2%CC%FB%A3%AChaha%0D%0A";
-					//String str="title="+title2+"&pid=0&reid=0&signature=1&autocr=on&text="+content2;
-					//HttpEntity bodyEntity=new StringEntity(str, "gbk");
-					//params.setBodyEntity(bodyEntity);
 					
 					//添加cookie
 					String cookie = BaseApplication.cookie;
 					if(cookie==null){//自动登陆
 						
-//						runOnUiThread(new Runnable() {
-//							@Override
-//							public void run() {
-//								//MyToast.toast("尝试自动登陆");
-//							}
-//						});
-					
 						BaseApplication.autoLogin();
 						cookie=BaseApplication.cookie;
 						if(cookie!=null){
 							runOnUiThread(new Runnable() {
-								
 								@Override
 								public void run() {
 									MyToast.toast("自动登陆成功！");
@@ -184,13 +224,55 @@ public class NewTopicActivity extends MyActionBarActivity implements
 							}
 						});
 					}
-					
-
 
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
 
+			}
+
+			//上传图片
+			private void uploadPic() {
+				String url=Constants.getUploadUrl();
+				
+				if(httpUtils==null){
+					httpUtils=new HttpUtils();
+				}
+				try {
+					
+					File file=new File(picturePath);
+					
+					RequestParams rp=new RequestParams();
+					
+					String cookie = BaseApplication.cookie;
+					if(cookie==null){//自动登陆
+						
+						BaseApplication.autoLogin();
+						cookie=BaseApplication.cookie;
+						if(cookie!=null){
+							runOnUiThread(new Runnable() {
+								@Override
+								public void run() {
+									MyToast.toast("自动登陆成功！");
+								}
+							});
+						}
+					}
+					
+					rp.addHeader("Cookie", cookie);
+					
+					rp.addBodyParameter("file", file,"image/jpeg");
+					
+					ResponseStream stream = httpUtils.sendSync(HttpMethod.POST, url, rp);
+					
+					String result = BaseApplication.StreamToStr(stream);
+					LogUtil.d("上传图片结果："+result);
+					
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				
+				
 			}
 		});
 

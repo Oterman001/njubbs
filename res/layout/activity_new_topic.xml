@@ -11,19 +11,54 @@
         android:layout_margin="10dp"
         android:hint="标题" />
 
-    <EditText
-        android:id="@+id/et_content"
-        android:layout_width="fill_parent"
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+      <EditText
+            android:id="@+id/et_content"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:hint="内容"
+            android:lines="8" />
+    </ScrollView>
+
+    <ImageView
+        android:layout_marginLeft="10dp"
+        android:id="@+id/iv_pic"
+        android:src="@drawable/assic"
+        android:scaleType="fitXY"
+        android:layout_width="100dp"
+        android:layout_height="100dp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:hint="内容"
-        android:lines="8" />
+        android:orientation="horizontal" >
+
+        <Button
+            android:id="@+id/btn_chose_pic"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:layout_weight="1"
+            android:text="图片" />
+
+        <Button
+            android:id="@+id/btn_smiley"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:layout_weight="1"
+            android:text="表情" />
+    </LinearLayout>
 
     <Button
         android:id="@+id/btn_send"
-        android:layout_margin="10dp"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_margin="10dp"
         android:text="发送" />
 
 </LinearLayout>

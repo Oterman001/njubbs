@@ -39,6 +39,11 @@ public class Constants {
 		
 		return NJU_BBS_BASE_URL+"bbsdel?"+substring;
 	}
+
+
+	public static String getUploadUrl() {
+		return NJU_BBS_BASE_URL+"bbsdoupload";
+	}
 	
 	
 }
