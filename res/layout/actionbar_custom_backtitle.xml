@@ -44,16 +44,29 @@
             android:textColor="@color/white"
             android:textSize="18sp" />
 
-        <ImageButton
-            android:id="@+id/btn_new_topic"
+        <FrameLayout
             android:layout_width="wrap_content"
-            android:layout_height="fill_parent"
-            android:layout_marginRight="10dp"
-            android:clickable="true"
-            android:visibility="invisible"
-            android:background="@drawable/socialize_titlebar_item_background_selector"
-            android:src="@drawable/ic_ab_new_topic" />
+             android:layout_marginRight="10dp"
+            android:layout_height="match_parent" >
 
+            <ImageButton
+                android:id="@+id/btn_new_topic"
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:background="@drawable/socialize_titlebar_item_background_selector"
+                android:clickable="true"
+                android:src="@drawable/ic_ab_new_topic"
+                android:visibility="invisible" />
+            
+            <ImageButton
+                android:id="@+id/btn_post_topic"
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:background="@drawable/socialize_titlebar_item_background_selector"
+                android:clickable="true"
+                android:src="@drawable/actionbar_send_icon"
+                android:visibility="invisible" />
+        </FrameLayout>
     </LinearLayout>
 
 </RelativeLayout>

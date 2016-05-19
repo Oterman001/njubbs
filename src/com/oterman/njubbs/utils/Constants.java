@@ -13,7 +13,7 @@ public class Constants {
 	
 	public static String getContentUrl(String contentUrl) {
 		//  /bbstcon?board=Pictures&file=M.1463379554.A
-		
+		//   bbstcon?board=Pictures&file=M.1463582774.A
 		return NJU_BBS_BASE_URL+contentUrl;
 	}
 
@@ -43,6 +43,16 @@ public class Constants {
 
 	public static String getUploadUrl() {
 		return NJU_BBS_BASE_URL+"bbsdoupload";
+	}
+
+
+	public static String getReplyPageUrl(String contentUrl) {
+		//bbstcon?board=Pictures&file=M.1463582774.A
+		
+		//bbspst?board=Pictures&file=M.1463582774.A
+		String url="bbspst?"+contentUrl.substring(contentUrl.lastIndexOf("?")+1);
+		
+		return NJU_BBS_BASE_URL+url;
 	}
 	
 	

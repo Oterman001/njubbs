@@ -78,7 +78,7 @@ public class TopicDetailProtocol  extends BaseProtocol<TopicDetailInfo>{
 		content=content.replaceAll("\\n", "<br>");
 //		content=content.replaceAll("\\s+<br>","");
 		
-		System.out.println("content:================\n"+content);
+		//System.out.println("content:================\n"+content);
 		
 		TopicDetailInfo info=new TopicDetailInfo(author, floorth+"", pubTime, content, loadMoreUrl);
 		list.add(info);

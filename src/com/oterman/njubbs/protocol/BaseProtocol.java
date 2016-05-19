@@ -46,6 +46,7 @@ public abstract class BaseProtocol<E> {
 	 * 需要缓存的必须重写   缓存文件名
 	 * @return
 	 */
+	
 	public String getSaveKey(){
 		return null;
 	}

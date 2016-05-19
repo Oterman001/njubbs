@@ -33,7 +33,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="com.oterman.njubbs.activity.TopicDetailActivity" />
+        <activity android:name="com.oterman.njubbs.activity.TopicDetailActivity" 
+            	
+             android:windowSoftInputMode="adjustResize|stateHidden"
+            />
+        
+        <!--android:windowSoftInputMode="adjustPan|stateHidden"  -->
         <activity
             android:name="com.oterman.njubbs.activity.BoardDetailActivity"
             android:launchMode="singleTask"
@@ -46,7 +51,9 @@
             android:label="图片"
              android:name="com.oterman.njubbs.activity.BigImageActivity"/>
         <activity
-             android:name="com.oterman.njubbs.activity.NewTopicActivity"/>
+             android:name="com.oterman.njubbs.activity.NewTopicActivity"
+             android:windowSoftInputMode="adjustResize|stateVisible"
+             />
     </application>
 
 </manifest>

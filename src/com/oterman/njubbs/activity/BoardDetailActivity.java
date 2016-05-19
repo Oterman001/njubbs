@@ -137,7 +137,7 @@ public class BoardDetailActivity extends BaseActivity {
 			}
 		});
 		
-		
+		//长按弹出对话框
 		lv.setOnItemLongClickListener(new OnItemLongClickListener() {
 			@Override
 			public boolean onItemLongClick(AdapterView<?> parent, View view,
@@ -149,9 +149,7 @@ public class BoardDetailActivity extends BaseActivity {
 				
 				AlertDialog.Builder  builder=new AlertDialog.Builder(BoardDetailActivity.this);
 				
-				
 				View dialogView=View.inflate(getApplicationContext(), R.layout.item_long_click, null);
-				
 				
 				
 				builder.setTitle("请选择操作");
@@ -194,6 +192,7 @@ public class BoardDetailActivity extends BaseActivity {
 						
 					}
 				});
+				
 				tvDeleteTopic.setOnClickListener(new OnClickListener() {
 					@Override
 					public void onClick(View v) {

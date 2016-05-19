@@ -40,7 +40,6 @@ import com.oterman.njubbs.view.WaitDialog;
 public class NewTopicActivity extends MyActionBarActivity implements
 		OnClickListener {
 
-	private Button btnSend;
 	private EditText etTitle;
 	private EditText etContent;
 	private String board;
@@ -49,6 +48,7 @@ public class NewTopicActivity extends MyActionBarActivity implements
 	private ImageButton ibSmiley;
 	private View addFaceToolView;
 	private SelectFaceHelper mFaceHelper;
+	private ImageButton ibPost;
 	boolean isVisbilityFace=false;
 
 	@Override
@@ -57,8 +57,14 @@ public class NewTopicActivity extends MyActionBarActivity implements
 		
 		setContentView(R.layout.activity_new_topic);
 
-		btnSend = (Button) this.findViewById(R.id.btn_send);
-
+		//btnSend = (Button) this.findViewById(R.id.btn_send);
+		
+		//actionbar的发送箭头
+		ibPost = (ImageButton) actionBarView.findViewById(R.id.btn_post_topic);
+		ibPost.setVisibility(View.VISIBLE);
+		
+		ibPost.setOnClickListener(this);
+			
 		etTitle = (EditText) this.findViewById(R.id.et_titile);
 
 		etContent = (EditText) this.findViewById(R.id.et_content);
@@ -69,7 +75,7 @@ public class NewTopicActivity extends MyActionBarActivity implements
 		
 		addFaceToolView=this.findViewById(R.id.add_tool);
 
-		btnSend.setOnClickListener(this);
+		//btnSend.setOnClickListener(this);
 		
 		etContent.setOnTouchListener(new OnTouchListener() {
 			@Override
@@ -125,6 +131,21 @@ public class NewTopicActivity extends MyActionBarActivity implements
 			}
 		}
 		
+		
+		/*
+		public static void showSoftKeyboard(View view) {
+			((InputMethodManager) BaseApplication.context().getSystemService(
+			Context.INPUT_METHOD_SERVICE)).showSoftInput(view,
+			InputMethodManager.SHOW_FORCED);
+		}
+		
+		public static void toogleSoftKeyboard(View view) {
+			((InputMethodManager) BaseApplication.context().getSystemService(
+			Context.INPUT_METHOD_SERVICE)).toggleSoftInput(0,
+			InputMethodManager.HIDE_NOT_ALWAYS);
+		}
+		 */
+		
 		//表情点击的监听事件
 		OnFaceOprateListener mOnFaceOprateListener2 = new OnFaceOprateListener() {
 			@Override
@@ -150,6 +171,8 @@ public class NewTopicActivity extends MyActionBarActivity implements
 				}
 			}
 		};
+		
+		
 	
 	@Override
 	protected String getBarTitle() {
@@ -159,7 +182,7 @@ public class NewTopicActivity extends MyActionBarActivity implements
 	@Override
 	public void onClick(View v) {
 		switch (v.getId()) {
-		case R.id.btn_send:// 处理发帖
+		case R.id.btn_post_topic:// 处理发帖
 			// 获取数据
 			String title = etTitle.getText().toString();
 			String content = etContent.getText().toString();
