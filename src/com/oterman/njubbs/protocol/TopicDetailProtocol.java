@@ -40,6 +40,10 @@ public class TopicDetailProtocol  extends BaseProtocol<TopicDetailInfo>{
 		for (int i = 0; i < tableEles.size(); i++) {
 			Elements tdEles = tableEles.get(i).select("td");
 			
+			//回复本文链接
+			Element aEle = tdEles.get(0).select("a").get(1);
+			String replyUrl= aEle.attr("href");
+			
 			int floorth=Integer.parseInt(tdEles.get(1).text());
 			
 			String str=tdEles.get(2).text();
@@ -48,13 +52,13 @@ public class TopicDetailProtocol  extends BaseProtocol<TopicDetailInfo>{
 			Pattern p1=Pattern.compile("发信人:(.+),.*小百合站 \\((.+\\d{4})\\)(.+)--.*",Pattern.DOTALL);
 			Matcher matcher = p1.matcher(str);
 			if(matcher.find()){
-				handleData(list, dateFormat, floorth, matcher);
+				handleData(list, dateFormat, floorth, matcher,replyUrl);
 			}else{//帖子有修改 格式变化
 				p1=Pattern.compile("发信人:(.+),.*小百合站 \\((.+\\d{4})\\)(.+)",Pattern.DOTALL);
 				matcher = p1.matcher(str);
 				
 				if(matcher.find()){
-					handleData(list, dateFormat, floorth, matcher);
+					handleData(list, dateFormat, floorth, matcher,replyUrl);
 				}
 			}
 		}
@@ -65,7 +69,7 @@ public class TopicDetailProtocol  extends BaseProtocol<TopicDetailInfo>{
 	private void handleData(
 			List<TopicDetailInfo> list,
 			SimpleDateFormat dateFormat, 
-			int floorth, Matcher matcher) {
+			int floorth, Matcher matcher,String replyUrl) {
 		String author=matcher.group(1).trim();
 		String pubTime=matcher.group(2).trim();
 		pubTime=dateFormat.format(new Date(pubTime));
@@ -80,7 +84,7 @@ public class TopicDetailProtocol  extends BaseProtocol<TopicDetailInfo>{
 		
 		//System.out.println("content:================\n"+content);
 		
-		TopicDetailInfo info=new TopicDetailInfo(author, floorth+"", pubTime, content, loadMoreUrl);
+		TopicDetailInfo info=new TopicDetailInfo(author, floorth+"", pubTime, content, loadMoreUrl,replyUrl);
 		list.add(info);
 	}
 

@@ -91,7 +91,7 @@ public class EmojiParser {
 					eventCode = xmlpull.next();
 				}
 			} catch (Exception e) {
-				Log.e(TAG, e.toString(), e);
+				//Log.e(TAG, e.toString(), e);
 			}
 		}
 	}

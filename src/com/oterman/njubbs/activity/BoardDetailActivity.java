@@ -347,32 +347,6 @@ public class BoardDetailActivity extends BaseActivity {
 				android.R.color.holo_blue_light);
 		return sr;
 	}
-	public View createSuccessView_old() {
-		
-		lv = new ListView(getApplicationContext());
-		
-		lv.setDivider(new ColorDrawable(0x77888888));
-		lv.setDividerHeight(1);
-		
-		lv.setAdapter(new BoardAdapter());
-		
-		lv.setOnItemClickListener(new OnItemClickListener() {
-			
-			@Override
-			public void onItemClick(AdapterView<?> parent, View view,
-					int position, long id) {
-				TopicInfo info = dataList.get(position);
-				Intent intent = new Intent(getApplicationContext(),
-						TopicDetailActivity.class);
-				info.board =board;
-				info.boardUrl = boardUrl;
-				intent.putExtra("topicInfo", info);
-				startActivity(intent);
-			}
-		});
-		return lv;
-	}
-
 	public LoadingState loadDataFromServer() {
 		if(protocol==null){
 			protocol = new BoardTopicProtocol();

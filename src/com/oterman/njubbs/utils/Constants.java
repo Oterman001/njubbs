@@ -44,7 +44,14 @@ public class Constants {
 	public static String getUploadUrl() {
 		return NJU_BBS_BASE_URL+"bbsdoupload";
 	}
-
+	
+	public static String getReplyDelUrl(String replyUrl){
+		// replyUrl   bbspst?board=WorldFootball&amp;file=M.1462286742.A
+		//bbsdel?board=WorldFootball&amp;file=M.1462286742.A
+		String str=replyUrl.substring(replyUrl.indexOf("?")+1);
+		
+		return NJU_BBS_BASE_URL+"bbsdel?"+str;
+	}
 
 	public static String getReplyPageUrl(String contentUrl) {
 		//bbstcon?board=Pictures&file=M.1463582774.A
