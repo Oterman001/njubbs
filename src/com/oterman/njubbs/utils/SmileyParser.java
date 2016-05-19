@@ -82,7 +82,7 @@ public class SmileyParser {
             Drawable drawable = mContext.getResources().getDrawable(resId);    
 //            drawable.setBounds(0, 0, 25, 25);//这里设置图片的大小
 //            drawable.setBounds(0, 0, UiUtils.dip2px(45), UiUtils.dip2px(45));//这里设置图片的大小    
-            drawable.setBounds(0, 0, UiUtils.dip2px(35), UiUtils.dip2px(35));//这里设置图片的大小    
+            drawable.setBounds(0, 0, UiUtils.dip2px(25), UiUtils.dip2px(25));//这里设置图片的大小    
             ImageSpan imageSpan = new ImageSpan(drawable, ImageSpan.ALIGN_BOTTOM);    
             builder.setSpan(imageSpan, matcher.start(),matcher.end(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);    
         }    

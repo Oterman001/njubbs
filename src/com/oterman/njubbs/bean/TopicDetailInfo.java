@@ -1,10 +1,14 @@
 package com.oterman.njubbs.bean;
 
-public class TopicDetailInfo {
+import java.io.Serializable;
+
+public class TopicDetailInfo implements Serializable{
 	public String author;
 	public String floorth;
 	public String pubTime;
 	public String content;
+	
+	public String title;
 	
 	
 	public String loadMoreUrl;//обр╩рЁ

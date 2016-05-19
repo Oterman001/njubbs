@@ -61,6 +61,11 @@ public class Constants {
 		
 		return NJU_BBS_BASE_URL+url;
 	}
+
+
+	public static String getModifyReplyUrl() {
+		return NJU_BBS_BASE_URL+"bbsedit";
+	}
 	
 	
 }

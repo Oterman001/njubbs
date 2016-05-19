@@ -36,6 +36,7 @@ import com.oterman.njubbs.BaseApplication;
 import com.oterman.njubbs.R;
 import com.oterman.njubbs.bean.TopicInfo;
 import com.oterman.njubbs.protocol.BoardTopicProtocol;
+import com.oterman.njubbs.protocol.TopicDetailProtocol;
 import com.oterman.njubbs.utils.Constants;
 import com.oterman.njubbs.utils.LogUtil;
 import com.oterman.njubbs.utils.MyToast;
@@ -64,6 +65,36 @@ public class BoardDetailActivity extends BaseActivity {
 	private MySwipeRefreshLayout sr;
 
 	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		// TODO Auto-generated method stub
+		super.onActivityResult(requestCode, resultCode, data);
+		
+		if(requestCode==100){//修改回帖成功后跳转  刷新
+			ThreadManager.getInstance().createLongPool().execute(new Runnable() {
+				
+				@Override
+				public void run() {
+					if(protocol==null){
+						protocol = new BoardTopicProtocol();
+					}
+					dataList = protocol.loadFromServer(Constants
+							.getBoardUrl(boardUrl),false);
+					
+					runOnUiThread(new Runnable() {
+						@Override
+						public void run() {
+							adapter.notifyDataSetChanged();
+						}
+					});
+					
+					
+				}
+				});
+			}
+		
+	}
+	
+	@Override
 	public void initViews() {
 		//自定义actionbar
 		actionBar=getActionBar();
@@ -90,7 +121,7 @@ public class BoardDetailActivity extends BaseActivity {
 				Intent intent=new Intent(getApplicationContext(), NewTopicActivity.class);
 				intent.putExtra("board", board);
 				intent.putExtra("boardUrl", boardUrl);
-				startActivity(intent);
+				startActivityForResult(intent, 100);
 			}
 		});
         

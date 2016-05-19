@@ -91,7 +91,7 @@ public class TopicDetailActivity extends BaseActivity implements
 	private View addFaceToolView;
 	private WaitDialog waitDialog;
 	SelectFaceHelper mFaceHelper;
-
+	
 	@Override
 	public void initViews() {
 		// 显示返回箭头
@@ -257,7 +257,16 @@ public class TopicDetailActivity extends BaseActivity implements
 	
 			@Override
 			public void onClick(View v) {
-				MyToast.toast("修改帖子" + detailInfo.content);
+				//MyToast.toast("修改帖子" + detailInfo.content);
+				
+				//跳转到修改页面
+				Intent intent=new Intent(TopicDetailActivity.this,ModifyReplyActivity.class);
+				detailInfo.title=topicInfo.title;
+				intent.putExtra("topicDetailInfo", detailInfo);
+				
+				startActivityForResult(intent, 100);
+				
+				replyDialog.dismiss();
 	
 			}
 		});
@@ -270,6 +279,7 @@ public class TopicDetailActivity extends BaseActivity implements
 				LogUtil.d("删除回帖链接："+url);
 				MyToast.toast("正在删除..");
 				
+				//删帖逻辑
 				handleDelReply(url,detailInfo,replyDialog);
 			}
 	
@@ -285,6 +295,7 @@ public class TopicDetailActivity extends BaseActivity implements
 			}
 		});
 	}
+
 
 	//处理删回帖
 	private void handleDelReply(final String url,final TopicDetailInfo detailInfo,final AlertDialog replyDialog ) {
@@ -409,6 +420,38 @@ public class TopicDetailActivity extends BaseActivity implements
 		return view;
 	}
 
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+		if(requestCode==100){//修改回帖成功后跳转  刷新
+			
+			
+			ThreadManager.getInstance().createLongPool().execute(new Runnable() {
+				
+				@Override
+				public void run() {
+					String url = Constants.getContentUrl(topicInfo.contentUrl);
+					if(protocol==null){
+						protocol = new TopicDetailProtocol();
+					}
+					list = protocol.loadFromServer(url, false);
+					
+					runOnUiThread(new Runnable() {
+						
+						@Override
+						public void run() {
+							adapter.notifyDataSetChanged();
+						}
+					});
+					
+					
+				}
+			});
+			
+			
+		}
+	}
+
 	// 表情点击的监听事件
 	OnFaceOprateListener mOnFaceOprateListener = new OnFaceOprateListener() {
 		@Override
@@ -440,7 +483,6 @@ public class TopicDetailActivity extends BaseActivity implements
 	 */
 	public LoadingState loadDataFromServer() {
 		String url = Constants.getContentUrl(topicInfo.contentUrl);
-
 		protocol = new TopicDetailProtocol();
 		list = protocol.loadFromServer(url, false);
 		return list == null ? LoadingState.LOAD_FAILED
@@ -563,7 +605,21 @@ public class TopicDetailActivity extends BaseActivity implements
 								startActivity(intent);
 							}
 						});
-					} else {
+					} else if(result.contains("发文间隔过密")){
+						// 更新界面
+						runOnUiThread(new Runnable() {
+							@Override
+							public void run() {
+								if (waitDialog != null) {
+									waitDialog.dismiss();
+								}
+								waitDialog.dismiss();
+								MyToast.toast("回帖失败！发文间隔过密！");
+								// 刷新界面
+								cbSmiley.setChecked(false);
+							}
+						});
+					}else {
 						// 回帖成功
 						if (protocol == null) {
 							protocol = new TopicDetailProtocol();
@@ -584,6 +640,7 @@ public class TopicDetailActivity extends BaseActivity implements
 								MyToast.toast("回帖成功！");
 								// 刷新界面
 								adapter.notifyDataSetChanged();
+								//pLv.getRefreshableView().setSelection(list.size());
 								etContent.setText("");
 								cbSmiley.setChecked(false);
 							}
@@ -760,7 +817,8 @@ public class TopicDetailActivity extends BaseActivity implements
 		}
 
 	}
-
+	
+	
 	// 隐藏软键盘
 	public void hideInputManager(Context ct) {
 		try {
@@ -773,5 +831,6 @@ public class TopicDetailActivity extends BaseActivity implements
 			Log.e("", "hideInputManager Catch error,skip it!", e);
 		}
 	}
+	
 
 }
