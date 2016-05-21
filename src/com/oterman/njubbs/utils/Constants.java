@@ -9,6 +9,7 @@ public class Constants {
 	public static final String USER_QUERY_URL = "http://bbs.nju.edu.cn/bbsqry?userid=";
 	public static final String BBSLEFT_URL = "http://bbs.nju.edu.cn/bbsleft";
 	public static final String BBS_NEW_TOPIC_URL = "http://bbs.nju.edu.cn/bbssnd?board=";
+	public static final String BBS_MAIL_URL = "http://bbs.nju.edu.cn/bbsmail";
 	
 	
 	public static String getContentUrl(String contentUrl) {
@@ -22,7 +23,6 @@ public class Constants {
 		boardUrl=boardUrl.replaceAll("bbsdoc", "bbstdoc");
 		return NJU_BBS_BASE_URL+boardUrl;
 	}
-	
 	
 	public static String getUserUrl(String id) {
 		return USER_QUERY_URL+id;
@@ -65,6 +65,17 @@ public class Constants {
 
 	public static String getModifyReplyUrl() {
 		return NJU_BBS_BASE_URL+"bbsedit";
+	}
+
+
+	public static String getMailMoreUrl(String moreUrl) {
+		return NJU_BBS_BASE_URL+moreUrl;
+	}
+
+
+	public static String getMailContentUrl(String contentUrl) {
+		// TODO Auto-generated method stub
+		return NJU_BBS_BASE_URL+contentUrl;
 	}
 	
 	

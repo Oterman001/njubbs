@@ -55,6 +55,8 @@
         <activity
             android:name="com.oterman.njubbs.activity.ModifyReplyActivity"
             android:windowSoftInputMode="adjustResize|stateVisible" />
+        <activity android:name=".activity.MailBoxActicity" />
+        <activity android:name=".activity.MailContentActicity" />
     </application>
 
 </manifest>

@@ -21,16 +21,20 @@ String str="njubbs_v0.5 \n " +
 		"更新日志：" +
 		"\n 1.实现了长按帖子删除功能" +
 		"\n 2.实现了发帖时添加表情功能";
+ str="njubbs_v0.8 \n " +
+		"更新日志：" +
+		"\n 1.实现了回帖" +
+		"\n 2.实现了修改回帖";
  *
  */
 public class DiscoveryFragment extends BaseFragment {
 	@Override
 	public View createSuccessView() {
 		TextView tv=new TextView(getActivity());
-		String  str="njubbs_v0.7 \n " +
+		String   str="njubbs_v0.8 \n " +
 				"更新日志：" +
-				"\n 1.实现了长按帖子删除功能" +
-				"\n 2.实现了发帖时添加表情功能";
+				"\n 1.实现了回帖" +
+				"\n 2.实现了修改回帖";
 		tv.setText(str);
 		tv.setTextSize(22f);
 		return tv;

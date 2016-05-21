@@ -3,6 +3,7 @@ package com.oterman.njubbs.activity;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
+import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -18,6 +19,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.SystemClock;
 import android.text.Html;
 import android.text.SpannableString;
@@ -166,7 +168,7 @@ public class TopicDetailActivity extends BaseActivity implements
 		lv.addHeaderView(headerView);
 
 		// lv.setDivider(new ColorDrawable(Color.GRAY));
-		lv.setDivider(new ColorDrawable(0x77888888));
+		lv.setDivider(new ColorDrawable(0x88888888));
 		lv.setDividerHeight(UiUtils.dip2px(1));
 
 		lv.setDividerHeight(1);
@@ -277,10 +279,11 @@ public class TopicDetailActivity extends BaseActivity implements
 			public void onClick(View v) {
 				String url=Constants.getReplyDelUrl(detailInfo.replyUrl);
 				LogUtil.d("删除回帖链接："+url);
-				MyToast.toast("正在删除..");
+				//MyToast.toast("正在删除..");
 				
 				//删帖逻辑
 				handleDelReply(url,detailInfo,replyDialog);
+				replyDialog.dismiss();
 			}
 	
 		});
@@ -296,63 +299,6 @@ public class TopicDetailActivity extends BaseActivity implements
 		});
 	}
 
-
-	//处理删回帖
-	private void handleDelReply(final String url,final TopicDetailInfo detailInfo,final AlertDialog replyDialog ) {
-		ThreadManager.getInstance().createShortPool().execute(new Runnable() {
-			@Override
-			public void run() {
-				HttpUtils httpUtils=new HttpUtils();
-				
-				try {
-					RequestParams rp=new RequestParams();
-					//先自动登陆
-					String cookie=BaseApplication.cookie;
-					if(cookie==null){
-						BaseApplication.autoLogin();
-						cookie=BaseApplication.cookie;
-					}
-					
-					rp.addHeader("Cookie", cookie);
-					
-					ResponseStream responseStream = httpUtils.sendSync(HttpMethod.GET, url,rp);
-					
-					String result = BaseApplication.StreamToStr(responseStream);
-					LogUtil.d("删除回帖结果："+result);
-					
-					if(result.contains("返回本讨论区")){//删除成功
-						runOnUiThread(new Runnable() {
-							@Override
-							public void run() {
-								replyDialog.dismiss();
-								MyToast.toast("删除成功");
-								list.remove(detailInfo);
-								adapter.notifyDataSetChanged();
-							}
-						});
-					}else if(result.contains("无权")){
-						runOnUiThread(new Runnable() {
-							@Override
-							public void run() {
-								replyDialog.dismiss();
-								MyToast.toast("删除失败，无权删除该文");
-								adapter.notifyDataSetChanged();
-							}
-						});
-					}
-				} catch (Exception e) {
-					e.printStackTrace();
-					runOnUiThread(new Runnable() {
-						@Override
-						public void run() {
-							MyToast.toast("删除失败，请检查网络");
-							replyDialog.dismiss();
-						}
-					});
-				} 
-			}
-		});
-	}
 
 	/*
 	 * 初始化回帖布局
@@ -556,6 +502,69 @@ public class TopicDetailActivity extends BaseActivity implements
 		}
 	}
 
+	//处理删回帖
+	private void handleDelReply(final String url,final TopicDetailInfo detailInfo,final AlertDialog replyDialog ) {
+		if(waitDialog==null){
+			waitDialog = new WaitDialog(this);
+		}
+		waitDialog.setMessage("努力的删帖中。。。");
+		waitDialog.show();
+		
+		ThreadManager.getInstance().createShortPool().execute(new Runnable() {
+			@Override
+			public void run() {
+				HttpUtils httpUtils=new HttpUtils();
+				
+				try {
+					RequestParams rp=new RequestParams();
+					//先自动登陆
+					String cookie=BaseApplication.cookie;
+					if(cookie==null){
+						BaseApplication.autoLogin();
+						cookie=BaseApplication.cookie;
+					}
+					
+					rp.addHeader("Cookie", cookie);
+					
+					ResponseStream responseStream = httpUtils.sendSync(HttpMethod.GET, url,rp);
+					
+					String result = BaseApplication.StreamToStr(responseStream);
+					LogUtil.d("删除回帖结果："+result);
+					
+					if(result.contains("返回本讨论区")){//删除成功
+						runOnUiThread(new Runnable() {
+							@Override
+							public void run() {
+								waitDialog.dismiss();
+								MyToast.toast("删除成功");
+								list.remove(detailInfo);
+								adapter.notifyDataSetChanged();
+							}
+						});
+					}else if(result.contains("无权")){
+						runOnUiThread(new Runnable() {
+							@Override
+							public void run() {
+								waitDialog.dismiss();
+								MyToast.toast("删除失败，无权删除该文");
+								adapter.notifyDataSetChanged();
+							}
+						});
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+					runOnUiThread(new Runnable() {
+						@Override
+						public void run() {
+							MyToast.toast("删除失败，请检查网络");
+							waitDialog.dismiss();
+						}
+					});
+				} 
+			}
+		});
+	}
+
 	// 处理回帖
 	private void handleReplyTopic(final String content) {
 
@@ -740,7 +749,7 @@ public class TopicDetailActivity extends BaseActivity implements
 
 	class TopicDetailAdapter extends BaseAdapter {
 		SmileyParser sp = SmileyParser.getInstance(getApplicationContext());
-
+		Random r=new Random();
 		@Override
 		public int getCount() {
 			return list.size();
@@ -801,11 +810,24 @@ public class TopicDetailActivity extends BaseActivity implements
 			holder.tvFloorth.setText("第" + info.floorth + "楼");
 			holder.tvPubTime.setText(info.pubTime);
 
-			if (position % 2 == 0) {
-				convertView.setBackgroundColor(0xFFEBEBEB);
-			} else {
-				convertView.setBackgroundColor(0xAAD0D0E0);
+//			if (position % 2 == 0) {
+//				convertView.setBackgroundColor(0xFFEBEBEB);
+//			} else {
+//				convertView.setBackgroundColor(0xAAD0D0E0);
+//			}
+			
+			Drawable drawable;
+			
+			if(r.nextInt(2)%2!=0){
+				drawable=getResources().getDrawable(R.drawable.ic_gender_female);
+			}else{
+				drawable=getResources().getDrawable(R.drawable.ic_gender_male);
 			}
+			
+			//随机设置左边的图标
+			drawable.setBounds(0,0,drawable.getMinimumWidth(),drawable.getMinimumHeight());
+			holder.tvAuthor.setCompoundDrawables(drawable, null, null, null);
+			
 			return convertView;
 		}
 

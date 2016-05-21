@@ -38,8 +38,6 @@ public abstract class MyActionBarActivity extends FragmentActivity {
 		//处理actionBar
 		initActionBar();
 
-		initViews();
-
 	}
 
 	private void initActionBar() {
@@ -70,11 +68,5 @@ public abstract class MyActionBarActivity extends FragmentActivity {
 		return "小百合";
 	}
 
-	/**
-	 * 初始化view
-	 */
-	public void initViews() {
-
-	}
 
 }

@@ -17,6 +17,7 @@ import android.widget.TextView;
 import com.oterman.njubbs.BaseApplication;
 import com.oterman.njubbs.R;
 import com.oterman.njubbs.activity.LoginActivity;
+import com.oterman.njubbs.activity.MailBoxActicity;
 import com.oterman.njubbs.bean.UserInfo;
 import com.oterman.njubbs.utils.LogUtil;
 
@@ -34,6 +35,7 @@ public class AboutMeFragment  extends Fragment implements OnClickListener {
 	private TextView tvQianming;
 	private TextView tvUnlogin;
 	private ViewGroup llUserContainer;
+	private TextView tvMail;
 
 	@Override
 	@Nullable
@@ -43,7 +45,11 @@ public class AboutMeFragment  extends Fragment implements OnClickListener {
 		
 		userInfo=BaseApplication.userInfo;
 		btnLogin = (Button) rootView.findViewById(R.id.btn_login);
+		tvMail = (TextView) rootView.findViewById(R.id.tv_mail);
+		
 		btnLogin.setOnClickListener(this);
+		tvMail.setOnClickListener(this);
+		
 		
 		initUserViews();
 		
@@ -145,7 +151,11 @@ public class AboutMeFragment  extends Fragment implements OnClickListener {
 //			startActivity(intent);
 			startActivityForResult(intent, 100);
 			break;
-
+			
+		case R.id.tv_mail:
+			Intent intent2=new Intent(getContext(),MailBoxActicity.class);
+			startActivity(intent2);
+			break;
 		default:
 			break;
 		}

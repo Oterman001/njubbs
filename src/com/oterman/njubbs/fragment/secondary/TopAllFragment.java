@@ -75,6 +75,10 @@ public class TopAllFragment extends BaseFragment implements OnRefreshListener {
 				return true;
 			}
 		});
+		
+		for(int i=0;i<keyMap.size()/2;i++){
+			expLv.expandGroup(i);
+		}
 
 		srl.addView(expLv);
 		srl.setColorSchemeResources(android.R.color.holo_green_light,
