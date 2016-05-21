@@ -10,6 +10,7 @@ public class Constants {
 	public static final String BBSLEFT_URL = "http://bbs.nju.edu.cn/bbsleft";
 	public static final String BBS_NEW_TOPIC_URL = "http://bbs.nju.edu.cn/bbssnd?board=";
 	public static final String BBS_MAIL_URL = "http://bbs.nju.edu.cn/bbsmail";
+	public static final String REPLY_MAIL_URL = "http://bbs.nju.edu.cn/bbssndmail";
 	
 	
 	public static String getContentUrl(String contentUrl) {

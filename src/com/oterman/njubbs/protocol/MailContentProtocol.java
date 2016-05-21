@@ -54,6 +54,15 @@ public class MailContentProtocol {
 				cookies.put("_U_KEY",strs[2].split("=")[1]);
 				
 				Document doc= Jsoup.connect(url).cookies(cookies).get();
+				if(doc.select("td").size()==0){
+					BaseApplication.autoLogin();
+					cookie = BaseApplication.cookie;
+					cookies.put("_U_NUM",strs[0].split("=")[1]);
+					cookies.put("_U_UID",strs[1].split("=")[1]);
+					cookies.put("_U_KEY",strs[2].split("=")[1]);
+					
+					doc= Jsoup.connect(url).cookies(cookies).get();
+				}
 				String result=doc.html();
 				LogUtil.d("站内信内容："+result);
 				
@@ -117,6 +126,7 @@ public class MailContentProtocol {
 		text = text.replaceFirst("来.*?源.*","");
 		
 		//Pattern p=Pattern.compile(".*?寄信人:(.*?).标 题:(.*?).发信站.*?\\((.*?\\d{4})\\)(.*?)--.*",Pattern.DOTALL);
+//		Pattern p=Pattern.compile(".*?寄信人:(.*?)标.*?题:(.*?)发信站.*?\\((.*?)\\)(.*?)※.*?来源.*",Pattern.DOTALL);
 		Pattern p=Pattern.compile(".*?寄信人:(.*?)标.*?题:(.*?)发信站.*?\\((.*?)\\)(.*?)--.*",Pattern.DOTALL);
 		
 		Matcher matcher = p.matcher(text);
@@ -128,7 +138,20 @@ public class MailContentProtocol {
 			String posttime=matcher.group(3).trim();
 			posttime=dateFormat.format(new Date(posttime));
 			String content=matcher.group(4).trim();
+
 			
+			content=content.replaceAll("\\[/*uid\\]", "").trim();
+			content=content.replaceAll("\\[.*?m", "");
+			content=content.replaceAll("http.*?(jpg|jpeg|png|JPG|JPEG|PNG|gif|GIF)", "<br><img src=\""+"$0"+"\"/><br>");
+		
+			content=content.replaceAll("\\n", "<br>");
+//			p=Pattern.compile("(.*?)--.*?");
+//			matcher=p.matcher(content);
+//			
+//			if(matcher.find()){
+//				content=matcher.group(1).trim();
+//			}
+//			
 			info=new MailInfo(author, posttime, title, content, replyUrl, delUrl);
 			
 		}

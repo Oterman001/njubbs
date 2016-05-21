@@ -1,10 +1,13 @@
 package com.oterman.njubbs.bean;
 
-public class MailInfo {
+import java.io.Serializable;
+
+public class MailInfo implements Serializable{
 	
 	public String author;
 	public String postTime;
 	public String title;
+	
 	public String contentUrl;
 	
 	//¾ßÌåÄÚÈİ

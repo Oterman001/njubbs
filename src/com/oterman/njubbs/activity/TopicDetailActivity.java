@@ -801,9 +801,10 @@ public class TopicDetailActivity extends BaseActivity implements
 			holder.tvContent
 					.setMovementMethod(LinkMovementMethod.getInstance());// 设置超链接可以打开网页
 
-			Spanned spanned = Html.fromHtml(info.content, new URLImageParser(
-					holder.tvContent),
+			Spanned spanned = Html.fromHtml(info.content, 
+					new URLImageParser(holder.tvContent),
 					new MyTagHandler(getApplicationContext()));
+			
 			holder.tvContent.setText(sp.strToSmiley(spanned));
 			holder.tvContent.invalidate();
 
