@@ -41,8 +41,12 @@ import com.oterman.njubbs.utils.ThreadManager;
 import com.oterman.njubbs.view.MyTagHandler;
 import com.oterman.njubbs.view.URLImageParser;
 import com.oterman.njubbs.view.WaitDialog;
-
-public class MailReplyActivity extends MyActionBarActivity implements
+/**
+ * 发站内信
+ * @author oterman
+ *
+ */
+public class MailNewActivity extends MyActionBarActivity implements
 		OnClickListener {
 
 	private EditText etTitle;
@@ -60,8 +64,7 @@ public class MailReplyActivity extends MyActionBarActivity implements
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
-		setContentView(R.layout.activity_mail_reply);
-
+		setContentView(R.layout.activity_mail_new);
 		
 		//actionbar的发送箭头
 		ibPost = (ImageButton) actionBarView.findViewById(R.id.btn_post_topic);
@@ -70,7 +73,7 @@ public class MailReplyActivity extends MyActionBarActivity implements
 		ibPost.setOnClickListener(this);
 			
 		etTitle = (EditText) this.findViewById(R.id.et_titile);//标题
-		etReceiver=(EditText) this.findViewById(R.id.et_mailto);
+		etReceiver=(EditText) this.findViewById(R.id.et_mailto);//收件人
 		etContent = (EditText) this.findViewById(R.id.et_content);
 		
 		
@@ -99,36 +102,6 @@ public class MailReplyActivity extends MyActionBarActivity implements
 			}
 		});	
 		
-		//回去要修改回帖的数据
-		Intent intent = getIntent();
-		mailInfo = (MailInfo) intent.getSerializableExtra("mailInfo");
-		
-		//初始化
-		String author = mailInfo.author;
-		author=author.substring(0,author.indexOf("("));
-		
-		etTitle.setText("Re:"+mailInfo.title);
-		
-		SmileyParser sp=SmileyParser.getInstance(getApplicationContext());
-		StringBuffer sb=new StringBuffer();
-		sb.append("<br><br><br>");
-		sb.append("<font color=\"black\">");
-		
-		etReceiver.setText(author);
-		
-		sb.append("【 在").append(author).append("的来信中提到: 】<br>").append(":");
-		String content=mailInfo.content;
-		sb.append(content);
-		sb.append("</font>");
-		
-		
-		Spanned spanned = Html.fromHtml(sb.toString(), 
-				new URLImageParser(etContent),
-				new MyTagHandler(getApplicationContext()));
-		etContent.setText(sp.strToSmiley(spanned));
-		
-		
-		
 		
 	}
 
@@ -137,7 +110,7 @@ public class MailReplyActivity extends MyActionBarActivity implements
 			@Override
 			public void onClick(View v) {
 				if (null == mFaceHelper) {
-					mFaceHelper = new SelectFaceHelper(MailReplyActivity.this, addFaceToolView);
+					mFaceHelper = new SelectFaceHelper(MailNewActivity.this, addFaceToolView);
 					//点击表情时，设置监听
 					mFaceHelper.setFaceOpreateListener(mOnFaceOprateListener2);
 				}
@@ -147,7 +120,7 @@ public class MailReplyActivity extends MyActionBarActivity implements
 				} else {
 					isVisbilityFace = true;
 					addFaceToolView.setVisibility(View.VISIBLE);
-					hideInputManager(MailReplyActivity.this);//隐藏软键盘
+					hideInputManager(MailNewActivity.this);//隐藏软键盘
 				}
 			}
 		};
@@ -170,7 +143,6 @@ public class MailReplyActivity extends MyActionBarActivity implements
 				if (null != spanEmojiStr) {
 					//在光标处插入表情
 					String oriText=etContent.getText().toString();//原始文字
-					
 					
 					
 					int index=Math.max(etContent.getSelectionStart(),0);//获取光标处位置，没有光标，返回-1
@@ -210,7 +182,7 @@ public class MailReplyActivity extends MyActionBarActivity implements
 	
 	@Override
 	protected String getBarTitle() {
-		return "回复站内";
+		return "写站内信";
 	}
 
 	@Override
@@ -236,7 +208,7 @@ public class MailReplyActivity extends MyActionBarActivity implements
 			}
 
 			// 处理发帖逻辑
-			handleReplyMail(content,title,receiver);
+			handleNewMail(content,title,receiver);
 			// MyToast.toast("发帖："+board);
 
 			break;
@@ -246,9 +218,9 @@ public class MailReplyActivity extends MyActionBarActivity implements
 		}
 
 	}
-	private void handleReplyMail( final String content, final String title, final String receiver) {
+	private void handleNewMail( final String content, final String title, final String receiver) {
 		dialog = new WaitDialog(this);
-		dialog.setMessage("努力回信中。。。");
+		dialog.setMessage("努力发信中。。。");
 		dialog.show();
 		
 		ThreadManager.getInstance().createLongPool().execute(new Runnable() {
@@ -261,18 +233,11 @@ public class MailReplyActivity extends MyActionBarActivity implements
 						httpUtils=new HttpUtils();
 					}
 					RequestParams rp=new RequestParams("gbk");
-					// delUrl=bbsdelmail?file=M.1463833076.A
 					
-					String delUrl=mailInfo.delUrl;
-					String action=delUrl.substring(delUrl.indexOf("=")+1).trim();
-					String pid = action.substring(action.indexOf(".")+1, action.lastIndexOf("."));
-					
-					
-					rp.addQueryStringParameter("pid", pid);
-					rp.addQueryStringParameter("userid",receiver);
+					rp.addQueryStringParameter("pid", "0");
+					rp.addQueryStringParameter("userid","");
 					
 					rp.addBodyParameter("signature", "1");
-					rp.addBodyParameter("action", action);
 					rp.addBodyParameter("userid", receiver);
 					rp.addBodyParameter("title", title);
 					rp.addBodyParameter("text", content);
@@ -289,7 +254,7 @@ public class MailReplyActivity extends MyActionBarActivity implements
 					ResponseStream stream = httpUtils.sendSync(HttpMethod.POST, Constants.REPLY_MAIL_URL, rp);
 					
 					String result = BaseApplication.StreamToStr(stream);
-					LogUtil.d("回信结果："+result);
+					LogUtil.d("发站内结果："+result);
 					
 					if(result.contains("信件已寄给")){//成功
 						runOnUiThread(new Runnable() {
@@ -298,8 +263,9 @@ public class MailReplyActivity extends MyActionBarActivity implements
 								if (dialog != null) {
 									dialog.dismiss();
 								}
-								MyToast.toast("回信成功！");
-								finish();
+								MyToast.toast("发信成功！");
+								
+								etContent.setText("");
 							}
 						});
 					}else{//回信失败
@@ -309,7 +275,7 @@ public class MailReplyActivity extends MyActionBarActivity implements
 								if (dialog != null) {
 									dialog.dismiss();
 								}
-								MyToast.toast("回信失败！重新登陆再试试");
+								MyToast.toast("发信失败！重新登陆再试试");
 							}
 						});
 					}

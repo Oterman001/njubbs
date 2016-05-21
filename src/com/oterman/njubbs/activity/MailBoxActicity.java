@@ -51,7 +51,7 @@ import com.oterman.njubbs.view.WaitDialog;
  * 版面详情
  * 
  */
-public class MailBoxActicity extends BaseActivity {
+public class MailBoxActicity extends BaseActivity implements OnClickListener {
 
 	// TopicInfo topicInfo;
 	private List<MailInfo> dataList;
@@ -61,133 +61,163 @@ public class MailBoxActicity extends BaseActivity {
 	private MessageAdapter adapter;
 	private MailProtocol protocol;
 	private MySwipeRefreshLayout sr;
-	
+	private ImageButton ibNewMail;
+	private MailInfo mailInfo;
+
 	@Override
 	protected CharSequence getBarTitle() {
 		return "站内信";
 	}
 
 	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+
+		if (resultCode == 111) {
+			dataList.remove(mailInfo);
+			adapter.notifyDataSetChanged();
+
+		}
+	}
+
+	@Override
 	public View createSuccessView() {
-		sr=new MySwipeRefreshLayout(getApplicationContext());
-		
-		rootView = View.inflate(getApplicationContext(), R.layout.activity_message_main, null);
+
+		ibNewMail = (ImageButton) actionBarView
+				.findViewById(R.id.btn_new_topic);
+
+		ibNewMail.setVisibility(View.VISIBLE);
+
+		ibNewMail.setOnClickListener(this);
+
+		sr = new MySwipeRefreshLayout(getApplicationContext());
+
+		rootView = View.inflate(getApplicationContext(),
+				R.layout.activity_message_main, null);
 		plv = (PullToRefreshListView) rootView.findViewById(R.id.pLv_message);
-		
+
 		sr.setViewGroup(plv.getRefreshableView());
-		
+
 		adapter = new MessageAdapter();
-		
+
 		plv.setAdapter(adapter);
-		plv.setMode(Mode.PULL_FROM_END);//设置模式为从底部加载更多
-		
-		//设置条目之间的分割线
-		lv=plv.getRefreshableView();
+		plv.setMode(Mode.PULL_FROM_END);// 设置模式为从底部加载更多
+
+		// 设置条目之间的分割线
+		lv = plv.getRefreshableView();
 		lv.setDivider(new ColorDrawable(0x77888888));
 		lv.setDividerHeight(1);
-		
-		//点击站内
+
+		// 点击站内
 		plv.setOnItemClickListener(new OnItemClickListener() {
+
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {
-				
-				MailInfo mailInfo = dataList.get(position-1);
-				
-				Intent intent=new Intent(getApplicationContext(),MailContentActicity.class);
+
+				mailInfo = dataList.get(position - 1);
+
+				Intent intent = new Intent(getApplicationContext(),
+						MailContentActicity.class);
 				intent.putExtra("contentUrl", mailInfo.contentUrl);
-				startActivity(intent);
-				
+				startActivityForResult(intent, 100);
+
 			}
 		});
-		
-		//设置上拉加载更多刷新
+
+		// 设置上拉加载更多刷新
 		plv.setOnRefreshListener(new OnRefreshListener<ListView>() {
 			@Override
 			public void onRefresh(PullToRefreshBase<ListView> refreshView) {
 				plv.getLoadingLayoutProxy().setRefreshingLabel("正在加载...嘿咻嘿咻");
 				plv.getLoadingLayoutProxy().setPullLabel("上拉加载更多");
 				plv.getLoadingLayoutProxy().setReleaseLabel("松手开始加载");
-				
-				ThreadManager.getInstance().createLongPool().execute(new Runnable() {
-					
-					private List<MailInfo> moreList;
 
-					@Override
-					public void run() {
-						if(protocol==null){
-							protocol =new MailProtocol();
-						}
-						
-						String moreUrl = dataList.get(dataList.size()-1).loadMoreUrl;
-						moreUrl=Constants.getMailMoreUrl(moreUrl);
-						if(moreUrl!=null){
-							moreList = protocol.loadFromServer(moreUrl,false);
-						}
-						//加载完后 更新主页面
-						UiUtils.runOnUiThread(new Runnable() {
+				ThreadManager.getInstance().createLongPool()
+						.execute(new Runnable() {
+
+							private List<MailInfo> moreList;
+
 							@Override
 							public void run() {
-								if(moreList!=null&&moreList.size()!=0){
-									dataList.addAll(moreList);
-									adapter.notifyDataSetChanged();
-									MyToast.toast("加载成功！");
-								}else{//没有更多
-									MyToast.toast("欧哦，没有更多了");
+								if (protocol == null) {
+									protocol = new MailProtocol();
 								}
-								//加载完成，通知回掉
-								plv.onRefreshComplete();
-							}
-						});
-					}
 
-				});
+								String moreUrl = dataList.get(dataList.size() - 1).loadMoreUrl;
+								moreUrl = Constants.getMailMoreUrl(moreUrl);
+								if (moreUrl != null) {
+									moreList = protocol.loadFromServer(moreUrl,
+											false);
+								}
+								// 加载完后 更新主页面
+								UiUtils.runOnUiThread(new Runnable() {
+									@Override
+									public void run() {
+										if (moreList != null
+												&& moreList.size() != 0) {
+											dataList.addAll(moreList);
+											adapter.notifyDataSetChanged();
+											MyToast.toast("加载成功！");
+										} else {// 没有更多
+											MyToast.toast("欧哦，没有更多了");
+										}
+										// 加载完成，通知回掉
+										plv.onRefreshComplete();
+									}
+								});
+							}
+
+						});
 			}
 		});
-		
+
 		sr.addView(rootView);
-		
-		//下拉刷新
+
+		// 下拉刷新
 		sr.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
 			public void onRefresh() {
-				ThreadManager.getInstance().createLongPool().execute(new Runnable() {
-					
-					@Override
-					public void run() {
-						if(protocol==null){
-							protocol = new MailProtocol();
-						}
-						
-						dataList = protocol.loadFromServer(Constants.BBS_MAIL_URL,false);
-						if(dataList!=null){
-							runOnUiThread(new Runnable() {
-								public void run() {
-									sr.setRefreshing(false);
-									MyToast.toast("刷新成功!");
-									
-									adapter.notifyDataSetChanged();
-									
+				ThreadManager.getInstance().createLongPool()
+						.execute(new Runnable() {
+
+							@Override
+							public void run() {
+								if (protocol == null) {
+									protocol = new MailProtocol();
 								}
-							});
-						}
-						
-					}
-				});
-				
+
+								dataList = protocol.loadFromServer(
+										Constants.BBS_MAIL_URL, false);
+								if (dataList != null) {
+									runOnUiThread(new Runnable() {
+										public void run() {
+											sr.setRefreshing(false);
+											MyToast.toast("刷新成功!");
+
+											adapter.notifyDataSetChanged();
+
+										}
+									});
+								}
+
+							}
+						});
+
 			}
 		});
-		
-		sr.setColorSchemeResources(android.R.color.holo_green_light,android.R.color.holo_blue_light);
-		
-		
+
+		sr.setColorSchemeResources(android.R.color.holo_green_light,
+				android.R.color.holo_blue_light);
+
 		return sr;
 	}
+
 	public LoadingState loadDataFromServer() {
-		if(protocol==null){
+		if (protocol == null) {
 			protocol = new MailProtocol();
 		}
-		
-		dataList = protocol.loadFromServer(Constants.BBS_MAIL_URL,false);
+
+		dataList = protocol.loadFromServer(Constants.BBS_MAIL_URL, false);
 
 		return dataList == null ? LoadingState.LOAD_FAILED
 				: LoadingState.LOAD_SUCCESS;
@@ -250,6 +280,7 @@ public class MailBoxActicity extends BaseActivity {
 			// 随机设置左边的图标
 			drawable.setBounds(0, 0, drawable.getMinimumWidth(),
 					drawable.getMinimumHeight());
+
 			holder.tvAuthor.setCompoundDrawables(drawable, null, null, null);
 
 			return view;
@@ -259,6 +290,22 @@ public class MailBoxActicity extends BaseActivity {
 			TextView tvTitle;
 			TextView tvAuthor;
 			TextView tvPubTime;
+		}
+	}
+
+	@Override
+	public void onClick(View v) {
+		switch (v.getId()) {
+		case R.id.btn_new_topic:
+			// 跳转到发站内信页面
+			Intent intent = new Intent(getApplicationContext(),
+					MailNewActivity.class);
+
+			startActivity(intent);
+			break;
+
+		default:
+			break;
 		}
 
 	}

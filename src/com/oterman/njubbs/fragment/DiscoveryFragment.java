@@ -25,16 +25,20 @@ String str="njubbs_v0.5 \n " +
 		"更新日志：" +
 		"\n 1.实现了回帖" +
 		"\n 2.实现了修改回帖";
+ str="njubbs_v0.9 \n " +
+		"更新日志：" +
+		"\n 1.站内信的查看" +
+		"\n 2.站内信的发送，回复，删除";
  *
  */
 public class DiscoveryFragment extends BaseFragment {
 	@Override
 	public View createSuccessView() {
 		TextView tv=new TextView(getActivity());
-		String   str="njubbs_v0.8 \n " +
+		String   str="njubbs_v0.9 \n " +
 				"更新日志：" +
-				"\n 1.实现了回帖" +
-				"\n 2.实现了修改回帖";
+				"\n 1.站内信的查看" +
+				"\n 2.站内信的发送，回复，删除";
 		tv.setText(str);
 		tv.setTextSize(22f);
 		return tv;

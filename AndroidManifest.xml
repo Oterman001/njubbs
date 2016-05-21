@@ -60,6 +60,9 @@
         <activity
             android:name="com.oterman.njubbs.activity.MailReplyActivity"
             android:windowSoftInputMode="adjustResize|stateHidden" />
+        <activity
+            android:name="com.oterman.njubbs.activity.MailNewActivity"
+            android:windowSoftInputMode="adjustResize|stateVisible" />
     </application>
 
 </manifest>

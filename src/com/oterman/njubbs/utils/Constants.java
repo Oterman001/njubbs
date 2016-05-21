@@ -78,6 +78,12 @@ public class Constants {
 		// TODO Auto-generated method stub
 		return NJU_BBS_BASE_URL+contentUrl;
 	}
+
+
+	public static String getMailDelUrl(String delUrl) {
+		// bbsdelmail?file=M.1463837094.A
+		return NJU_BBS_BASE_URL+delUrl;
+	}
 	
 	
 }
