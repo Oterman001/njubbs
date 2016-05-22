@@ -8,10 +8,16 @@ import android.app.ActionBar.LayoutParams;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.SystemClock;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.text.Spannable;
+import android.text.SpannableStringBuilder;
+import android.text.TextUtils;
+import android.text.style.BackgroundColorSpan;
+import android.text.style.ForegroundColorSpan;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -40,6 +46,7 @@ import com.oterman.njubbs.protocol.TopicDetailProtocol;
 import com.oterman.njubbs.utils.Constants;
 import com.oterman.njubbs.utils.LogUtil;
 import com.oterman.njubbs.utils.MyToast;
+import com.oterman.njubbs.utils.SPutils;
 import com.oterman.njubbs.utils.ThreadManager;
 import com.oterman.njubbs.utils.UiUtils;
 import com.oterman.njubbs.view.LoadingView.LoadingState;
@@ -431,9 +438,40 @@ public class BoardDetailActivity extends BaseActivity {
 			}
 
 			TopicInfo info = dataList.get(position);
-
-			holder.tvTitle.setText(info.title);
-			holder.tvAuthor.setText(info.author);
+			String title=info.title;
+			if(info.shouldTop){//置顶  标记一下
+				title=" 置顶 "+title;
+				SpannableStringBuilder ssb=new SpannableStringBuilder(title);
+				int start=0;
+				int end=start+" 置顶 ".length();
+				
+//				ssb.setSpan(new BackgroundColorSpan(Color.RED), start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+				ssb.setSpan(new BackgroundColorSpan(0xff008000), start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+				ssb.setSpan(new ForegroundColorSpan(Color.WHITE), start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+				
+				holder.tvTitle.setText(ssb);
+				
+			}else{//不是置顶
+				holder.tvTitle.setText(title);
+			}
+			
+			//检查是否为我发的帖子
+			String author=info.author;
+			String id = SPutils.getFromSP("id");
+			if(!TextUtils.isEmpty(id)&&author.contains(id)){
+				author=" 我 "+author;
+				SpannableStringBuilder ssb=new SpannableStringBuilder(author);
+				int start=0;
+				int end=start+" 我 ".length();
+				
+				ssb.setSpan(new BackgroundColorSpan(0xFF8a2be2), start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+				ssb.setSpan(new ForegroundColorSpan(Color.WHITE), start, end, Spannable.SPAN_EXCLUSIVE_INCLUSIVE);
+				
+				holder.tvAuthor.setText(ssb);
+			}else{
+				holder.tvAuthor.setText(author);
+			}
+			
 			holder.tvReplyCount.setText(info.replyCount + "");
 			holder.tvPubTime.setText(info.pubTime);
 			Drawable drawable;

@@ -1,7 +1,5 @@
 package com.oterman.njubbs.activity;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Random;
 import java.util.regex.Matcher;
@@ -9,24 +7,29 @@ import java.util.regex.Pattern;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.w3c.dom.Text;
 
 import android.annotation.SuppressLint;
 import android.app.ActionBar;
-import android.app.AlertDialog;
 import android.app.ActionBar.LayoutParams;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.os.SystemClock;
 import android.text.Html;
+import android.text.Spannable;
 import android.text.SpannableString;
+import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.text.method.ScrollingMovementMethod;
+import android.text.style.BackgroundColorSpan;
+import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -53,7 +56,6 @@ import com.handmark.pulltorefresh.library.PullToRefreshBase.OnRefreshListener;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import com.lidroid.xutils.BitmapUtils;
 import com.lidroid.xutils.HttpUtils;
-import com.lidroid.xutils.exception.HttpException;
 import com.lidroid.xutils.http.RequestParams;
 import com.lidroid.xutils.http.ResponseStream;
 import com.lidroid.xutils.http.client.HttpRequest.HttpMethod;
@@ -67,6 +69,7 @@ import com.oterman.njubbs.smiley.SelectFaceHelper.OnFaceOprateListener;
 import com.oterman.njubbs.utils.Constants;
 import com.oterman.njubbs.utils.LogUtil;
 import com.oterman.njubbs.utils.MyToast;
+import com.oterman.njubbs.utils.SPutils;
 import com.oterman.njubbs.utils.SmileyParser;
 import com.oterman.njubbs.utils.ThreadManager;
 import com.oterman.njubbs.utils.UiUtils;
@@ -792,7 +795,38 @@ public class TopicDetailActivity extends BaseActivity implements
 			// mmlover(mmlover)
 			String author = info.author;
 			// author=author.replaceFirst("\\(","\n(" );
-			holder.tvAuthor.setText(author);
+			
+			if(author.contains(topicInfo.author)){
+				author=" 楼主 "+author;
+				SpannableStringBuilder ssb=new SpannableStringBuilder(author);
+				int start=0;
+				int end=start+" 楼主 ".length();
+				
+				ssb.setSpan(new BackgroundColorSpan(Color.RED), start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+				ssb.setSpan(new ForegroundColorSpan(Color.WHITE), start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+				
+				holder.tvAuthor.setText(ssb);
+				
+			}else{
+				String id = SPutils.getFromSP("id");
+				if(!TextUtils.isEmpty(id)&&author.contains(id)){
+					author=" 我 "+author;
+					SpannableStringBuilder ssb=new SpannableStringBuilder(author);
+					int start=0;
+					int end=start+" 我 ".length();
+					
+					ssb.setSpan(new BackgroundColorSpan(0xFF8a2be2), start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+					ssb.setSpan(new ForegroundColorSpan(Color.WHITE), start, end, Spannable.SPAN_EXCLUSIVE_INCLUSIVE);
+					
+					holder.tvAuthor.setText(ssb);
+				}else{
+					holder.tvAuthor.setText(author);
+				}
+				
+				
+			}
+			
+			
 
 			BitmapUtils bu = new BitmapUtils(getApplicationContext());
 
