@@ -117,6 +117,7 @@ public class FavoriteFragment extends BaseFragment {
 		
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
+			
 			TextView tv=new TextView(getContext());
 			
 			tv.setTextSize(30);
@@ -126,7 +127,6 @@ public class FavoriteFragment extends BaseFragment {
 			}else{
 				tv.setText(dataList.get(position));
 			}
-			
 			
 			return tv;
 		}

@@ -801,8 +801,8 @@ public class TopicDetailActivity extends BaseActivity implements
 			String author = info.author;
 			// author=author.replaceFirst("\\(","\n(" );
 			
-			//做标记
-			if(author.contains(topicInfo.author)){
+			//做标记 
+			if(author!=null&&author.contains(topicInfo.author)){
 				author=" 楼主 "+author;
 				SpannableStringBuilder ssb=new SpannableStringBuilder(author);
 				int start=0;

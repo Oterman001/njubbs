@@ -198,7 +198,6 @@ public class LoginActivity extends FragmentActivity implements OnClickListener {
 							
 							//½âÎö
 							Document doc= Jsoup.parse(favHtml.toString());
-							
 							Elements aEles = doc.select("a");
 							
 							StringBuffer sbFav=new StringBuffer();

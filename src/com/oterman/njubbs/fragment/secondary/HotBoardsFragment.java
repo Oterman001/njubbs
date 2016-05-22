@@ -120,7 +120,9 @@ public class HotBoardsFragment extends BaseFragment {
 	}
 
 	class BoardAdapter extends BaseAdapter{
+		
 		Random r=new Random();
+		
 		@Override
 		public int getCount() {
 			return dataList.size();
