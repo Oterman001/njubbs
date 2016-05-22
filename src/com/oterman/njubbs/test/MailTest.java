@@ -9,7 +9,7 @@ public class MailTest {
 	
 	public void testMail(){
 		BaseApplication.autoLogin();
-		String cookie=BaseApplication.cookie;
+		String cookie=BaseApplication.getCookie();
 		
 //		Jsoup.connect("http://bbs.nju.edu.cn/bbsmailcon?file=M.1463704322.A&num=74").cookies();
 		

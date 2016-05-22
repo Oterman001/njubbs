@@ -39,10 +39,9 @@ public class MailContentProtocol {
 	public MailInfo loadFromServer(String url,boolean saveToLocal) {
 		MailInfo info=null;
 		try {
-			String cookie = BaseApplication.cookie;
+			String cookie = BaseApplication.getCookie();
 			if (cookie == null) {
-				BaseApplication.autoLogin();
-				cookie = BaseApplication.cookie;
+				cookie=BaseApplication.autoLogin();
 			}
 
 			//	"_U_NUM=xx;_U_UID=xx;_U_KEY=xx
@@ -56,7 +55,7 @@ public class MailContentProtocol {
 				Document doc= Jsoup.connect(url).cookies(cookies).get();
 				if(doc.select("td").size()==0){
 					BaseApplication.autoLogin();
-					cookie = BaseApplication.cookie;
+					cookie = BaseApplication.getCookie();
 					cookies.put("_U_NUM",strs[0].split("=")[1]);
 					cookies.put("_U_UID",strs[1].split("=")[1]);
 					cookies.put("_U_KEY",strs[2].split("=")[1]);

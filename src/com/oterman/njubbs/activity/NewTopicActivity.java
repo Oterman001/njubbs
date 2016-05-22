@@ -254,11 +254,11 @@ public class NewTopicActivity extends MyActionBarActivity implements
 				
 					
 					//Ìí¼Ócookie
-					String cookie = BaseApplication.cookie;
+					String cookie = BaseApplication.getCookie();
 					if(cookie==null){//×Ô¶¯µÇÂ½
 						
-						BaseApplication.autoLogin();
-						cookie=BaseApplication.cookie;
+						cookie=BaseApplication.autoLogin();
+						
 						if(cookie!=null){
 							runOnUiThread(new Runnable() {
 								@Override

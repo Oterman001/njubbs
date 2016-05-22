@@ -43,7 +43,7 @@ public class AboutMeFragment  extends Fragment implements OnClickListener {
 			@Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 		rootView = View.inflate(getContext(), R.layout.frag_about_me, null);
 		
-		userInfo=BaseApplication.userInfo;
+		userInfo=BaseApplication.getLogedUser();
 		btnLogin = (Button) rootView.findViewById(R.id.btn_login);
 		tvMail = (TextView) rootView.findViewById(R.id.tv_mail);
 		
@@ -64,7 +64,7 @@ public class AboutMeFragment  extends Fragment implements OnClickListener {
 		tvUnlogin = (TextView) rootView.findViewById(R.id.tv_unlogin);
 		llUserContainer = (ViewGroup) rootView.findViewById(R.id.user_container);
 		
-		if(BaseApplication.isLogin){//ÒÑµÇÂ¼×´Ì¬µÇÂ½
+		if(BaseApplication.getCookie()!=null){//ÒÑµÇÂ¼×´Ì¬µÇÂ½
 			llUserContainer.setVisibility(View.VISIBLE);
 			tvUnlogin.setVisibility(View.INVISIBLE);
 			
@@ -96,34 +96,29 @@ public class AboutMeFragment  extends Fragment implements OnClickListener {
 		if(data!=null){
 			userInfo = (UserInfo) data.getSerializableExtra("userInfo");
 			LogUtil.d("·µ»ØÊý¾Ý£º"+userInfo.toString());
-			BaseApplication.isLogin=true;
 		}
 		updateViews();
-		
 	}
 	
 	private void updateViews() {
-		if(llUserContainer!=null&&tvUnlogin!=null&&BaseApplication.isLogin){
+		if(llUserContainer!=null&&tvUnlogin!=null&&BaseApplication.getCookie()!=null){
 			llUserContainer.setVisibility(View.VISIBLE);
 			tvUnlogin.setVisibility(View.INVISIBLE);
 			btnLogin.setText("×¢Ïú");
 			btnLogin.setBackgroundColor(0x88ff0000);
 		}
 		
-		if(BaseApplication.isLogin){//ÒÑµÇÂ¼×´Ì¬µÇÂ½
+		if(BaseApplication.getCookie()!=null){//ÒÑµÇÂ¼×´Ì¬µÇÂ½
 			llUserContainer.setVisibility(View.VISIBLE);
 			tvUnlogin.setVisibility(View.INVISIBLE);
-			
 			btnLogin.setText("×¢Ïú");
 			btnLogin.setBackgroundColor(0x88ff0000);
 			
 		}else{//Î´µÇÂ¼
 			llUserContainer.setVisibility(View.INVISIBLE);
 			tvUnlogin.setVisibility(View.VISIBLE);
-			
 			btnLogin.setText("µÇÂ½");
 			btnLogin.setBackgroundColor(getResources().getColor(R.color.main_green));
-			
 		}
 		
 		if(userInfo!=null){
@@ -142,8 +137,8 @@ public class AboutMeFragment  extends Fragment implements OnClickListener {
 	public void onClick(View v) {
 		switch (v.getId()) {
 		case R.id.btn_login:
-			if(BaseApplication.isLogin){//µ±Ç°ÎªµÇÂ½×´Ì¬£¬
-				BaseApplication.isLogin=false;
+			if(BaseApplication.getCookie()!=null){//µ±Ç°ÎªµÇÂ½×´Ì¬£¬
+				BaseApplication.setCookie(null);
 			}
 			
 			Intent intent=new Intent(getContext(),LoginActivity.class);

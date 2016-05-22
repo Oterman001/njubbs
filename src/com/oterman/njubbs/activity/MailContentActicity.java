@@ -152,10 +152,10 @@ public class MailContentActicity extends BaseActivity implements OnClickListener
 									httpUtils=new HttpUtils();
 								}
 								RequestParams rp=new RequestParams();
-								String cookie=BaseApplication.cookie;
+								String cookie=BaseApplication.getCookie();
+								
 								if(cookie==null){
-									BaseApplication.autoLogin();
-									cookie=BaseApplication.cookie;
+									cookie=BaseApplication.autoLogin();
 								}
 								rp.addHeader("Cookie", cookie);
 								String url=Constants.getMailDelUrl(mailInfo.delUrl);

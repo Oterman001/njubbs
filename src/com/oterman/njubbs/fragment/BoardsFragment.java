@@ -21,9 +21,11 @@ import android.widget.ExpandableListView.OnChildClickListener;
 import android.widget.TextView;
 
 import com.oterman.njubbs.R;
+import com.oterman.njubbs.activity.BoardDetailActivity;
 import com.oterman.njubbs.activity.TopicDetailActivity;
 import com.oterman.njubbs.bean.BoardInfo;
 import com.oterman.njubbs.bean.TopicInfo;
+import com.oterman.njubbs.protocol.FavBoardsProtocol;
 import com.oterman.njubbs.protocol.HotBoardProtocol;
 import com.oterman.njubbs.utils.Constants;
 import com.oterman.njubbs.utils.MyToast;
@@ -37,10 +39,12 @@ public class BoardsFragment extends BaseFragment implements OnRefreshListener {
 	private SwipeRefreshLayout srl;
 	private ExpandableListView expLv;
 	private BoardsAdapter adapter;
-	private HotBoardProtocol protocol;
+	private HotBoardProtocol hotBoardProtocol;
+	private FavBoardsProtocol favBoardProtocol;
+	
 	private Map<String, List<BoardInfo>> dataMap;
 	private List<BoardInfo> hotBoardsList;
-	private ArrayList<BoardInfo> favBoardsList;
+	private List<BoardInfo> favBoardsList;
 
 	@Override
 	public void onActivityCreated(@Nullable Bundle savedInstanceState) {
@@ -75,13 +79,23 @@ public class BoardsFragment extends BaseFragment implements OnRefreshListener {
 			@Override
 			public boolean onChildClick(ExpandableListView parent, View v,
 					int groupPosition, int childPosition, long id) {
-//				TopicInfo info = adapter.getChild(groupPosition, childPosition);
-//
-//				Intent intent = new Intent(getContext(),
-//						TopicDetailActivity.class);
-//
-//				intent.putExtra("topicInfo", info);
-//				startActivity(intent);
+				
+				BoardInfo info = adapter.getChild(groupPosition, childPosition);
+				
+				if(info==null){
+					return false;
+				}
+				
+				Intent intent=new Intent(getContext(),BoardDetailActivity.class);
+				String boardUrl=null;
+				if(info.boardUrl==null){
+					boardUrl="bbstdoc?board="+info.boardName;
+				}else{
+					boardUrl=info.boardUrl;
+				}
+				intent.putExtra("boardUrl", boardUrl);
+				
+				startActivity(intent);
 				return true;
 			}
 		});
@@ -98,21 +112,19 @@ public class BoardsFragment extends BaseFragment implements OnRefreshListener {
 	@Override
 	public LoadingState loadDataFromServer() {
 		 
-		if(protocol==null){
-			protocol=new HotBoardProtocol();
+		//获取热门版面
+		if(hotBoardProtocol==null){
+			hotBoardProtocol=new HotBoardProtocol();
 		}
+		hotBoardsList = hotBoardProtocol.loadFromCache(Constants.HOT_BOARD_ULR);
 		
-		hotBoardsList = protocol.loadFromCache(Constants.HOT_BOARD_ULR);
 		//获取收藏的版面
-		String strs = SPutils.getFromSP("favBoards");
-		String[] boards = strs.split("#");
-		
-		favBoardsList = new ArrayList<>();
-		for (int i = 0; i < boards.length; i++) {
-			BoardInfo info=new BoardInfo(null, boards[i], null, null);
-			favBoardsList.add(info);
+		if(favBoardProtocol==null){
+			favBoardProtocol=new FavBoardsProtocol();
 		}
-
+		String favUrl=Constants.BBSLEFT_URL;
+		favBoardsList=favBoardProtocol.loadFromCache(favUrl);
+		
 		return hotBoardsList == null ? LoadingState.LOAD_FAILED: LoadingState.LOAD_SUCCESS;
 	}
 
@@ -123,9 +135,7 @@ public class BoardsFragment extends BaseFragment implements OnRefreshListener {
 			public void run() {
 				// 重新加载数据
 				final boolean result = updateData();
-
 				UiUtils.runOnUiThread(new Runnable() {
-
 					@Override
 					public void run() {
 						if (result) {
@@ -134,7 +144,6 @@ public class BoardsFragment extends BaseFragment implements OnRefreshListener {
 						} else {
 							MyToast.toast("刷新失败，请检查网络!");
 						}
-
 						srl.setRefreshing(false);
 					}
 				});
@@ -148,8 +157,27 @@ public class BoardsFragment extends BaseFragment implements OnRefreshListener {
 	 * 刷新数据
 	 */
 	public boolean updateData() {
+		//从服务器去更新数据
+		//获取热门版面
+		if(hotBoardProtocol==null){
+			hotBoardProtocol=new HotBoardProtocol();
+		}
+		List<BoardInfo> list1 = hotBoardProtocol.loadFromServer(Constants.HOT_BOARD_ULR, true);
 		
-		return true;
+		//获取收藏的版面
+		if(favBoardProtocol==null){
+			favBoardProtocol=new FavBoardsProtocol();
+		}
+		String favUrl=Constants.BBSLEFT_URL;
+		List<BoardInfo> list2 = favBoardProtocol.loadFromServer(favUrl, true);
+		
+		if(list1!=null&&list1.size()!=0){
+			hotBoardsList=list1;
+			favBoardsList=list2;
+			return true;
+		}
+		
+		return false;
 	}
 
 	class BoardsAdapter extends BaseExpandableListAdapter {
@@ -232,7 +260,7 @@ public class BoardsFragment extends BaseFragment implements OnRefreshListener {
 			if(groupPosition==0){
 				holder.tvPeopleCount.setVisibility(View.INVISIBLE);
 				
-				if(TextUtils.isEmpty(boardInfo.boardName)){
+				if(boardInfo==null||TextUtils.isEmpty(boardInfo.boardName)){
 					holder.tvBoard.setText("当前未收藏版面");
 				}else{
 					holder.tvBoard.setText(boardInfo.boardName);
@@ -240,7 +268,8 @@ public class BoardsFragment extends BaseFragment implements OnRefreshListener {
 				
 			}else{
 				holder.tvPeopleCount.setVisibility(View.VISIBLE);
-				holder.tvBoard.setText(boardInfo.rankth+". "+boardInfo.boardName+"("+boardInfo.chineseName+")");
+//				holder.tvBoard.setText(boardInfo.rankth+". "+boardInfo.boardName+"("+boardInfo.chineseName+")");
+				holder.tvBoard.setText(boardInfo.boardName+"("+boardInfo.chineseName+")");
 				holder.tvPeopleCount.setText(boardInfo.peopleCount);
 			}
 			

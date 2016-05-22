@@ -47,76 +47,49 @@ import com.oterman.njubbs.utils.UiUtils;
 import com.oterman.njubbs.view.WaitDialog;
 
 @SuppressLint("NewApi")
-public class LoginActivity extends FragmentActivity implements OnClickListener {
+public class LoginActivity extends MyActionBarActivity  implements OnClickListener {
 
 	
 	private EditText etId;
 	private EditText etPwd;
-	private CheckBox cbAutoLogin;
 	private Button btnLogin;
 	private WaitDialog dialog;
 	private HttpUtils httpUtil;
-	private UserInfo userInfo=BaseApplication.userInfo;
+	private UserInfo userInfo=BaseApplication.getLogedUser();
 
 	private  ActionBar actionBar;
 	
 	@Override
-	protected void onCreate(@Nullable Bundle savedInstanceState) {
+	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
 		setContentView(R.layout.activity_login);
-		//更改状态栏的颜色
-		if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.LOLLIPOP){
-			Window window = this.getWindow();
-			window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-			window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-			window.setStatusBarColor(this.getResources().getColor(R.color.green));
-		}
-		
-		
 		initViews();
 	}
 
+	@Override
+	protected String getBarTitle() {
+		return "登陆";
+	}
+	
 	private void initViews() {
-		//处理actionbar
-		actionBar=getActionBar();
-		actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
-		
-		View view=View.inflate(getApplicationContext(), R.layout.actionbar_custom_backtitle, null);
-		
-		View back = view.findViewById(R.id.btn_back);
-        back.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onBackPressed();
-            }
-        });
-        
-        TextView tvTitle=(TextView) view.findViewById(R.id.tv_actionbar_title);
-        LayoutParams params = new LayoutParams(LayoutParams.MATCH_PARENT,LayoutParams.MATCH_PARENT);
-        actionBar.setCustomView(view, params);
-
-		tvTitle.setText("登陆");
-		tvTitle.setTextSize(22);
-		
 		
 		etId = (EditText) this.findViewById(R.id.et_id);
-		
 		etPwd = (EditText) this.findViewById(R.id.et_passsword);
 		//初始化数据
-		etId.setText(SPutils.getFromSP("id"));
-		etPwd.setText(SPutils.getFromSP("pwd"));
-		
-		
-		cbAutoLogin = (CheckBox) this.findViewById(R.id.ch_auto_login);
+		String id=SPutils.getFromSP("id");
+		String pwd=SPutils.getFromSP("pwd");
+		if(id!=null){
+			etId.setText(id);
+		}
+		if(pwd!=null){
+			etPwd.setText(pwd);
+		}
 	
 		btnLogin = (Button) this.findViewById(R.id.btn_login);
-		
 		btnLogin.setOnClickListener(this);
 		
-		
 		dialog = new WaitDialog(this);
-		
 		httpUtil = new HttpUtils();
 		
 	}
@@ -136,106 +109,65 @@ public class LoginActivity extends FragmentActivity implements OnClickListener {
 			MyToast.toast("亲，忘记输密码了哦！");
 			return ;
 		}
-		dialog.setMessage("努力登陆中。。。");
-		//显示等待
-		WaitDialog.show(dialog);
+		
 		//处理登陆
 		handleLogin(id, pwd);
-		
 		
 	}
 
 	//处理登陆
 	private void handleLogin(final String id, final String pwd) {
+		dialog.setMessage("努力登陆中。。。");
+		//显示等待
+		dialog.show();
 		
 		ThreadManager.getInstance().createLongPool().execute(new Runnable() {
 			@Override
 			public void run() {
-				//处理登陆的逻辑
-				RequestParams params=new RequestParams();
+				// 处理登陆的逻辑
+				RequestParams params = new RequestParams();
 				params.addBodyParameter("id", id);
 				params.addBodyParameter("pw", pwd);
 				
 				try {
-					ResponseStream responseStream = httpUtil.sendSync(HttpMethod.POST, Constants.LOGIN_URL, params);
-					//将返回的流解析为字符串
-					StringBuffer sb = StreamToStr(responseStream);
-				
-					final String result=sb.toString();
+					if (httpUtil == null) {
+						httpUtil = new HttpUtils();
+					}
+					ResponseStream responseStream = httpUtil.sendSync(HttpMethod.POST,Constants.LOGIN_URL, params);
+					// 将返回的流解析为字符串
+					String sb = BaseApplication.StreamToStr(responseStream);
+					final String result = sb.toString();
+					LogUtil.d("登陆结果:" + result);
 					
-					LogUtil.d("登陆结果:"+result);
-					
+					//根据登陆结果来判断
 					if(result.contains("Net.BBS.setCookie")){//登陆成功
-						//保存起来
-						SPutils.saveToSP("id", id);
-						SPutils.saveToSP("pwd", pwd);
+						//获取用户
+						//处理cookie 获取用户信息
+						BaseApplication.handleCookie(result);
 						
-						//处理cookie
-						String reg="Net.BBS.setCookie\\(\\'" +
-								"(\\d+)" +"N"+"(.*?)\\+"+"(\\d+)"+
-								"\\'\\)";
-						Pattern p=Pattern.compile(reg, Pattern.DOTALL);
-						Matcher matcher = p.matcher(result);
-						
-						if(matcher.find()){
-							Integer _U_NUM=Integer.parseInt(matcher.group(1))+2;
-							String _U_UID=matcher.group(2);
-							Integer _U_KEY=Integer.parseInt(matcher.group(3))-2;
-							
-							String cookie="_U_NUM="+_U_NUM+";_U_UID="+_U_UID+";_U_KEY="+_U_KEY;
-							LogUtil.d("cookie:"+cookie);
-							BaseApplication.cookie=cookie;
-							
-							RequestParams rp=new RequestParams();
-							rp.addHeader("Cookie", cookie);
-							
-							//发送请求
-							ResponseStream stream = httpUtil.sendSync(HttpMethod.GET, Constants.BBSLEFT_URL, rp);
-							
-							StringBuffer favHtml = StreamToStr(stream);
-							
-							//LogUtil.d("bbsleft:\n"+favHtml.toString());
-							
-							//解析
-							Document doc= Jsoup.parse(favHtml.toString());
-							Elements aEles = doc.select("a");
-							
-							StringBuffer sbFav=new StringBuffer();
-							boolean flag=false;
-							for (int i = 0; i < aEles.size(); i++) {
-								Element aEle = aEles.get(i);
-								if(flag&&!aEle.text().equals("预定管理")){//找到收藏的版面
-									sbFav.append(aEle.text()).append("#");
-								}
-								if(aEle.text().equals("预定讨论区")){//开始记录
-									flag=true;
-								}
-								if(aEle.text().equals("预定管理")){//开始记录
-									flag=false;
-								}
-							}
-							
-							SPutils.saveToSP("favBoards", sbFav.toString());
-							
-							LogUtil.d("favBoards:"+sbFav.toString());
-						}
-						//从网络获取user的信息
+						//获取用户信息
 						UserProtocol protocol=new UserProtocol();
-						userInfo = protocol.getUserInfoFromServer(id);
+						userInfo=protocol.getUserInfoFromServer(id);
+						BaseApplication.setLogedUser(userInfo);
 						
-						//回到主线程，提示登陆成功
-						logOk(result);
+						//提示登陆成功
+						logOk();
+						
+					}else if(result.contains("登录间隔过密")){//登陆间隔过密
+						loginFailed("登录间隔不能少于10秒！");
+					}else if(result.contains("错误的使用者帐号")){//账号错误
+						loginFailed("错误的使用者帐号!");
+					}else if(result.contains("密码间隔不要小于10秒")){//密码错误且太平凡
+						loginFailed("密码错误且过于频繁！");
+					}else {//密码错误
+						loginFailed("密码错误！");
 					}
 					
-					
-					
-				} catch (Exception e) {
-					e.printStackTrace();
-					//登陆成功后显示
-					UiUtils.runOnUiThread(new Runnable() {
+				} catch (Exception e) {//联网异常
+					runOnUiThread(new Runnable() {
 						@Override
 						public void run() {
-							MyToast.toast("登陆失败，请检查网络！");
+							MyToast.toast("登陆失败，请检查网络");
 							dialog.dismiss();
 						}
 					});
@@ -243,46 +175,37 @@ public class LoginActivity extends FragmentActivity implements OnClickListener {
 
 			}
 
-			
-			private void logOk(final String result) {
+			private void logOk() {
 				//登陆成功后显示
 				UiUtils.runOnUiThread(new Runnable() {
 					@Override
 					public void run() {
 						if(userInfo!=null){//登陆成功
-							
 							getIntent().putExtra("userInfo", userInfo);
-							MyToast.toast("登陆成功");
-							
 							setResult(100, getIntent());
-							
-							finish();
-						}else if(result.contains("错误")){
-							MyToast.toast("用户名或密码不匹配！");
-							etPwd.setText("");
 						}
-						
+						MyToast.toast("登陆成功");
 						dialog.dismiss();
+						finish();
 						
 					}
 				});
 			}
-
-			private StringBuffer StreamToStr(ResponseStream responseStream)
-					throws UnsupportedEncodingException, IOException {
-				InputStream is = responseStream.getBaseStream();
-				
-				BufferedReader br=new BufferedReader(new InputStreamReader(is,"gbk"));
-				
-				String line=null;
-				StringBuffer sb=new StringBuffer();
-				
-				while((line=br.readLine())!=null){
-					sb.append(line);
-				}
-				return sb;
+			
+			//登陆失败
+			private void loginFailed(final String msg) {
+				runOnUiThread(new Runnable() {
+					@Override
+					public void run() {
+						MyToast.toast(msg);
+						etPwd.setText("");
+						dialog.dismiss();
+					}
+				});
 			}
 		});
+		
+		
 	}
 	
 	

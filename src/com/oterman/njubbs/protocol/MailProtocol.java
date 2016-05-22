@@ -35,10 +35,10 @@ public class MailProtocol {
 			httpUtils = new HttpUtils();
 			// 登陆后，获取站内信息
 			RequestParams rp = new RequestParams();
-			String cookie = BaseApplication.cookie;
+			String cookie = BaseApplication.getCookie();
+			
 			if (cookie == null) {
-				BaseApplication.autoLogin();
-				cookie = BaseApplication.cookie;
+				cookie=BaseApplication.autoLogin();
 			}
 
 			rp.addHeader("Cookie", cookie);

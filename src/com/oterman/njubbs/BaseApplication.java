@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -15,7 +16,6 @@ import org.jsoup.select.Elements;
 
 import android.app.Application;
 import android.content.Context;
-import android.graphics.Bitmap.CompressFormat;
 import android.os.Handler;
 import android.text.TextUtils;
 
@@ -30,7 +30,9 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.QueueProcessingType;
 import com.nostra13.universalimageloader.core.download.BaseImageDownloader;
+import com.oterman.njubbs.bean.BoardInfo;
 import com.oterman.njubbs.bean.UserInfo;
+import com.oterman.njubbs.protocol.FavBoardsProtocol;
 import com.oterman.njubbs.protocol.UserProtocol;
 import com.oterman.njubbs.utils.Constants;
 import com.oterman.njubbs.utils.LogUtil;
@@ -38,14 +40,15 @@ import com.oterman.njubbs.utils.SPutils;
 import com.oterman.njubbs.utils.UiUtils;
 
 public class BaseApplication extends Application {
+	
 	public static BaseApplication application;
 	private static int mainTid;
 	private static Handler handler;
-	public static boolean isLogin = false;// 默认为非登陆
-	public static String cookie = null;
-	public static HttpUtils httpUtil = null;
-	public static UserInfo userInfo = null;
-
+	private static String cookie = null;
+	
+	private static HttpUtils httpUtil = null;
+	private static UserInfo userInfo = null;
+	
 	@Override
 	public void onCreate() {
 		super.onCreate();
@@ -55,7 +58,6 @@ public class BaseApplication extends Application {
 
 		// 创建默认的ImageLoader配置参数
 		//ImageLoaderConfiguration configuration = ImageLoaderConfiguration.createDefault(this);
-		
 		
 		ImageLoaderConfiguration configuration = new ImageLoaderConfiguration  
 			    .Builder(this)  
@@ -77,6 +79,13 @@ public class BaseApplication extends Application {
 		ImageLoader.getInstance().init(configuration);
 	}
 
+	public static String getCookie(){
+		return cookie;
+	}
+	
+	public static void setCookie(String ck){
+		cookie=ck;
+	}
 	public static Context getApplication() {
 		return application;
 	}
@@ -88,27 +97,32 @@ public class BaseApplication extends Application {
 	public static int getMainTid() {
 		return mainTid;
 	}
-
+	
 	/**
-	 * 自动登陆
+	 * 自动登陆  返回cookie
 	 */
-	public static void autoLogin() {
+	public static String autoLogin() {
 		// 从配置文件获取id和密码
 		final String id = SPutils.getFromSP("id");
 		final String passwd = SPutils.getFromSP("pwd");
-
+	
 		if (TextUtils.isEmpty(id) || TextUtils.isEmpty(passwd)) {
 			LogUtil.d("从未登陆过,自动登陆失败！");
-			return;
+			return null;
 		}
+		
+		return autoLogin(id, passwd);
+		
+	}
 
+	public static String autoLogin(String id,String pwd){
+		
 		LogUtil.d("尝试自动登陆中...");
-
 		// 处理登陆的逻辑
 		RequestParams params = new RequestParams();
 		params.addBodyParameter("id", id);
-		params.addBodyParameter("pw", passwd);
-
+		params.addBodyParameter("pw", pwd);
+	
 		try {
 			if (httpUtil == null) {
 				httpUtil = new HttpUtils();
@@ -116,106 +130,64 @@ public class BaseApplication extends Application {
 			ResponseStream responseStream = httpUtil.sendSync(HttpMethod.POST,Constants.LOGIN_URL, params);
 			// 将返回的流解析为字符串
 			String sb = StreamToStr(responseStream);
-
+	
 			final String result = sb.toString();
 			LogUtil.d("登陆结果:" + result);
-
+	
 			if (result.contains("Net.BBS.setCookie")) {// 登陆成功
 				// 保存起来
 				SPutils.saveToSP("id", id);
-				SPutils.saveToSP("pwd", passwd);
-
+				SPutils.saveToSP("pwd", pwd);
 				// 处理cookie
-				handleCookie(result);
-
-				if (cookie != null) {
-					
-					// 获取收藏的版面
-					getFavBoards();
-					// 从网络获取user的信息
-					handleUserInfo(id);
+				String cookie=handleCookie(result);
+				if (cookie!=null) {
 					// 回到主线程，提示登陆成功
 					autoLogInOk(result);
-
-					// 标记登陆
-					BaseApplication.isLogin = true;
+					return handleCookie(result);
 				}
-
 			} else {// 登陆失败
 				autoLoginFailed("自动登陆失败,请手动登录！");
 			}
-
+	
 		} catch (Exception e) {
 			e.printStackTrace();
 			// 登陆成功后显示
 			autoLoginFailed("登陆失败，请检查网络！");
 		}
-	}
-
-	
-	private static void getFavBoards() throws Exception {
-		RequestParams rp=new RequestParams();
-		rp.addHeader("Cookie", cookie);
-		
-		//发送请求
-		ResponseStream stream = httpUtil.sendSync(HttpMethod.GET, Constants.BBSLEFT_URL, rp);
-		
-		String favHtml = StreamToStr(stream);
-		
-		//LogUtil.d("bbsleft:\n"+favHtml.toString());
-		
-		//解析
-		Document doc= Jsoup.parse(favHtml.toString());
-		
-		Elements aEles = doc.select("a");
-		
-		StringBuffer sbFav=new StringBuffer();
-		boolean flag=false;
-		for (int i = 0; i < aEles.size(); i++) {
-			Element aEle = aEles.get(i);
-			if(flag&&!aEle.text().equals("预定管理")){//找到收藏的版面
-				sbFav.append(aEle.text()).append("#");
-			}
-			if(aEle.text().equals("预定讨论区")){//开始记录
-				flag=true;
-			}
-			if(aEle.text().equals("预定管理")){//开始记录
-				flag=false;
-			}
-		}
-		
-		SPutils.saveToSP("favBoards", sbFav.toString());
-		
-		LogUtil.d("favBoards:"+sbFav.toString());
+		return null;
 		
 	}
-
-	private static void handleUserInfo(final String id) {
-		UserProtocol protocol = new UserProtocol();
-		userInfo = protocol.getUserInfoFromServer(id);
-	}
-
-	private  static void handleCookie(final String result) {
+	public  static String handleCookie(final String result) {
 		String reg = "Net.BBS.setCookie\\(\\'" + "(\\d+)" + "N" + "(.*?)\\+"
 				+ "(\\d+)" + "\\'\\)";
 		Pattern p = Pattern.compile(reg, Pattern.DOTALL);
 		Matcher matcher = p.matcher(result);
 
+		String cookie2=null;
 		if (matcher.find()) {
 			Integer _U_NUM = Integer.parseInt(matcher.group(1)) + 2;
 			String _U_UID = matcher.group(2);
 			Integer _U_KEY = Integer.parseInt(matcher.group(3)) - 2;
 
-			String cookie = "_U_NUM=" + _U_NUM + ";_U_UID=" + _U_UID
+			cookie2 = "_U_NUM=" + _U_NUM + ";_U_UID=" + _U_UID
 					+ ";_U_KEY=" + _U_KEY;
 			
 			LogUtil.d("cookie:" + cookie);
 
 			// 保存cookie
-			BaseApplication.cookie = cookie;
+			BaseApplication.cookie = cookie2;
 		}
+		return cookie2;
 	}
-
+	
+	public static UserInfo getLogedUser(){
+		return userInfo;
+	}
+	
+	public static void setLogedUser(UserInfo user){
+		userInfo=user;
+	}
+	
 	private static void autoLogInOk(String result) {
 		UiUtils.runOnUiThread(new Runnable() {
 			@Override
