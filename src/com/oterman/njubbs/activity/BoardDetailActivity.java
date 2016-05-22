@@ -171,6 +171,19 @@ public class BoardDetailActivity extends BaseActivity {
 				info.board =board;
 				info.boardUrl = boardUrl;
 				intent.putExtra("topicInfo", info);
+				
+				//标记为读过；
+				String readedTopics = SPutils.getFromSP("readedTopics");
+				String readUrl=info.contentUrl;
+				if(TextUtils.isEmpty(readedTopics)){//没有记录
+					SPutils.saveToSP("readedTopics",readUrl );
+				}else{
+					if(!readedTopics.contains(readUrl)){//没读过
+						SPutils.saveToSP("readedTopics", readedTopics+"#"+readUrl);
+					}
+				}
+				adapter.notifyDataSetChanged();
+				
 				startActivity(intent);
 			}
 		});
@@ -438,6 +451,15 @@ public class BoardDetailActivity extends BaseActivity {
 			}
 
 			TopicInfo info = dataList.get(position);
+			//检查是否浏览过
+			String readedTopics = SPutils.getFromSP("readedTopics");
+			if(!TextUtils.isEmpty(readedTopics)&&readedTopics.contains(info.contentUrl)){
+				holder.tvTitle.setTextColor(0x70000000);
+			}else{
+				holder.tvTitle.setTextColor(0xff000000);
+			}
+			
+			
 			String title=info.title;
 			if(info.shouldTop){//置顶  标记一下
 				title=" 置顶 "+title;

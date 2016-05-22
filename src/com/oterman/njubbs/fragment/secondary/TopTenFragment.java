@@ -1,7 +1,6 @@
 package com.oterman.njubbs.fragment.secondary;
 
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -12,8 +11,9 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
+import android.text.TextUtils;
+import android.view.TextureView;
 import android.view.View;
-import android.view.View.OnSystemUiVisibilityChangeListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -28,6 +28,7 @@ import com.oterman.njubbs.fragment.BaseFragment;
 import com.oterman.njubbs.protocol.TopTenProtocol;
 import com.oterman.njubbs.utils.Constants;
 import com.oterman.njubbs.utils.MyToast;
+import com.oterman.njubbs.utils.SPutils;
 import com.oterman.njubbs.utils.ThreadManager;
 import com.oterman.njubbs.utils.UiUtils;
 import com.oterman.njubbs.view.LoadingView.LoadingState;
@@ -71,6 +72,17 @@ public class TopTenFragment extends BaseFragment implements OnRefreshListener {
 				Intent intent=new Intent(getContext(),TopicDetailActivity.class);
 				
 				intent.putExtra("topicInfo", info);
+				//标记为读过；
+				String readedTopics = SPutils.getFromSP("readedTopics");
+				String readUrl=info.contentUrl;
+				if(TextUtils.isEmpty(readedTopics)){//没有记录
+					SPutils.saveToSP("readedTopics",readUrl );
+				}else{
+					if(!readedTopics.contains(readUrl)){//没读过
+						SPutils.saveToSP("readedTopics", readedTopics+"#"+readUrl);
+					}
+				}
+				adapter.notifyDataSetChanged();
 				startActivity(intent);
 				
 			}
@@ -180,8 +192,15 @@ public class TopTenFragment extends BaseFragment implements OnRefreshListener {
 			}
 			
 			TopicInfo info = dataList.get(position);
-			
+			//检查是否浏览过
+			String readedTopics = SPutils.getFromSP("readedTopics");
+			if(!TextUtils.isEmpty(readedTopics)&&readedTopics.contains(info.contentUrl)){
+				holder.tvTitle.setTextColor(0x70000000);
+			}else{
+				holder.tvTitle.setTextColor(0xff000000);
+			}
 			holder.tvTitle.setText(info.title);
+			
 			holder.tvBoard.setText(info.board);
 			holder.tvAuthor.setText(info.author);
 			holder.tvReplyCount.setText(info.replyCount);

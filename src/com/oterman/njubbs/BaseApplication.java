@@ -15,23 +15,26 @@ import org.jsoup.select.Elements;
 
 import android.app.Application;
 import android.content.Context;
+import android.graphics.Bitmap.CompressFormat;
 import android.os.Handler;
 import android.text.TextUtils;
 
 import com.lidroid.xutils.HttpUtils;
-import com.lidroid.xutils.exception.HttpException;
 import com.lidroid.xutils.http.RequestParams;
 import com.lidroid.xutils.http.ResponseStream;
 import com.lidroid.xutils.http.client.HttpRequest.HttpMethod;
+import com.nostra13.universalimageloader.cache.disc.naming.Md5FileNameGenerator;
+import com.nostra13.universalimageloader.cache.memory.impl.UsingFreqLimitedMemoryCache;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+import com.nostra13.universalimageloader.core.assist.QueueProcessingType;
+import com.nostra13.universalimageloader.core.download.BaseImageDownloader;
 import com.oterman.njubbs.bean.UserInfo;
 import com.oterman.njubbs.protocol.UserProtocol;
 import com.oterman.njubbs.utils.Constants;
 import com.oterman.njubbs.utils.LogUtil;
-import com.oterman.njubbs.utils.MyToast;
 import com.oterman.njubbs.utils.SPutils;
-import com.oterman.njubbs.utils.ThreadManager;
 import com.oterman.njubbs.utils.UiUtils;
 
 public class BaseApplication extends Application {
@@ -51,8 +54,24 @@ public class BaseApplication extends Application {
 		handler = new Handler();
 
 		// 创建默认的ImageLoader配置参数
-		ImageLoaderConfiguration configuration = ImageLoaderConfiguration
-				.createDefault(this);
+		//ImageLoaderConfiguration configuration = ImageLoaderConfiguration.createDefault(this);
+		
+		
+		ImageLoaderConfiguration configuration = new ImageLoaderConfiguration  
+			    .Builder(this)  
+			    .threadPoolSize(5)//线程池内加载的数量  
+			    .threadPriority(Thread.NORM_PRIORITY - 2)  
+			    .denyCacheImageMultipleSizesInMemory()  
+			    .memoryCache(new UsingFreqLimitedMemoryCache(2 * 1024 * 1024)) // You can pass your own memory cache implementation/你可以通过自己的内存缓存实现  
+			    .memoryCacheSize(2 * 1024 * 1024)    
+			    .discCacheSize(50 * 1024 * 1024)    
+			    .discCacheFileNameGenerator(new Md5FileNameGenerator())//将保存的时候的URI名称用MD5 加密  
+			    .tasksProcessingOrder(QueueProcessingType.LIFO)  
+			    .discCacheFileCount(100) //缓存的文件数量  
+			    .defaultDisplayImageOptions(DisplayImageOptions.createSimple())  
+			    .imageDownloader(new BaseImageDownloader(this, 5 * 1000, 30 * 1000)) // connectTimeout (5 s), readTimeout (30 s)超时时间  
+			    .writeDebugLogs() // Remove for release app  
+			    .build();//开始构建  
 
 		// Initialize ImageLoader with configuration.
 		ImageLoader.getInstance().init(configuration);

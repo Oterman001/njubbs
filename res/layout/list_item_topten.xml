@@ -11,6 +11,7 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
 		android:layout_margin="8dp"
+		android:textColor="@color/black"
         android:text="这是标题这是标题"
         android:textSize="18sp" />
 

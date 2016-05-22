@@ -59,6 +59,8 @@ import com.lidroid.xutils.HttpUtils;
 import com.lidroid.xutils.http.RequestParams;
 import com.lidroid.xutils.http.ResponseStream;
 import com.lidroid.xutils.http.client.HttpRequest.HttpMethod;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.listener.PauseOnScrollListener;
 import com.oterman.njubbs.BaseApplication;
 import com.oterman.njubbs.R;
 import com.oterman.njubbs.bean.TopicDetailInfo;
@@ -175,6 +177,9 @@ public class TopicDetailActivity extends BaseActivity implements
 		lv.setDividerHeight(UiUtils.dip2px(1));
 
 		lv.setDividerHeight(1);
+		
+		//滑动的时候不加载图片
+		lv.setOnScrollListener(new PauseOnScrollListener(ImageLoader.getInstance(), true, true));
 
 		adapter = new TopicDetailAdapter();
 		pLv.setAdapter(adapter);
@@ -796,17 +801,15 @@ public class TopicDetailActivity extends BaseActivity implements
 			String author = info.author;
 			// author=author.replaceFirst("\\(","\n(" );
 			
+			//做标记
 			if(author.contains(topicInfo.author)){
 				author=" 楼主 "+author;
 				SpannableStringBuilder ssb=new SpannableStringBuilder(author);
 				int start=0;
 				int end=start+" 楼主 ".length();
-				
 				ssb.setSpan(new BackgroundColorSpan(Color.RED), start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 				ssb.setSpan(new ForegroundColorSpan(Color.WHITE), start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-				
 				holder.tvAuthor.setText(ssb);
-				
 			}else{
 				String id = SPutils.getFromSP("id");
 				if(!TextUtils.isEmpty(id)&&author.contains(id)){
@@ -822,18 +825,10 @@ public class TopicDetailActivity extends BaseActivity implements
 				}else{
 					holder.tvAuthor.setText(author);
 				}
-				
-				
 			}
-			
-			
 
-			BitmapUtils bu = new BitmapUtils(getApplicationContext());
-
-			holder.tvContent.setMovementMethod(ScrollingMovementMethod
-					.getInstance());// 设置可滚动
-			holder.tvContent
-					.setMovementMethod(LinkMovementMethod.getInstance());// 设置超链接可以打开网页
+			holder.tvContent.setMovementMethod(ScrollingMovementMethod.getInstance());// 设置可滚动
+			holder.tvContent.setMovementMethod(LinkMovementMethod.getInstance());// 设置超链接可以打开网页
 
 			Spanned spanned = Html.fromHtml(info.content, 
 					new URLImageParser(holder.tvContent),
