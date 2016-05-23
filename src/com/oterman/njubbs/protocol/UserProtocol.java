@@ -47,7 +47,7 @@ public class UserProtocol {
 				String biaoxian=m.group(9).trim();
 				String life=m.group(10).trim();
 				
-				if(lastVisitIP==null||lastVisitIP.length()==0){
+				if(lastVisitIP==null||lastVisitIP.length()<3){
 					lastVisitIP=lastVisitTime;
 					lastVisitTime=xingzuo;
 					xingzuo="δ֪";

@@ -1,5 +1,7 @@
 package com.oterman.njubbs.activity;
 
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Random;
 
@@ -18,13 +20,16 @@ import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
 import android.text.style.BackgroundColorSpan;
 import android.text.style.ForegroundColorSpan;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.BaseAdapter;
+import android.widget.CheckBox;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -42,7 +47,6 @@ import com.oterman.njubbs.BaseApplication;
 import com.oterman.njubbs.R;
 import com.oterman.njubbs.bean.TopicInfo;
 import com.oterman.njubbs.protocol.BoardTopicProtocol;
-import com.oterman.njubbs.protocol.TopicDetailProtocol;
 import com.oterman.njubbs.utils.Constants;
 import com.oterman.njubbs.utils.LogUtil;
 import com.oterman.njubbs.utils.MyToast;
@@ -70,37 +74,10 @@ public class BoardDetailActivity extends BaseActivity {
 	private BoardTopicProtocol protocol;
 	private ActionBar actionBar;
 	private MySwipeRefreshLayout sr;
+	private CheckBox cbFav;
+	private HttpUtils httpUtils;
+	private AlertDialog.Builder builder;
 
-	@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		// TODO Auto-generated method stub
-		super.onActivityResult(requestCode, resultCode, data);
-		
-		if(requestCode==100){//修改回帖成功后跳转  刷新
-			ThreadManager.getInstance().createLongPool().execute(new Runnable() {
-				
-				@Override
-				public void run() {
-					if(protocol==null){
-						protocol = new BoardTopicProtocol();
-					}
-					dataList = protocol.loadFromServer(Constants
-							.getBoardUrl(boardUrl),false);
-					
-					runOnUiThread(new Runnable() {
-						@Override
-						public void run() {
-							adapter.notifyDataSetChanged();
-						}
-					});
-					
-					
-				}
-				});
-			}
-		
-	}
-	
 	@Override
 	public void initViews() {
 		//自定义actionbar
@@ -118,10 +95,30 @@ public class BoardDetailActivity extends BaseActivity {
         });
         
 		boardUrl = getIntent().getStringExtra("boardUrl");
-		board = boardUrl.substring(boardUrl.indexOf("=")+1);
+		board = boardUrl.substring(boardUrl.indexOf("=")+1);//获得版面名称
 
         //添加事件 新帖
         ImageButton btnNewTopic = (ImageButton) view.findViewById(R.id.btn_new_topic);
+        cbFav = (CheckBox) view.findViewById(R.id.cb_fav_board);
+        
+		String favBoards = SPutils.getFromSP("favBoards_"+SPutils.getFromSP("id"));
+		LogUtil.d("版面帖子列表："+favBoards);
+		if(favBoards!=null){
+			if(favBoards.contains(board)){
+				cbFav.setChecked(true);
+			}
+		}
+        
+        //点击事件
+        cbFav.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				handleFavBoards();
+			}
+		});
+        
+        cbFav.setVisibility(View.VISIBLE);
+        
 		btnNewTopic.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -138,11 +135,189 @@ public class BoardDetailActivity extends BaseActivity {
         LayoutParams params = new LayoutParams(LayoutParams.MATCH_PARENT,LayoutParams.MATCH_PARENT);
         actionBar.setCustomView(view, params);
 
-		tvTitle.setText(board + "(帖子列表)");
+		tvTitle.setText(board);
 		tvTitle.setTextSize(22);
 
 	}
+	/**
+	 * 处理收藏版面
+	 * @param isChecked
+	 */
+	private void handleFavBoards() {
+		if(builder==null){
+			builder = new AlertDialog.Builder(BoardDetailActivity.this);
+		}
+		
+		if(cbFav.isChecked()){
+			builder.setTitle("通知");
+			builder.setMessage("确定要收藏该版面吗？");
+		}else{
+			builder.setTitle("通知");
+			builder.setMessage("确定要取消收藏该版面吗？");
+		}
 
+		builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				cbFav.setChecked(!cbFav.isChecked());
+				dialog.dismiss();
+			}
+		});
+		
+		builder.setPositiveButton("确认", new  DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				boolean checked = cbFav.isChecked();
+				
+				if(checked){//当前为选中状态，添加到收藏
+					MyToast.toast("正在操作...");
+					
+					//处理添加到收藏
+					handleAddToFavs();
+					
+				}else{//当前为未选中状态，取消收藏
+					MyToast.toast("正在取消收藏..");
+					//处理取消收藏
+					handleRemoveFromFavs();
+				}
+				dialog.dismiss();
+			}
+		});
+		
+		builder.show();
+	}
+	
+	/**
+	 * 处理添加到收藏
+	 */
+	private void handleAddToFavs() {
+		ThreadManager.getInstance().createLongPool().execute(new Runnable() {
+			@Override
+			public void run() {
+				
+				if(httpUtils==null){
+					httpUtils = new HttpUtils();
+				}
+				RequestParams rp=new RequestParams();
+				final String favBoards = SPutils.getFromSP("favBoards_"+SPutils.getFromSP("id"));
+				//处理提交参数  从保存的sp中获取；
+				LogUtil.d("操作前："+favBoards);
+				try {
+					
+					if(favBoards!=null){
+						String[] boards = favBoards.split("#");
+						for (int i = 0; i < boards.length; i++) {
+							String board = boards[i].trim();
+							if(!TextUtils.isEmpty(board)){
+								rp.addBodyParameter(board,"on");
+							}
+						}
+					}
+					
+					//将当前的版面添加进入
+					rp.addBodyParameter(board, "on");
+					rp.addBodyParameter("confirm1", "1");
+					
+					String cookie = BaseApplication.getCookie();
+					if(cookie==null){
+						cookie=BaseApplication.autoLogin();
+					}
+					
+					rp.addHeader("Cookie",cookie);
+					ResponseStream stream= httpUtils.sendSync(HttpMethod.POST, Constants.FAV_BOARD_URL, rp);
+					
+					String result = BaseApplication.StreamToStr(stream);
+					
+					LogUtil.d("收藏结果："+result);
+					
+					if(result.contains("成功")){
+						runOnUiThread(new Runnable() {
+							@Override
+							public void run() {
+								MyToast.toast("收藏成功！");
+								//更新
+								String str=favBoards+board+"#";
+								LogUtil.d("操作后："+str);
+								SPutils.saveToSP("favBoards_"+SPutils.getFromSP("id"),str);
+							}
+						});
+					}else{
+						LogUtil.d("收藏失败");
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}
+	
+	/**
+	 * 处理从收藏中移除
+	 */
+	private void handleRemoveFromFavs() {
+		ThreadManager.getInstance().createLongPool().execute(new Runnable() {
+			@Override
+			public void run() {
+				
+				if(httpUtils==null){
+					httpUtils = new HttpUtils();
+				}
+				RequestParams rp=new RequestParams();
+				String favBoards = SPutils.getFromSP("favBoards_"+SPutils.getFromSP("id"));
+				//处理提交参数  从保存的sp中获取；
+				LogUtil.d("取消收藏，操作前："+favBoards);
+				
+				if(favBoards.contains(board)){
+					favBoards=favBoards.replaceFirst(board+"#", "");
+				}
+				final String str=favBoards;
+				LogUtil.d("取消收藏，操作后："+favBoards);
+				
+				try {
+					
+					if(favBoards!=null){
+						String[] boards = favBoards.split("#");
+						for (int i = 0; i < boards.length; i++) {
+							String board = boards[i].trim();
+							if(!TextUtils.isEmpty(board)){
+								rp.addBodyParameter(board,"on");
+							}
+						}
+					}
+					
+					//将当前的版面添加进入
+					rp.addBodyParameter("confirm1", "1");
+					
+					String cookie = BaseApplication.getCookie();
+					if(cookie==null){
+						cookie=BaseApplication.autoLogin();
+					}
+					
+					rp.addHeader("Cookie",cookie);
+					ResponseStream stream= httpUtils.sendSync(HttpMethod.POST, Constants.FAV_BOARD_URL, rp);
+					
+					String result = BaseApplication.StreamToStr(stream);
+					
+					LogUtil.d("取消收藏结果："+result);
+					
+					if(result.contains("成功")){
+						runOnUiThread(new Runnable() {
+							@Override
+							public void run() {
+								MyToast.toast("取消成功！");
+								//更新
+								SPutils.saveToSP("favBoards_"+SPutils.getFromSP("id"),str);
+							}
+						});
+					}else{
+						LogUtil.d("取消失败");
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}
 	@Override
 	public View createSuccessView() {
 		sr=new MySwipeRefreshLayout(getApplicationContext());
@@ -381,7 +556,6 @@ public class BoardDetailActivity extends BaseActivity {
 							public void run() {
 								sr.setRefreshing(false);
 								MyToast.toast("刷新成功!");
-								
 								adapter.notifyDataSetChanged();
 								
 							}
@@ -406,6 +580,36 @@ public class BoardDetailActivity extends BaseActivity {
 
 		return dataList == null ? LoadingState.LOAD_FAILED
 				: LoadingState.LOAD_SUCCESS;
+	}
+
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		// TODO Auto-generated method stub
+		super.onActivityResult(requestCode, resultCode, data);
+		
+		if(requestCode==100){//修改回帖成功后跳转  刷新
+			ThreadManager.getInstance().createLongPool().execute(new Runnable() {
+				
+				@Override
+				public void run() {
+					if(protocol==null){
+						protocol = new BoardTopicProtocol();
+					}
+					dataList = protocol.loadFromServer(Constants
+							.getBoardUrl(boardUrl),false);
+					
+					runOnUiThread(new Runnable() {
+						@Override
+						public void run() {
+							adapter.notifyDataSetChanged();
+						}
+					});
+					
+					
+				}
+				});
+			}
+		
 	}
 
 	class BoardAdapter extends BaseAdapter {

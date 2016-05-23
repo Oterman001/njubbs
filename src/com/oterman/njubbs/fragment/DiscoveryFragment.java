@@ -1,14 +1,11 @@
 package com.oterman.njubbs.fragment;
 
-import android.graphics.Color;
-import android.text.Spannable;
-import android.text.SpannableStringBuilder;
-import android.text.style.BackgroundColorSpan;
-import android.text.style.ForegroundColorSpan;
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.TextView;
-
-import com.oterman.njubbs.view.LoadingView.LoadingState;
 
 
 /**
@@ -36,30 +33,17 @@ String str="njubbs_v0.5 \n " +
 		"\n 2.站内信的发送，回复，删除";
  *
  */
-public class DiscoveryFragment extends BaseFragment {
+public class DiscoveryFragment extends Fragment {
+	
 	@Override
-	public View createSuccessView() {
+	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+			Bundle savedInstanceState) {
 		TextView tv=new TextView(getActivity());
 		
-		String str="楼主 mmlover(大蘑菇)";
-		tv.setTextSize(22f);
-		SpannableStringBuilder ssb=new SpannableStringBuilder(str);
-		int start=0;
-		int end=start+"楼主".length();
-		
-		ssb.setSpan(new BackgroundColorSpan(Color.RED), start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-		ssb.setSpan(new ForegroundColorSpan(Color.WHITE), start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-		
-		tv.setText(ssb);
-		
+		String str="我爱你哦。晚安了哦";
+		tv.setText(str);
 		
 		return tv;
 	}
-	
-	@Override
-	public LoadingState loadDataFromServer() {
-		return LoadingState.LOAD_SUCCESS;
-	}
-	
 
 }

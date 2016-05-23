@@ -1,8 +1,5 @@
 package com.oterman.njubbs.fragment;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -22,14 +19,12 @@ import android.widget.TextView;
 
 import com.oterman.njubbs.R;
 import com.oterman.njubbs.activity.BoardDetailActivity;
-import com.oterman.njubbs.activity.TopicDetailActivity;
 import com.oterman.njubbs.bean.BoardInfo;
-import com.oterman.njubbs.bean.TopicInfo;
+import com.oterman.njubbs.db.BoardDao;
 import com.oterman.njubbs.protocol.FavBoardsProtocol;
 import com.oterman.njubbs.protocol.HotBoardProtocol;
 import com.oterman.njubbs.utils.Constants;
 import com.oterman.njubbs.utils.MyToast;
-import com.oterman.njubbs.utils.SPutils;
 import com.oterman.njubbs.utils.ThreadManager;
 import com.oterman.njubbs.utils.UiUtils;
 import com.oterman.njubbs.view.LoadingView.LoadingState;
@@ -181,6 +176,8 @@ public class BoardsFragment extends BaseFragment implements OnRefreshListener {
 	}
 
 	class BoardsAdapter extends BaseExpandableListAdapter {
+		
+		BoardDao boardDao=null;
 
 		@Override
 		public int getGroupCount() {
@@ -263,7 +260,18 @@ public class BoardsFragment extends BaseFragment implements OnRefreshListener {
 				if(boardInfo==null||TextUtils.isEmpty(boardInfo.boardName)){
 					holder.tvBoard.setText("当前未收藏版面");
 				}else{
-					holder.tvBoard.setText(boardInfo.boardName);
+					if(boardDao==null){
+						boardDao=new BoardDao();
+					}
+					BoardInfo info = boardDao.getInfoByName(boardInfo.boardName);
+					if(info!=null){
+						String str=info.boardName+"("+info.chineseName+")";
+						holder.tvBoard.setText(str);
+					}else{
+						holder.tvBoard.setText(boardInfo.boardName);
+						
+					}
+					
 				}
 				
 			}else{

@@ -246,9 +246,6 @@ public class NewTopicActivity extends MyActionBarActivity implements
 					params.addBodyParameter("signature", 1 + "");
 					params.addBodyParameter("autocr", "on");
 					
-//					params.addBodyParameter(key, file)
-//					params.addBodyParameter(key, file, fileName, mimeType, charset)
-					
 					String content2=URLEncoder.encode(content, "gbk");
 					params.addBodyParameter("text", content);
 				
@@ -276,12 +273,38 @@ public class NewTopicActivity extends MyActionBarActivity implements
 					LogUtil.d("发帖结果：" + result);
 					
 					if(result.contains("匆匆过客")){
-						MyToast.toast("发帖失败！");
+						//登陆失败，手动登录
+						runOnUiThread(new Runnable() {
+							@Override
+							public void run() {
+								if (dialog != null) {
+									dialog.dismiss();
+								}
+								MyToast.toast("自动登陆失败，请登录！");
+								// 跳转到登陆页面
+								Intent intent = new Intent(
+										NewTopicActivity.this,
+										LoginActivity.class);
+								startActivity(intent);
+							}
+						});
+						
 					}else if(result.contains("发文间隔过密")){
+						runOnUiThread(new Runnable() {
+							@Override
+							public void run() {
+								if (dialog != null) {
+									dialog.dismiss();
+								}
+								MyToast.toast("发文间隔过密，稍后重试！");
+//								Intent intent=new Intent(getApplicationContext(),BoardDetailActivity.class);
+//								intent.putExtra("boardUrl", boardUrl);
+//								startActivity(intent);
+								//finish();
+							}
+						});
 						
-						
-					} 
-					 else{
+					} else{//成功
 						runOnUiThread(new Runnable() {
 							@Override
 							public void run() {

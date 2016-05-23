@@ -201,9 +201,9 @@ public class TopicDetailActivity extends BaseActivity implements
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {
 				LogUtil.d("点击了哦" + position);
-				TopicDetailInfo detailInfo = list.get(position);
-
-				MyToast.toast(detailInfo.toString());
+//				TopicDetailInfo detailInfo = list.get(position);
+//
+//				MyToast.toast(detailInfo.toString());
 			}
 		});
 		
@@ -605,6 +605,7 @@ public class TopicDetailActivity extends BaseActivity implements
 					LogUtil.d("回帖结果：" + result);
 
 					if (result.contains("匆匆过客")) {// 发帖失败了。
+						
 						runOnUiThread(new Runnable() {
 							@Override
 							public void run() {
@@ -612,7 +613,7 @@ public class TopicDetailActivity extends BaseActivity implements
 									waitDialog.dismiss();
 								}
 								waitDialog.dismiss();
-								MyToast.toast("回帖失败，请登录！");
+								MyToast.toast("自动登陆失败，请登录！");
 								cbSmiley.setChecked(false);
 								// 跳转到登陆页面
 								Intent intent = new Intent(
@@ -621,6 +622,7 @@ public class TopicDetailActivity extends BaseActivity implements
 								startActivity(intent);
 							}
 						});
+						
 					} else if(result.contains("发文间隔过密")){
 						// 更新界面
 						runOnUiThread(new Runnable() {

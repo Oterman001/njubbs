@@ -22,7 +22,9 @@ import com.oterman.njubbs.R.color;
 import com.oterman.njubbs.R.id;
 import com.oterman.njubbs.R.layout;
 import com.oterman.njubbs.R.menu;
+import com.oterman.njubbs.fragment.AboutMeFragment;
 import com.oterman.njubbs.fragment.BaseFragment;
+import com.oterman.njubbs.fragment.DiscoveryFragment;
 import com.oterman.njubbs.fragment.factory.FragmentFactory;
 
 @SuppressLint("NewApi")
@@ -92,9 +94,15 @@ public class MainActivity extends FragmentActivity {
 				//加载数据
 
 				Fragment fragment = FragmentFactory.creatFragment(position);
-				if(fragment instanceof BaseFragment){
-					((BaseFragment)fragment).showViewFromServer();
+				
+//				if(fragment instanceof BaseFragment){
+//					//((BaseFragment)fragment).showViewFromServer();
+//				}
+//				
+				if(fragment instanceof AboutMeFragment){
+					((AboutMeFragment)fragment).updateViews();
 				}
+				
 				//选中页面时，切换到对应的radiobutton;
 				switch (position) {
 				case 0:
@@ -108,6 +116,8 @@ public class MainActivity extends FragmentActivity {
 					break;
 				case 3:
 					rgGroup.check(R.id.rb_me);
+					
+					
 					break;
 				default:
 					break;

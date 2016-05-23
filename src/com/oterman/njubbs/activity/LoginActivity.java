@@ -117,6 +117,7 @@ public class LoginActivity extends MyActionBarActivity  implements OnClickListen
 
 	//处理登陆
 	private void handleLogin(final String id, final String pwd) {
+		
 		dialog.setMessage("努力登陆中。。。");
 		//显示等待
 		dialog.show();
@@ -141,7 +142,10 @@ public class LoginActivity extends MyActionBarActivity  implements OnClickListen
 					
 					//根据登陆结果来判断
 					if(result.contains("Net.BBS.setCookie")){//登陆成功
-						//获取用户
+						//保存起来
+						SPutils.saveToSP("id", id);
+						SPutils.saveToSP("pwd", pwd);
+						
 						//处理cookie 获取用户信息
 						BaseApplication.handleCookie(result);
 						
@@ -164,6 +168,7 @@ public class LoginActivity extends MyActionBarActivity  implements OnClickListen
 					}
 					
 				} catch (Exception e) {//联网异常
+					e.printStackTrace();
 					runOnUiThread(new Runnable() {
 						@Override
 						public void run() {

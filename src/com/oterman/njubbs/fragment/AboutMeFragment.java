@@ -20,6 +20,7 @@ import com.oterman.njubbs.activity.LoginActivity;
 import com.oterman.njubbs.activity.MailBoxActicity;
 import com.oterman.njubbs.bean.UserInfo;
 import com.oterman.njubbs.utils.LogUtil;
+import com.oterman.njubbs.utils.MyToast;
 
 public class AboutMeFragment  extends Fragment implements OnClickListener {
 
@@ -41,14 +42,18 @@ public class AboutMeFragment  extends Fragment implements OnClickListener {
 	@Nullable
 	public View onCreateView(LayoutInflater inflater,
 			@Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+		
+		LogUtil.d("关于我界面：onCreateView()执行了...");
+		
 		rootView = View.inflate(getContext(), R.layout.frag_about_me, null);
 		
-		userInfo=BaseApplication.getLogedUser();
+		userInfo=BaseApplication.getLogedUser();//获取登录的user
+		
 		btnLogin = (Button) rootView.findViewById(R.id.btn_login);
 		tvMail = (TextView) rootView.findViewById(R.id.tv_mail);
 		
-		btnLogin.setOnClickListener(this);
-		tvMail.setOnClickListener(this);
+		btnLogin.setOnClickListener(this);//登陆、注销按钮
+		tvMail.setOnClickListener(this);//站内
 		
 		
 		initUserViews();
@@ -60,11 +65,15 @@ public class AboutMeFragment  extends Fragment implements OnClickListener {
 		return rootView;
 	}
 
+	/**
+	 * 初始化用户信息相关的视图   顶部视图
+	 */
 	private void initUserViews() {
-		tvUnlogin = (TextView) rootView.findViewById(R.id.tv_unlogin);
-		llUserContainer = (ViewGroup) rootView.findViewById(R.id.user_container);
 		
-		if(BaseApplication.getCookie()!=null){//已登录状态登陆
+		tvUnlogin = (TextView) rootView.findViewById(R.id.tv_unlogin);//未登录视图
+		llUserContainer = (ViewGroup) rootView.findViewById(R.id.user_container);//登陆视图
+		
+		if(BaseApplication.getCookie()!=null&&BaseApplication.getLogedUser()!=null){//已登录状态登陆
 			llUserContainer.setVisibility(View.VISIBLE);
 			tvUnlogin.setVisibility(View.INVISIBLE);
 			
@@ -93,14 +102,17 @@ public class AboutMeFragment  extends Fragment implements OnClickListener {
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
+		
 		if(data!=null){
 			userInfo = (UserInfo) data.getSerializableExtra("userInfo");
 			LogUtil.d("返回数据："+userInfo.toString());
 		}
 		updateViews();
+		
+		
 	}
 	
-	private void updateViews() {
+	public void updateViews() {
 		if(llUserContainer!=null&&tvUnlogin!=null&&BaseApplication.getCookie()!=null){
 			llUserContainer.setVisibility(View.VISIBLE);
 			tvUnlogin.setVisibility(View.INVISIBLE);
@@ -137,17 +149,19 @@ public class AboutMeFragment  extends Fragment implements OnClickListener {
 	public void onClick(View v) {
 		switch (v.getId()) {
 		case R.id.btn_login:
-			if(BaseApplication.getCookie()!=null){//当前为登陆状态，
+			if(BaseApplication.getCookie()!=null&&BaseApplication.getLogedUser()!=null){//当前为登陆状态，注销
 				BaseApplication.setCookie(null);
+				MyToast.toast("注销成功");
+				BaseApplication.setLogedUser(null);
+				updateViews();
+				return;
+			}else{
+				Intent intent=new Intent(getContext(),LoginActivity.class);
+				startActivityForResult(intent, 100);
 			}
-			
-			Intent intent=new Intent(getContext(),LoginActivity.class);
-			
-//			startActivity(intent);
-			startActivityForResult(intent, 100);
 			break;
 			
-		case R.id.tv_mail:
+		case R.id.tv_mail://点击的是站内
 			Intent intent2=new Intent(getContext(),MailBoxActicity.class);
 			startActivity(intent2);
 			break;

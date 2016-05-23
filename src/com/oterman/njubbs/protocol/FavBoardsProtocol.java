@@ -78,16 +78,20 @@ public class FavBoardsProtocol {
 	private String getSaveKey() {
 		return "favboards_"+SPutils.getFromSP("id");
 	}
-
+	
 	private List<BoardInfo> parseHtml(Document doc) {
 		List<BoardInfo> list=new ArrayList<>();
 		Elements aEles = doc.select("a");
 		
+		StringBuffer sb=new StringBuffer();
+		
 		boolean flag=false;
+		
 		for (int i = 0; i < aEles.size(); i++) {
 			Element aEle = aEles.get(i);
 			if(flag&&!aEle.text().equals("预定管理")){//找到收藏的版面
 				BoardInfo info=new BoardInfo(null, aEle.text(), null, null);
+				sb.append(aEle.text()).append("#");
 				list.add(info);
 			}
 			if(aEle.text().equals("预定讨论区")){//开始记录
@@ -98,9 +102,8 @@ public class FavBoardsProtocol {
 			}
 		}
 		
-		//SPutils.saveToSP("favBoards", sbFav.toString());
-		
-		//LogUtil.d("favBoards:"+sbFav.toString());
+		SPutils.saveToSP("favBoards_"+SPutils.getFromSP("id"), sb.toString());
+		LogUtil.d("保存收藏版面：favBoards_"+SPutils.getFromSP("id")+"  :"+sb.toString());
 		return list;
 	}
 }

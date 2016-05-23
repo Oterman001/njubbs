@@ -9,13 +9,9 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
-
 import android.app.Application;
 import android.content.Context;
+import android.media.audiofx.LoudnessEnhancer;
 import android.os.Handler;
 import android.text.TextUtils;
 
@@ -32,11 +28,13 @@ import com.nostra13.universalimageloader.core.assist.QueueProcessingType;
 import com.nostra13.universalimageloader.core.download.BaseImageDownloader;
 import com.oterman.njubbs.bean.BoardInfo;
 import com.oterman.njubbs.bean.UserInfo;
-import com.oterman.njubbs.protocol.FavBoardsProtocol;
+import com.oterman.njubbs.db.BoardDao;
+import com.oterman.njubbs.protocol.AllBoardProtocol;
 import com.oterman.njubbs.protocol.UserProtocol;
 import com.oterman.njubbs.utils.Constants;
 import com.oterman.njubbs.utils.LogUtil;
 import com.oterman.njubbs.utils.SPutils;
+import com.oterman.njubbs.utils.ThreadManager;
 import com.oterman.njubbs.utils.UiUtils;
 
 public class BaseApplication extends Application {
@@ -48,6 +46,7 @@ public class BaseApplication extends Application {
 	
 	private static HttpUtils httpUtil = null;
 	private static UserInfo userInfo = null;
+	private static UserProtocol userProtocol;
 	
 	@Override
 	public void onCreate() {
@@ -77,6 +76,26 @@ public class BaseApplication extends Application {
 
 		// Initialize ImageLoader with configuration.
 		ImageLoader.getInstance().init(configuration);
+		
+		prepateAllBoardsData();
+	}
+
+	//保存所有版面信息
+	private void prepateAllBoardsData() {
+		//先查询数据
+		BoardDao dao=new BoardDao();
+		int size=dao.getCount();
+		System.out.println("数据库记录数："+size);
+		if(size<100){
+			ThreadManager.getInstance().createLongPool().execute(new Runnable() {
+				@Override
+				public void run() {
+					AllBoardProtocol protocol=new AllBoardProtocol();
+					protocol.saveAllBoards();
+					LogUtil.d("prepateAllBoardsData...保存成功！");
+				}
+			});
+		}
 	}
 
 	public static String getCookie(){
@@ -141,6 +160,8 @@ public class BaseApplication extends Application {
 				// 处理cookie
 				String cookie=handleCookie(result);
 				if (cookie!=null) {
+					//更新用户数据
+					updateUserInfo();
 					// 回到主线程，提示登陆成功
 					autoLogInOk(result);
 					return handleCookie(result);
@@ -157,6 +178,21 @@ public class BaseApplication extends Application {
 		return null;
 		
 	}
+	/**
+	 * 获取用户信息
+	 */
+	public static UserInfo updateUserInfo() {
+		if(userInfo==null){
+			if(userProtocol==null){
+				userProtocol = new UserProtocol();
+			}
+			userInfo = userProtocol.getUserInfoFromServer(SPutils.getFromSP("id"));
+			LogUtil.d("获取用户信息成功。。。"+userInfo.toString());
+		}
+		
+		return userInfo;
+	}
+
 	public  static String handleCookie(final String result) {
 		String reg = "Net.BBS.setCookie\\(\\'" + "(\\d+)" + "N" + "(.*?)\\+"
 				+ "(\\d+)" + "\\'\\)";
@@ -205,6 +241,7 @@ public class BaseApplication extends Application {
 			}
 		});
 	}
+	
 
 	public static String StreamToStr(ResponseStream responseStream)
 			throws UnsupportedEncodingException, IOException {
@@ -222,5 +259,6 @@ public class BaseApplication extends Application {
 
 		return sb.toString();
 	}
+	
 
 }
