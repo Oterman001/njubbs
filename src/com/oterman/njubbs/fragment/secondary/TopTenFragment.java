@@ -4,6 +4,8 @@ package com.oterman.njubbs.fragment.secondary;
 import java.util.List;
 import java.util.Random;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
@@ -12,21 +14,26 @@ import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
 import android.text.TextUtils;
-import android.view.TextureView;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import com.oterman.njubbs.R;
+import com.oterman.njubbs.activity.BoardDetailActivity;
+import com.oterman.njubbs.activity.MailNewActivity;
 import com.oterman.njubbs.activity.TopicDetailActivity;
 import com.oterman.njubbs.bean.TopicInfo;
 import com.oterman.njubbs.fragment.BaseFragment;
+import com.oterman.njubbs.holders.UserDetailHolder;
 import com.oterman.njubbs.protocol.TopTenProtocol;
 import com.oterman.njubbs.utils.Constants;
+import com.oterman.njubbs.utils.LogUtil;
 import com.oterman.njubbs.utils.MyToast;
 import com.oterman.njubbs.utils.SPutils;
 import com.oterman.njubbs.utils.ThreadManager;
@@ -87,8 +94,40 @@ public class TopTenFragment extends BaseFragment implements OnRefreshListener {
 				
 			}
 		});
-		srl.addView(lv);
 		
+		lv.setOnItemLongClickListener(new OnItemLongClickListener() {
+
+			@Override
+			public boolean onItemLongClick(AdapterView<?> parent, View view,
+					int position, long id) {
+				
+				LogUtil.d("长按了哦.."+position);
+				
+				TopicInfo topicInfo = dataList.get(position);
+				
+				AlertDialog.Builder  builder=new AlertDialog.Builder(getActivity());
+				
+				View dialogView=View.inflate(getActivity(), R.layout.item_long_click, null);
+				
+				builder.setTitle("请选择操作");
+				builder.setView(dialogView);
+				
+				builder.setNegativeButton("取消", new AlertDialog.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						dialog.dismiss();
+					}
+				});
+				
+				AlertDialog dialog = builder.create();
+				initDialogView(dialogView,topicInfo,dialog);
+				dialog.show();
+				return true;
+			}
+
+		});
+		
+		srl.addView(lv);
 		srl.setColorSchemeResources(android.R.color.holo_green_light,
 									android.R.color.holo_blue_light);
 		//下拉刷新 当下拉时 会出发该方法
@@ -100,7 +139,74 @@ public class TopTenFragment extends BaseFragment implements OnRefreshListener {
 		return srl;
 	}
 	
+	//初始化长安的对话框
+	private void initDialogView(View dialogView, final TopicInfo topicInfo, final AlertDialog dialog) {
+		
+		TextView tvAuthurDetail=(TextView) dialogView.findViewById(R.id.tv_author_detail);
+		TextView tvModifyTopic=(TextView) dialogView.findViewById(R.id.tv_modify_topic);
+		TextView tvDeleteTopic=(TextView) dialogView.findViewById(R.id.tv_delete_topci);
+		TextView tvMessage=(TextView) dialogView.findViewById(R.id.tv_message_to_author);
+		
+		tvAuthurDetail.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				//MyToast.toast("作者详情"+topicInfo.authorUrl);
+				handleShowUserDetail(topicInfo,dialog);
+				
+			}
+		});
+		
+		tvModifyTopic.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				MyToast.toast("修改帖子"+topicInfo.title);
+			}
+		});
+		
+		tvDeleteTopic.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+//						MyToast.toast("删除帖子"+topicInfo.contentUrl);
+//						LogUtil.d("帖子链接："+topicInfo.contentUrl);
+				//处理删帖逻辑
+				handleDeleteTopic(topicInfo, dialog);
+				
+			}
+		});
+		tvMessage.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				//MyToast.toast("站内"+topicInfo.authorUrl);
+				//发送站内信
+				dialog.dismiss();
+				Intent intent=new Intent(getContext(),MailNewActivity.class);
+				if(topicInfo!=null){
+					intent.putExtra("receiver",topicInfo.author);
+				}
+				startActivity(intent);
+			}
+		});
+	}
 	
+	
+	protected void handleDeleteTopic(TopicInfo topicInfo, AlertDialog dialog) {
+		
+	}
+
+	protected void handleShowUserDetail(TopicInfo topicInfo, AlertDialog dialog) {
+		dialog.dismiss();
+		AlertDialog.Builder builder=new AlertDialog.Builder(getActivity());
+		
+		UserDetailHolder holder=new UserDetailHolder(getContext());
+		//更新用户详情
+		holder.updateStatus(topicInfo.author);
+		
+		builder.setView(holder.getRootView());
+		builder.show();
+	}
+
 	/**
 	 * 刷新数据
 	 */

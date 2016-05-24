@@ -235,8 +235,7 @@ public class BoardDetailActivity extends BaseActivity {
 					tvAuthurDetail.setOnClickListener(new OnClickListener() {
 						@Override
 						public void onClick(View v) {
-							MyToast.toast("作者详情"+topicInfo.authorUrl);
-							
+							//MyToast.toast("作者详情"+topicInfo.authorUrl);
 							handleShowUserDetail(topicInfo,dialog);
 							
 						}
@@ -267,12 +266,18 @@ public class BoardDetailActivity extends BaseActivity {
 						
 						@Override
 						public void onClick(View v) {
-							MyToast.toast("站内"+topicInfo.authorUrl);
+							//MyToast.toast("站内"+topicInfo.authorUrl);
+							//发送站内信
+							dialog.dismiss();
+							Intent intent=new Intent(BoardDetailActivity.this,MailNewActivity.class);
+							if(topicInfo!=null){
+								intent.putExtra("receiver",topicInfo.author);
+							}
+							startActivity(intent);
+							
 							
 						}
 					});
-					
-					
 				}
 			});
 			//设置上拉加载更多刷新
@@ -538,7 +543,7 @@ public class BoardDetailActivity extends BaseActivity {
 		dialog.dismiss();
 		AlertDialog.Builder builder=new AlertDialog.Builder(BoardDetailActivity.this);
 		
-		UserDetailHolder holder=new UserDetailHolder(R.layout.user_detail_info);
+		UserDetailHolder holder=new UserDetailHolder(this);
 		//更新用户详情
 		holder.updateStatus(topicInfo.author);
 		

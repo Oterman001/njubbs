@@ -82,7 +82,14 @@ public class MailNewActivity extends MyActionBarActivity implements
 		ibSmiley.setOnClickListener(faceClick);
 		
 		addFaceToolView=this.findViewById(R.id.add_tool);
+		
+		//获取接收人
+		Intent intent = getIntent();
+		String receiver=intent.getStringExtra("receiver");
 
+		if(!TextUtils.isEmpty(receiver)){
+			etReceiver.setText(receiver);
+		}
 		
 		etContent.setOnTouchListener(new OnTouchListener() {
 			@Override

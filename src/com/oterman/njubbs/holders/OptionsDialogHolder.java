@@ -24,7 +24,7 @@ import com.oterman.njubbs.utils.MyToast;
 import com.oterman.njubbs.utils.ThreadManager;
 import com.oterman.njubbs.utils.UiUtils;
 
-public class UserDetailHolder implements OnClickListener {
+public class OptionsDialogHolder implements OnClickListener {
 
 	private TextView tvId;
 	private TextView tvNickname;
@@ -43,7 +43,7 @@ public class UserDetailHolder implements OnClickListener {
 	private UserInfo info;
 	Context context;
 
-	public UserDetailHolder(Context context) {
+	public OptionsDialogHolder(Context context) {
 		rootView = View.inflate(UiUtils.getContext(), R.layout.user_detail_info, null);
 		this.context=context;
 		initViews();
