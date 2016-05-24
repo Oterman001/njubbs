@@ -15,6 +15,11 @@ public class Constants {
 	public static final String FAV_BOARD_URL = "http://bbs.nju.edu.cn/bbsmybrd?type=1&confirm1=1";
 	
 	
+	
+	public static String  getQueryIpUrl(String ip){
+		return "http://test.ip138.com/query/?ip="+ip+"&datatype=text";
+	}
+	
 	public static String getContentUrl(String contentUrl) {
 		//  /bbstcon?board=Pictures&file=M.1463379554.A
 		//   bbstcon?board=Pictures&file=M.1463582774.A

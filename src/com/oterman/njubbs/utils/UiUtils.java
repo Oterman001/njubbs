@@ -22,6 +22,9 @@ public class UiUtils {
 	public static Resources getResource() {
 		return BaseApplication.getApplication().getResources();
 	}
+	public static String getString(int id){
+		return getResource().getString(id);
+	}
 	public static Context getContext(){
 		return BaseApplication.getApplication();
 	}

@@ -134,13 +134,13 @@ public class AboutMeFragment  extends Fragment implements OnClickListener {
 		}
 		
 		if(userInfo!=null){
-			tvId.setText(getResources().getString(R.string.id)+""+userInfo.id+"");
-			tvNickName.setText(getResources().getString(R.string.nickname)+userInfo.nickname);
-			tvXingzuo.setText(getResources().getString(R.string.xingzuo)+userInfo.xingzuo);
-			tvJingyan.setText(getResources().getString(R.string.jingyan)+userInfo.jingyan);
-			tvLife.setText(getResources().getString(R.string.life)+userInfo.life);
-			tvBiaoxian.setText(getResources().getString(R.string.biaoxian)+userInfo.biaoxian);
-			tvQianming.setText(getResources().getString(R.string.qianmingdang)+"ÔÝÎÞ");
+			tvId.setText(Html.fromHtml(getResources().getString(R.string.id2)+""+userInfo.id+""));
+			tvNickName.setText(Html.fromHtml(getResources().getString(R.string.nickname2)+userInfo.nickname));
+			tvXingzuo.setText(Html.fromHtml(getResources().getString(R.string.xingzuo2)+userInfo.xingzuo));
+			tvJingyan.setText(Html.fromHtml(getResources().getString(R.string.jingyan2)+userInfo.jingyan));
+			tvLife.setText(Html.fromHtml(getResources().getString(R.string.life2)+userInfo.life));
+			tvBiaoxian.setText(Html.fromHtml(getResources().getString(R.string.biaoxian2)+userInfo.biaoxian));
+			tvQianming.setText(Html.fromHtml(getResources().getString(R.string.qianmingdang2)+"ÔÝÎÞ"));
 		}
 		
 	}
