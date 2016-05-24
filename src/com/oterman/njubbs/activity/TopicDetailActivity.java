@@ -7,7 +7,6 @@ import java.util.regex.Pattern;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.w3c.dom.Text;
 
 import android.annotation.SuppressLint;
 import android.app.ActionBar;
@@ -54,7 +53,6 @@ import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshBase.Mode;
 import com.handmark.pulltorefresh.library.PullToRefreshBase.OnRefreshListener;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
-import com.lidroid.xutils.BitmapUtils;
 import com.lidroid.xutils.HttpUtils;
 import com.lidroid.xutils.http.RequestParams;
 import com.lidroid.xutils.http.ResponseStream;
@@ -65,6 +63,9 @@ import com.oterman.njubbs.BaseApplication;
 import com.oterman.njubbs.R;
 import com.oterman.njubbs.bean.TopicDetailInfo;
 import com.oterman.njubbs.bean.TopicInfo;
+import com.oterman.njubbs.holders.OptionsDialogHolder;
+import com.oterman.njubbs.holders.UserDetailHolder;
+import com.oterman.njubbs.holders.OptionsDialogHolder.MyOnclickListener;
 import com.oterman.njubbs.protocol.TopicDetailProtocol;
 import com.oterman.njubbs.smiley.SelectFaceHelper;
 import com.oterman.njubbs.smiley.SelectFaceHelper.OnFaceOprateListener;
@@ -98,7 +99,7 @@ public class TopicDetailActivity extends BaseActivity implements
 	private View addFaceToolView;
 	private WaitDialog waitDialog;
 	SelectFaceHelper mFaceHelper;
-	
+
 	@Override
 	public void initViews() {
 		// 显示返回箭头
@@ -150,6 +151,59 @@ public class TopicDetailActivity extends BaseActivity implements
 
 	}
 
+	/**
+	 * 加载下一页数据
+	 */
+	public void onLoadingMore() {
+
+		ThreadManager.getInstance().createLongPool().execute(new Runnable() {
+			private List<TopicDetailInfo> moreList;
+
+			@Override
+			public void run() {
+				if (protocol == null) {
+					protocol = new TopicDetailProtocol();
+				}
+
+				String loadMoreUrl = list.get(list.size() - 1).loadMoreUrl;
+				if (loadMoreUrl != null) {
+					moreList = protocol.loadFromServer(
+							Constants.getContentUrl(loadMoreUrl), false);
+				}
+
+				UiUtils.runOnUiThread(new Runnable() {
+
+					@Override
+					public void run() {
+						if (moreList != null && moreList.size() != 0) {
+							moreList.remove(0);
+							list.addAll(moreList);
+							adapter.notifyDataSetChanged();
+							MyToast.toast("加载成功！");
+						} else {// 没有更多
+							MyToast.toast("欧哦，没有更多了");
+						}
+						// 加载完成，通知回掉
+						pLv.onRefreshComplete();
+					}
+				});
+
+			}
+		});
+
+	}
+
+	/*
+	 * 从服务器中加载数据
+	 */
+	public LoadingState loadDataFromServer() {
+		String url = Constants.getContentUrl(topicInfo.contentUrl);
+		protocol = new TopicDetailProtocol();
+		list = protocol.loadFromServer(url, false);
+		return list == null ? LoadingState.LOAD_FAILED
+				: LoadingState.LOAD_SUCCESS;
+	}
+
 	// 联网成功后创建视图
 	public View createSuccessView() {
 
@@ -177,9 +231,10 @@ public class TopicDetailActivity extends BaseActivity implements
 		lv.setDividerHeight(UiUtils.dip2px(1));
 
 		lv.setDividerHeight(1);
-		
-		//滑动的时候不加载图片
-		lv.setOnScrollListener(new PauseOnScrollListener(ImageLoader.getInstance(), true, true));
+
+		// 滑动的时候不加载图片
+		lv.setOnScrollListener(new PauseOnScrollListener(ImageLoader
+				.getInstance(), true, true));
 
 		adapter = new TopicDetailAdapter();
 		pLv.setAdapter(adapter);
@@ -201,112 +256,26 @@ public class TopicDetailActivity extends BaseActivity implements
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {
 				LogUtil.d("点击了哦" + position);
-//				TopicDetailInfo detailInfo = list.get(position);
-//
-//				MyToast.toast(detailInfo.toString());
+				// TopicDetailInfo detailInfo = list.get(position);
+				//
+				// MyToast.toast(detailInfo.toString());
 			}
 		});
-		
-		//设置长点击事件
+
+		// 设置长点击事件
 		lv.setOnItemLongClickListener(new OnItemLongClickListener() {
 
 			@Override
 			public boolean onItemLongClick(AdapterView<?> parent, View view,
 					int position, long id) {
-				
-				TopicDetailInfo detailInfo = list.get(position - 2);
 
-				AlertDialog.Builder builder = new AlertDialog.Builder(TopicDetailActivity.this);
-
-				View dialogView = View.inflate(getApplicationContext(),R.layout.item_long_click, null);
-
-				builder.setTitle("请选择操作");
-				builder.setView(dialogView);
-
-				builder.setNegativeButton("取消",
-						new AlertDialog.OnClickListener() {
-							@Override
-							public void onClick(DialogInterface dialog,int which) {
-								dialog.dismiss();
-							}
-						});
-
-				AlertDialog replyDialog = builder.create();
-				
-				initReplyDialogView(dialogView, detailInfo, replyDialog);
-				
-				replyDialog.show();
+				handleItemLongClick(position);
 				return true;
 			}
 		});
 
 		return view;
 	}
-
-	/**
-	 * 初始化长按弹出的对话框
-	 */
-	private void initReplyDialogView(View dialogView,
-			final TopicDetailInfo detailInfo, final AlertDialog replyDialog) {
-	
-		TextView tvAuthurDetail = (TextView) dialogView.findViewById(R.id.tv_author_detail);
-		TextView tvModifyTopic = (TextView) dialogView.findViewById(R.id.tv_modify_topic);
-		TextView tvDeleteTopic = (TextView) dialogView.findViewById(R.id.tv_delete_topci);
-		TextView tvMessage = (TextView) dialogView.findViewById(R.id.tv_message_to_author);
-		
-		tvAuthurDetail.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				MyToast.toast("作者详情" + detailInfo.author);
-	
-			}
-		});
-		
-		tvModifyTopic.setText("修改回帖");
-		tvModifyTopic.setOnClickListener(new OnClickListener() {
-	
-			@Override
-			public void onClick(View v) {
-				//MyToast.toast("修改帖子" + detailInfo.content);
-				
-				//跳转到修改页面
-				Intent intent=new Intent(TopicDetailActivity.this,ModifyReplyActivity.class);
-				detailInfo.title=topicInfo.title;
-				intent.putExtra("topicDetailInfo", detailInfo);
-				
-				startActivityForResult(intent, 100);
-				
-				replyDialog.dismiss();
-	
-			}
-		});
-		
-		tvDeleteTopic.setText("删除回帖");
-		tvDeleteTopic.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				String url=Constants.getReplyDelUrl(detailInfo.replyUrl);
-				LogUtil.d("删除回帖链接："+url);
-				//MyToast.toast("正在删除..");
-				
-				//删帖逻辑
-				handleDelReply(url,detailInfo,replyDialog);
-				replyDialog.dismiss();
-			}
-	
-		});
-	
-		
-		tvMessage.setText("站内作者");
-		tvMessage.setOnClickListener(new OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				MyToast.toast("站内：" + detailInfo.author);
-			}
-		});
-	}
-
 
 	/*
 	 * 初始化回帖布局
@@ -374,171 +343,126 @@ public class TopicDetailActivity extends BaseActivity implements
 		return view;
 	}
 
-	@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		super.onActivityResult(requestCode, resultCode, data);
-		if(requestCode==100){//修改回帖成功后跳转  刷新
-			
-			
-			ThreadManager.getInstance().createLongPool().execute(new Runnable() {
-				
-				@Override
-				public void run() {
-					String url = Constants.getContentUrl(topicInfo.contentUrl);
-					if(protocol==null){
-						protocol = new TopicDetailProtocol();
-					}
-					list = protocol.loadFromServer(url, false);
-					
-					runOnUiThread(new Runnable() {
-						
-						@Override
-						public void run() {
-							adapter.notifyDataSetChanged();
-						}
-					});
-					
-					
-				}
-			});
-			
-			
-		}
-	}
-
-	// 表情点击的监听事件
-	OnFaceOprateListener mOnFaceOprateListener = new OnFaceOprateListener() {
-		@Override
-		public void onFaceSelected(SpannableString spanEmojiStr) {
-			if (null != spanEmojiStr) {
-				etContent.append(spanEmojiStr);
-			}
-		}
-
-		@Override
-		public void onFaceDeleted() {
-			int selection = etContent.getSelectionStart();
-			String text = etContent.getText().toString();
-			if (selection > 0) {
-				String text2 = text.substring(selection - 1);
-				if ("]".equals(text2)) {
-					int start = text.lastIndexOf("[");
-					int end = selection;
-					etContent.getText().delete(start, end);
-					return;
-				}
-				etContent.getText().delete(selection - 1, selection);
-			}
-		}
-	};
-
 	/*
-	 * 从服务器中加载数据
+	 * 处理长按点击
 	 */
-	public LoadingState loadDataFromServer() {
-		String url = Constants.getContentUrl(topicInfo.contentUrl);
-		protocol = new TopicDetailProtocol();
-		list = protocol.loadFromServer(url, false);
-		return list == null ? LoadingState.LOAD_FAILED
-				: LoadingState.LOAD_SUCCESS;
-	}
+	private void handleItemLongClick(int position) {
 
-	/**
-	 * 加载下一页数据
-	 */
-	public void onLoadingMore() {
+		final TopicDetailInfo detailInfo = list.get(position - 2);
 
-		ThreadManager.getInstance().createLongPool().execute(new Runnable() {
-			private List<TopicDetailInfo> moreList;
+		AlertDialog.Builder builder = new AlertDialog.Builder(
+				TopicDetailActivity.this);
 
+		// mmlover(xxx) 处理id
+		final String author = detailInfo.author.substring(0,
+				detailInfo.author.indexOf('(')).trim();
+
+		OptionsDialogHolder holder = new OptionsDialogHolder(
+				getApplicationContext(), author);
+
+		builder.setTitle("请选择操作");
+		builder.setView(holder.getRootView());
+
+		builder.setNegativeButton("取消", new AlertDialog.OnClickListener() {
 			@Override
-			public void run() {
-				if (protocol == null) {
-					protocol = new TopicDetailProtocol();
-				}
-
-				String loadMoreUrl = list.get(list.size() - 1).loadMoreUrl;
-				if (loadMoreUrl != null) {
-					moreList = protocol.loadFromServer(
-							Constants.getContentUrl(loadMoreUrl), false);
-				}
-
-				UiUtils.runOnUiThread(new Runnable() {
-
-					@Override
-					public void run() {
-						if (moreList != null && moreList.size() != 0) {
-							moreList.remove(0);
-							list.addAll(moreList);
-							adapter.notifyDataSetChanged();
-							MyToast.toast("加载成功！");
-						} else {// 没有更多
-							MyToast.toast("欧哦，没有更多了");
-						}
-						// 加载完成，通知回掉
-						pLv.onRefreshComplete();
-					}
-				});
-
+			public void onClick(DialogInterface dialog, int which) {
+				dialog.dismiss();
 			}
 		});
 
+		final AlertDialog optionsDialog = builder.create();
+
+		holder.setListener(new MyOnclickListener() {
+			@Override
+			public void onDelete() {
+				handleDelReply(detailInfo, optionsDialog);
+				optionsDialog.dismiss();
+			}
+
+			@Override
+			public void OnQueryAuthurDetail() {
+				// 处理查看用户信息
+				handleShowUserDetail(author, optionsDialog);
+			}
+
+			@Override
+			public void OnModify() {
+				optionsDialog.dismiss();
+				// 跳转到修改页面
+				Intent intent = new Intent(TopicDetailActivity.this,
+						ModifyReplyActivity.class);
+				detailInfo.title = topicInfo.title;
+				intent.putExtra("topicDetailInfo", detailInfo);
+				startActivityForResult(intent, 100);
+
+			}
+
+			@Override
+			public void OnMailTo() {
+				optionsDialog.dismiss();
+				Intent intent = new Intent(getApplicationContext(),
+						MailNewActivity.class);
+				if (topicInfo != null) {
+					intent.putExtra("receiver", topicInfo.author);
+				}
+				startActivity(intent);
+			}
+		});
+
+		optionsDialog.show();
 	}
 
 	/**
-	 * 点击发送按钮 发送回帖
+	 * 处理查看用户信息
+	 * @param userId
+	 * @param replyDialog
 	 */
-	@Override
-	public void onClick(View v) {
-		switch (v.getId()) {
-		case R.id.ib_reply_send:
+	protected void handleShowUserDetail(String userId,final AlertDialog replyDialog) {
+		replyDialog.dismiss();
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
-			// 校验数据
-			String content = etContent.getText().toString();
+		UserDetailHolder holder = new UserDetailHolder(this);
+		// 更新用户详情
+		holder.updateStatus(userId);
+		builder.setView(holder.getRootView());
+		builder.show();
 
-			if (TextUtils.isEmpty(content)) {
-				MyToast.toast("内容不能为空哦!");
-				return;
-			}
-
-			handleReplyTopic(content);
-
-			break;
-
-		default:
-			break;
-		}
 	}
 
-	//处理删回帖
-	private void handleDelReply(final String url,final TopicDetailInfo detailInfo,final AlertDialog replyDialog ) {
-		if(waitDialog==null){
+	/**
+	 * 删除回帖
+	 */
+	private void handleDelReply(final TopicDetailInfo detailInfo,
+			final AlertDialog replyDialog) {
+		if (waitDialog == null) {
 			waitDialog = new WaitDialog(this);
 		}
 		waitDialog.setMessage("努力的删帖中。。。");
 		waitDialog.show();
-		
+
 		ThreadManager.getInstance().createShortPool().execute(new Runnable() {
 			@Override
 			public void run() {
-				HttpUtils httpUtils=new HttpUtils();
-				
+				HttpUtils httpUtils = new HttpUtils();
+				String url = Constants.getReplyDelUrl(detailInfo.replyUrl);
+				LogUtil.d("删除回帖链接：" + url);
 				try {
-					RequestParams rp=new RequestParams();
-					//先自动登陆
-					String cookie=BaseApplication.getCookie();
-					if(cookie==null){
-						cookie=BaseApplication.autoLogin();
+					RequestParams rp = new RequestParams();
+					// 先自动登陆
+					String cookie = BaseApplication.getCookie();
+					if (cookie == null) {
+						cookie = BaseApplication.autoLogin();
 					}
-					
+
 					rp.addHeader("Cookie", cookie);
-					
-					ResponseStream responseStream = httpUtils.sendSync(HttpMethod.GET, url,rp);
-					
+
+					ResponseStream responseStream = httpUtils.sendSync(
+							HttpMethod.GET, url, rp);
+
 					String result = BaseApplication.StreamToStr(responseStream);
-					LogUtil.d("删除回帖结果："+result);
-					
-					if(result.contains("返回本讨论区")){//删除成功
+					LogUtil.d("删除回帖结果：" + result);
+
+					if (result.contains("返回本讨论区")) {// 删除成功
 						runOnUiThread(new Runnable() {
 							@Override
 							public void run() {
@@ -548,7 +472,7 @@ public class TopicDetailActivity extends BaseActivity implements
 								adapter.notifyDataSetChanged();
 							}
 						});
-					}else if(result.contains("无权")){
+					} else if (result.contains("无权")) {
 						runOnUiThread(new Runnable() {
 							@Override
 							public void run() {
@@ -567,12 +491,15 @@ public class TopicDetailActivity extends BaseActivity implements
 							waitDialog.dismiss();
 						}
 					});
-				} 
+				}
 			}
 		});
 	}
 
-	// 处理回帖
+	/**
+	 * 回帖
+	 * @param content
+	 */
 	private void handleReplyTopic(final String content) {
 
 		waitDialog = new WaitDialog(this);
@@ -605,7 +532,7 @@ public class TopicDetailActivity extends BaseActivity implements
 					LogUtil.d("回帖结果：" + result);
 
 					if (result.contains("匆匆过客")) {// 发帖失败了。
-						
+
 						runOnUiThread(new Runnable() {
 							@Override
 							public void run() {
@@ -622,8 +549,8 @@ public class TopicDetailActivity extends BaseActivity implements
 								startActivity(intent);
 							}
 						});
-						
-					} else if(result.contains("发文间隔过密")){
+
+					} else if (result.contains("发文间隔过密")) {
 						// 更新界面
 						runOnUiThread(new Runnable() {
 							@Override
@@ -637,7 +564,7 @@ public class TopicDetailActivity extends BaseActivity implements
 								cbSmiley.setChecked(false);
 							}
 						});
-					}else {
+					} else {
 						// 回帖成功
 						if (protocol == null) {
 							protocol = new TopicDetailProtocol();
@@ -658,7 +585,7 @@ public class TopicDetailActivity extends BaseActivity implements
 								MyToast.toast("回帖成功！");
 								// 刷新界面
 								adapter.notifyDataSetChanged();
-								//pLv.getRefreshableView().setSelection(list.size());
+								// pLv.getRefreshableView().setSelection(list.size());
 								etContent.setText("");
 								cbSmiley.setChecked(false);
 							}
@@ -755,9 +682,35 @@ public class TopicDetailActivity extends BaseActivity implements
 
 	}
 
+	/**
+	 * 点击发送按钮 发送回帖
+	 */
+	@Override
+	public void onClick(View v) {
+		switch (v.getId()) {
+		case R.id.ib_reply_send:
+
+			// 校验数据
+			String content = etContent.getText().toString();
+
+			if (TextUtils.isEmpty(content)) {
+				MyToast.toast("内容不能为空哦!");
+				return;
+			}
+
+			handleReplyTopic(content);
+
+			break;
+
+		default:
+			break;
+		}
+	}
+
 	class TopicDetailAdapter extends BaseAdapter {
 		SmileyParser sp = SmileyParser.getInstance(getApplicationContext());
-		Random r=new Random();
+		Random r = new Random();
+
 		@Override
 		public int getCount() {
 			return list.size();
@@ -800,64 +753,75 @@ public class TopicDetailActivity extends BaseActivity implements
 			// mmlover(mmlover)
 			String author = info.author;
 			// author=author.replaceFirst("\\(","\n(" );
-			
-			//做标记 
-			if(author!=null&&topicInfo.author!=null&&author.contains(topicInfo.author)){
-				author=" 楼主 "+author;
-				SpannableStringBuilder ssb=new SpannableStringBuilder(author);
-				int start=0;
-				int end=start+" 楼主 ".length();
-				ssb.setSpan(new BackgroundColorSpan(Color.RED), start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-				ssb.setSpan(new ForegroundColorSpan(Color.WHITE), start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+			// 做标记
+			if (author != null && topicInfo.author != null
+					&& author.contains(topicInfo.author)) {
+				author = " 楼主 " + author;
+				SpannableStringBuilder ssb = new SpannableStringBuilder(author);
+				int start = 0;
+				int end = start + " 楼主 ".length();
+				ssb.setSpan(new BackgroundColorSpan(Color.RED), start, end,
+						Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+				ssb.setSpan(new ForegroundColorSpan(Color.WHITE), start, end,
+						Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 				holder.tvAuthor.setText(ssb);
-			}else{
+			} else {
 				String id = SPutils.getFromSP("id");
-				if(!TextUtils.isEmpty(id)&&author.contains(id)){
-					author=" 我 "+author;
-					SpannableStringBuilder ssb=new SpannableStringBuilder(author);
-					int start=0;
-					int end=start+" 我 ".length();
-					
-					ssb.setSpan(new BackgroundColorSpan(0xFF8a2be2), start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-					ssb.setSpan(new ForegroundColorSpan(Color.WHITE), start, end, Spannable.SPAN_EXCLUSIVE_INCLUSIVE);
-					
+				if (!TextUtils.isEmpty(id) && author.contains(id)) {
+					author = " 我 " + author;
+					SpannableStringBuilder ssb = new SpannableStringBuilder(
+							author);
+					int start = 0;
+					int end = start + " 我 ".length();
+
+					ssb.setSpan(new BackgroundColorSpan(0xFF8a2be2), start,
+							end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+					ssb.setSpan(new ForegroundColorSpan(Color.WHITE), start,
+							end, Spannable.SPAN_EXCLUSIVE_INCLUSIVE);
+
 					holder.tvAuthor.setText(ssb);
-				}else{
+				} else {
 					holder.tvAuthor.setText(author);
 				}
 			}
 
-			holder.tvContent.setMovementMethod(ScrollingMovementMethod.getInstance());// 设置可滚动
-			holder.tvContent.setMovementMethod(LinkMovementMethod.getInstance());// 设置超链接可以打开网页
+			holder.tvContent.setMovementMethod(ScrollingMovementMethod
+					.getInstance());// 设置可滚动
+			holder.tvContent
+					.setMovementMethod(LinkMovementMethod.getInstance());// 设置超链接可以打开网页
 
-			Spanned spanned = Html.fromHtml(info.content, 
-					new URLImageParser(holder.tvContent),
+			Spanned spanned = Html.fromHtml(info.content, new URLImageParser(
+					holder.tvContent),
 					new MyTagHandler(getApplicationContext()));
-			
+
 			holder.tvContent.setText(sp.strToSmiley(spanned));
 			holder.tvContent.invalidate();
 
 			holder.tvFloorth.setText("第" + info.floorth + "楼");
 			holder.tvPubTime.setText(info.pubTime);
 
-//			if (position % 2 == 0) {
-//				convertView.setBackgroundColor(0xFFEBEBEB);
-//			} else {
-//				convertView.setBackgroundColor(0xAAD0D0E0);
-//			}
-			
+			// if (position % 2 == 0) {
+			// convertView.setBackgroundColor(0xFFEBEBEB);
+			// } else {
+			// convertView.setBackgroundColor(0xAAD0D0E0);
+			// }
+
 			Drawable drawable;
-			
-			if(r.nextInt(2)%2!=0){
-				drawable=getResources().getDrawable(R.drawable.ic_gender_female);
-			}else{
-				drawable=getResources().getDrawable(R.drawable.ic_gender_male);
+
+			if (r.nextInt(2) % 2 != 0) {
+				drawable = getResources().getDrawable(
+						R.drawable.ic_gender_female);
+			} else {
+				drawable = getResources()
+						.getDrawable(R.drawable.ic_gender_male);
 			}
-			
-			//随机设置左边的图标
-			drawable.setBounds(0,0,drawable.getMinimumWidth(),drawable.getMinimumHeight());
+
+			// 随机设置左边的图标
+			drawable.setBounds(0, 0, drawable.getMinimumWidth(),
+					drawable.getMinimumHeight());
 			holder.tvAuthor.setCompoundDrawables(drawable, null, null, null);
-			
+
 			return convertView;
 		}
 
@@ -869,8 +833,64 @@ public class TopicDetailActivity extends BaseActivity implements
 		}
 
 	}
-	
-	
+
+	// 表情点击的监听事件
+	OnFaceOprateListener mOnFaceOprateListener = new OnFaceOprateListener() {
+		@Override
+		public void onFaceSelected(SpannableString spanEmojiStr) {
+			if (null != spanEmojiStr) {
+				etContent.append(spanEmojiStr);
+			}
+		}
+
+		@Override
+		public void onFaceDeleted() {
+			int selection = etContent.getSelectionStart();
+			String text = etContent.getText().toString();
+			if (selection > 0) {
+				String text2 = text.substring(selection - 1);
+				if ("]".equals(text2)) {
+					int start = text.lastIndexOf("[");
+					int end = selection;
+					etContent.getText().delete(start, end);
+					return;
+				}
+				etContent.getText().delete(selection - 1, selection);
+			}
+		}
+	};
+
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+		if (requestCode == 100) {// 修改回帖成功后跳转 刷新
+
+			ThreadManager.getInstance().createLongPool()
+					.execute(new Runnable() {
+
+						@Override
+						public void run() {
+							String url = Constants
+									.getContentUrl(topicInfo.contentUrl);
+							if (protocol == null) {
+								protocol = new TopicDetailProtocol();
+							}
+							list = protocol.loadFromServer(url, false);
+
+							runOnUiThread(new Runnable() {
+
+								@Override
+								public void run() {
+									adapter.notifyDataSetChanged();
+								}
+							});
+
+						}
+					});
+
+		}
+	}
+
 	// 隐藏软键盘
 	public void hideInputManager(Context ct) {
 		try {
@@ -883,6 +903,5 @@ public class TopicDetailActivity extends BaseActivity implements
 			Log.e("", "hideInputManager Catch error,skip it!", e);
 		}
 	}
-	
 
 }

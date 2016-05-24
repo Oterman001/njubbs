@@ -8,10 +8,16 @@ import android.app.ActionBar.LayoutParams;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.SystemClock;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.text.Html;
+import android.text.Spannable;
+import android.text.SpannableStringBuilder;
+import android.text.style.BackgroundColorSpan;
+import android.text.style.ForegroundColorSpan;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -63,6 +69,7 @@ public class MailBoxActicity extends BaseActivity implements OnClickListener {
 	private MySwipeRefreshLayout sr;
 	private ImageButton ibNewMail;
 	private MailInfo mailInfo;
+	private TextView tvState;
 
 	@Override
 	protected CharSequence getBarTitle() {
@@ -74,10 +81,21 @@ public class MailBoxActicity extends BaseActivity implements OnClickListener {
 		super.onActivityResult(requestCode, resultCode, data);
 
 		if (resultCode == 111) {
-			dataList.remove(mailInfo);
-			adapter.notifyDataSetChanged();
+//			dataList.remove(mailInfo);
+//			adapter.notifyDataSetChanged();
+			updateData();
 
 		}
+	}
+
+	public LoadingState loadDataFromServer() {
+		if (protocol == null) {
+			protocol = new MailProtocol();
+		}
+	
+		dataList = protocol.loadFromServer(Constants.BBS_MAIL_URL, false);
+	
+		return dataList == null ? LoadingState.LOAD_FAILED:LoadingState.LOAD_SUCCESS;
 	}
 
 	@Override
@@ -95,6 +113,17 @@ public class MailBoxActicity extends BaseActivity implements OnClickListener {
 		rootView = View.inflate(getApplicationContext(),
 				R.layout.activity_message_main, null);
 		plv = (PullToRefreshListView) rootView.findViewById(R.id.pLv_message);
+		
+		lv = plv.getRefreshableView();
+		
+		View headerView=View.inflate(getApplicationContext(), R.layout.mailbox_header, null);
+		tvState = (TextView) headerView.findViewById(R.id.tv_mailbox_state);
+		
+		String state = getMailStatStr();
+				
+		tvState.setText(Html.fromHtml(state));
+		
+		lv.addHeaderView(headerView);
 
 		sr.setViewGroup(plv.getRefreshableView());
 
@@ -115,12 +144,12 @@ public class MailBoxActicity extends BaseActivity implements OnClickListener {
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {
 
-				mailInfo = dataList.get(position - 1);
-
-				Intent intent = new Intent(getApplicationContext(),
-						MailContentActicity.class);
+				mailInfo = dataList.get(position - 2);
+				Intent intent = new Intent(getApplicationContext(),MailContentActicity.class);
 				intent.putExtra("contentUrl", mailInfo.contentUrl);
 				startActivityForResult(intent, 100);
+				mailInfo.hasRead=true;
+				adapter.notifyDataSetChanged();
 
 			}
 		});
@@ -177,32 +206,7 @@ public class MailBoxActicity extends BaseActivity implements OnClickListener {
 		// 下拉刷新
 		sr.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
 			public void onRefresh() {
-				ThreadManager.getInstance().createLongPool()
-						.execute(new Runnable() {
-
-							@Override
-							public void run() {
-								if (protocol == null) {
-									protocol = new MailProtocol();
-								}
-
-								dataList = protocol.loadFromServer(
-										Constants.BBS_MAIL_URL, false);
-								if (dataList != null) {
-									runOnUiThread(new Runnable() {
-										public void run() {
-											sr.setRefreshing(false);
-											MyToast.toast("刷新成功!");
-
-											adapter.notifyDataSetChanged();
-
-										}
-									});
-								}
-
-							}
-						});
-
+				updateData();
 			}
 		});
 
@@ -211,16 +215,40 @@ public class MailBoxActicity extends BaseActivity implements OnClickListener {
 
 		return sr;
 	}
+	
+	private void updateData() {
+		ThreadManager.getInstance().createLongPool()
+				.execute(new Runnable() {
+					@Override
+					public void run() {
+						if (protocol == null) {
+							protocol = new MailProtocol();
+						}
+						 List<MailInfo> list = protocol.loadFromServer(
+								Constants.BBS_MAIL_URL, false);
+						 
+						 if(list!=null){
+							 dataList=list;
+								runOnUiThread(new Runnable() {
+									public void run() {
+										sr.setRefreshing(false);
+										//MyToast.toast("刷新成功!");
+										tvState.setText(Html.fromHtml(getMailStatStr()));
+										
+										adapter.notifyDataSetChanged();
+									}
+								});
+						 }
+					}
+				});
+	}
 
-	public LoadingState loadDataFromServer() {
-		if (protocol == null) {
-			protocol = new MailProtocol();
-		}
-
-		dataList = protocol.loadFromServer(Constants.BBS_MAIL_URL, false);
-
-		return dataList == null ? LoadingState.LOAD_FAILED
-				: LoadingState.LOAD_SUCCESS;
+	private String getMailStatStr() {
+		String state="信箱总数：<font color='purple'>"+MailInfo.totalCount+
+					  "</font>  封,  信箱容量：<font color='purple'>"+MailInfo.totalSpace+"</font>  K<br>"+
+					  "已使用量：<font color='purple'>"+MailInfo.usedSpace+
+					  "</font>  K,  剩余容量：<font color='purple'>"+MailInfo.getAvaiSpace()+"</font>  K";
+		return state;
 	}
 
 	class MessageAdapter extends BaseAdapter {
@@ -264,7 +292,21 @@ public class MailBoxActicity extends BaseActivity implements OnClickListener {
 
 			MailInfo info = dataList.get(position);
 
-			holder.tvTitle.setText(info.title);
+			//标记是否读
+			String title=info.title;
+			if(!info.hasRead){//未读
+				title="  新  "+title;
+				SpannableStringBuilder ssb=new SpannableStringBuilder(title);
+				int start=0;
+				int end=start+"  新  ".length();
+				ssb.setSpan(new BackgroundColorSpan(Color.RED), start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+				ssb.setSpan(new ForegroundColorSpan(Color.WHITE), start, end,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+				holder.tvTitle.setText(ssb);
+				
+			}else{//已读
+				holder.tvTitle.setText(info.title);
+			}
+			
 			holder.tvAuthor.setText(info.author);
 			holder.tvPubTime.setText(info.postTime);
 			Drawable drawable;

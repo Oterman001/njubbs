@@ -7,17 +7,10 @@
     android:paddingLeft="5dp"
     android:paddingRight="5dp" >
 
-    <TextView
-        android:id="@+id/tv_author_detail"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:clickable="true"
-        android:gravity="left"
-        android:padding="7dp"
-        android:text="查看作者"
-        android:textColor="@color/black"
-        android:textSize="20sp" />
+    <Button
+        android:id="@+id/btn_author_detail"
+        style="@style/options_btn_style"
+        android:text="查看作者" />
 
     <View
         android:layout_width="fill_parent"
@@ -25,16 +18,10 @@
         android:background="#44000000"
         android:paddingLeft="7dp" />
 
-    <TextView
-        android:id="@+id/tv_message_to_author"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:clickable="true"
-        android:padding="7dp"
-        android:text="站内作者"
-        android:textColor="@color/black"
-        android:textSize="20sp" />
+    <Button
+        android:id="@+id/btn_mail_to_author"
+        style="@style/options_btn_style"
+        android:text="站内作者" />
 
     <View
         android:layout_width="fill_parent"
@@ -42,16 +29,10 @@
         android:background="#44000000"
         android:paddingLeft="7dp" />
 
-    <TextView
-        android:id="@+id/tv_delete_topci"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:clickable="true"
-        android:padding="7dp"
-        android:text="删除帖子"
-        android:textColor="@color/black"
-        android:textSize="20sp" />
+    <Button
+        android:id="@+id/btn_delete_topci"
+        style="@style/options_btn_style"
+        android:text="删除帖子" />
 
     <View
         android:layout_width="fill_parent"
@@ -59,15 +40,9 @@
         android:background="#44000000"
         android:paddingLeft="7dp" />
 
-    <TextView
-        android:id="@+id/tv_modify_topic"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:clickable="true"
-        android:padding="7dp"
-        android:text="修改帖子"
-        android:textColor="@color/black"
-        android:textSize="20sp" />
+    <Button
+        android:id="@+id/btn_modify_topic"
+        style="@style/options_btn_style"
+        android:text="修改帖子" />
 
 </LinearLayout>

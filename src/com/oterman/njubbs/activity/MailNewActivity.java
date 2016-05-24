@@ -38,6 +38,7 @@ import com.oterman.njubbs.utils.LogUtil;
 import com.oterman.njubbs.utils.MyToast;
 import com.oterman.njubbs.utils.SmileyParser;
 import com.oterman.njubbs.utils.ThreadManager;
+import com.oterman.njubbs.utils.UiUtils;
 import com.oterman.njubbs.view.MyTagHandler;
 import com.oterman.njubbs.view.URLImageParser;
 import com.oterman.njubbs.view.WaitDialog;
@@ -112,27 +113,7 @@ public class MailNewActivity extends MyActionBarActivity implements
 		
 	}
 
-	//点击脸表情，调出所有表情
-		View.OnClickListener faceClick = new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				if (null == mFaceHelper) {
-					mFaceHelper = new SelectFaceHelper(MailNewActivity.this, addFaceToolView);
-					//点击表情时，设置监听
-					mFaceHelper.setFaceOpreateListener(mOnFaceOprateListener2);
-				}
-				if (isVisbilityFace) {
-					isVisbilityFace = false;
-					addFaceToolView.setVisibility(View.GONE);
-				} else {
-					isVisbilityFace = true;
-					addFaceToolView.setVisibility(View.VISIBLE);
-					hideInputManager(MailNewActivity.this);//隐藏软键盘
-				}
-			}
-		};
-		
-		// 隐藏软键盘
+	// 隐藏软键盘
 		public void hideInputManager(Context ct) {
 			try {
 				((InputMethodManager) getSystemService(INPUT_METHOD_SERVICE)).hideSoftInputFromWindow(((Activity) ct)
@@ -274,14 +255,18 @@ public class MailNewActivity extends MyActionBarActivity implements
 								etContent.setText("");
 							}
 						});
-					}else{//回信失败
+					}else {//回信失败
 						runOnUiThread(new Runnable() {
 							@Override
 							public void run() {
 								if (dialog != null) {
 									dialog.dismiss();
 								}
-								MyToast.toast("发信失败！重新登陆再试试");
+								MyToast.toast("自动登陆失败，请手动登录");
+								//跳转到登陆界面
+								Intent intent=new Intent(UiUtils.getContext(),LoginActivity.class);
+								intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+								UiUtils.getContext().startActivity(intent);
 							}
 						});
 					}
@@ -375,5 +360,25 @@ public class MailNewActivity extends MyActionBarActivity implements
 		});
 
 	}
+
+	//点击脸表情，调出所有表情
+	View.OnClickListener faceClick = new View.OnClickListener() {
+		@Override
+		public void onClick(View v) {
+			if (null == mFaceHelper) {
+				mFaceHelper = new SelectFaceHelper(MailNewActivity.this, addFaceToolView);
+				//点击表情时，设置监听
+				mFaceHelper.setFaceOpreateListener(mOnFaceOprateListener2);
+			}
+			if (isVisbilityFace) {
+				isVisbilityFace = false;
+				addFaceToolView.setVisibility(View.GONE);
+			} else {
+				isVisbilityFace = true;
+				addFaceToolView.setVisibility(View.VISIBLE);
+				hideInputManager(MailNewActivity.this);//隐藏软键盘
+			}
+		}
+	};
 
 }

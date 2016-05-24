@@ -10,6 +10,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import android.content.Intent;
 import android.text.TextUtils;
 
 import com.lidroid.xutils.HttpUtils;
@@ -17,10 +18,12 @@ import com.lidroid.xutils.http.RequestParams;
 import com.lidroid.xutils.http.ResponseStream;
 import com.lidroid.xutils.http.client.HttpRequest.HttpMethod;
 import com.oterman.njubbs.BaseApplication;
+import com.oterman.njubbs.activity.LoginActivity;
 import com.oterman.njubbs.bean.MailInfo;
 import com.oterman.njubbs.utils.CacheUtilsNew;
-import com.oterman.njubbs.utils.Constants;
 import com.oterman.njubbs.utils.LogUtil;
+import com.oterman.njubbs.utils.MyToast;
+import com.oterman.njubbs.utils.UiUtils;
 
 public class MailProtocol {
 
@@ -46,6 +49,9 @@ public class MailProtocol {
 			ResponseStream stream = httpUtils.sendSync(HttpMethod.GET,url, rp);
 
 			String result = BaseApplication.StreamToStr(stream);
+			
+			//LogUtil.d("Õ¾ÄÚ½á¹û£º"+result);
+			
 			if (!result.contains("ÄúÉÐÎ´µÇÂ¼")) {
 				Document doc = Jsoup.parse(result);
 				if (doc != null) {
@@ -56,6 +62,19 @@ public class MailProtocol {
 						CacheUtilsNew.saveToLocal(getSaveKey(), result);
 					}
 				}
+			}else if(result.contains("Î´µÇÂ¼")){
+				//Î´µÇÂ¼£¬Ìø×ªµ½µÇÂ½½çÃæ
+				UiUtils.runOnUiThread(new Runnable() {
+					@Override
+					public void run() {
+						MyToast.toast("×Ô¶¯µÇÂ½Ê§°Ü£¬ÇëÊÖ¶¯µÇÂ¼");
+						//Ìø×ªµ½µÇÂ½½çÃæ
+						Intent intent=new Intent(UiUtils.getContext(),LoginActivity.class);
+						intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+						UiUtils.getContext().startActivity(intent);
+					}
+				});
+
 			}
 
 		} catch (Exception e) {
@@ -114,6 +133,11 @@ public class MailProtocol {
 			Elements tdEles = trEles.get(i).select("td");
 
 			if (tdEles.size() == 6) {
+				boolean hasRead=true;
+				if(tdEles.get(2).select("img").size()==1){
+					hasRead=false;
+				}
+				
 				String author = tdEles.get(3).text();
 
 				String postTime = tdEles.get(4).text();
@@ -124,7 +148,7 @@ public class MailProtocol {
 				String contentUrl = aEle.attr("href");
 
 				MailInfo mail = new MailInfo(author, postTime, title,
-						contentUrl, loadingMoreUrl);
+						contentUrl, loadingMoreUrl,hasRead);
 				list.add(0,mail);
 			}
 

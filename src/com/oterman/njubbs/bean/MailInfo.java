@@ -9,6 +9,7 @@ public class MailInfo implements Serializable{
 	public String title;
 	
 	public String contentUrl;
+	public boolean hasRead;
 	
 	//¾ßÌåÄÚÈÝ
 	public String content;
@@ -38,13 +39,14 @@ public class MailInfo implements Serializable{
 	}
 
 	public MailInfo(String author, String postTime, String title,
-			String contentUrl, String loadMoreUrl) {
+			String contentUrl, String loadMoreUrl,boolean hasRead) {
 		super();
 		this.author = author;
 		this.postTime = postTime;
 		this.title = title;
 		this.contentUrl = contentUrl;
 		this.loadMoreUrl = loadMoreUrl;
+		this.hasRead=hasRead;
 	}
 	
 	
@@ -59,7 +61,7 @@ public class MailInfo implements Serializable{
 		this.delUrl = delUrl;
 	}
 
-	public String getAvaiSpace(){
+	public static String getAvaiSpace(){
 		int ava=Integer.parseInt(totalSpace)-Integer.parseInt(usedSpace);
 		return ava+"";
 	}

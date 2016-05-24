@@ -42,6 +42,8 @@ import com.lidroid.xutils.http.client.HttpRequest.HttpMethod;
 import com.oterman.njubbs.BaseApplication;
 import com.oterman.njubbs.R;
 import com.oterman.njubbs.bean.TopicInfo;
+import com.oterman.njubbs.holders.OptionsDialogHolder;
+import com.oterman.njubbs.holders.OptionsDialogHolder.MyOnclickListener;
 import com.oterman.njubbs.holders.UserDetailHolder;
 import com.oterman.njubbs.protocol.BoardTopicProtocol;
 import com.oterman.njubbs.utils.Constants;
@@ -86,6 +88,7 @@ public class BoardDetailActivity extends BaseActivity {
 		View view=View.inflate(getApplicationContext(), R.layout.actionbar_custom_backtitle, null);
 		
 		View back = view.findViewById(R.id.btn_back);
+		//返回箭头
         back.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -108,7 +111,7 @@ public class BoardDetailActivity extends BaseActivity {
 			}
 		}
         
-        //点击事件
+        //收藏
         cbFav.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -118,6 +121,7 @@ public class BoardDetailActivity extends BaseActivity {
         
         cbFav.setVisibility(View.VISIBLE);
         
+        //新发帖
 		btnNewTopic.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -171,25 +175,8 @@ public class BoardDetailActivity extends BaseActivity {
 				@Override
 				public void onItemClick(AdapterView<?> parent, View view,
 						int position, long id) {
-					TopicInfo info = dataList.get(position-1);
-					Intent intent = new Intent(getApplicationContext(),TopicDetailActivity.class);
-					info.board =board;
-					info.boardUrl = boardUrl;
-					intent.putExtra("topicInfo", info);
-					
-					//标记为读过；
-					String readedTopics = SPutils.getFromSP("readedTopics");
-					String readUrl=info.contentUrl;
-					if(TextUtils.isEmpty(readedTopics)){//没有记录
-						SPutils.saveToSP("readedTopics",readUrl );
-					}else{
-						if(!readedTopics.contains(readUrl)){//没读过
-							SPutils.saveToSP("readedTopics", readedTopics+"#"+readUrl);
-						}
-					}
-					adapter.notifyDataSetChanged();
-					
-					startActivity(intent);
+					//处理条目点击
+					handleItemClick(position);
 				}
 			});
 			
@@ -201,89 +188,18 @@ public class BoardDetailActivity extends BaseActivity {
 					
 					LogUtil.d("长按了哦.."+position);
 					
-					TopicInfo topicInfo = dataList.get(position-1);
-					
-					AlertDialog.Builder  builder=new AlertDialog.Builder(BoardDetailActivity.this);
-					
-					View dialogView=View.inflate(getApplicationContext(), R.layout.item_long_click, null);
-					
-					
-					builder.setTitle("请选择操作");
-					builder.setView(dialogView);
-					
-					builder.setNegativeButton("取消", new AlertDialog.OnClickListener() {
-						@Override
-						public void onClick(DialogInterface dialog, int which) {
-							dialog.dismiss();
-						}
-					});
-					
-					AlertDialog dialog = builder.create();
-					initDialogView(dialogView,topicInfo,dialog);
-					dialog.show();
+					//处理长按点击事件
+					handleLongClickItem(position);
 					
 					return true;
 				}
-	
-				private void initDialogView(View dialogView, final TopicInfo topicInfo, final AlertDialog dialog) {
-					
-					TextView tvAuthurDetail=(TextView) dialogView.findViewById(R.id.tv_author_detail);
-					TextView tvModifyTopic=(TextView) dialogView.findViewById(R.id.tv_modify_topic);
-					TextView tvDeleteTopic=(TextView) dialogView.findViewById(R.id.tv_delete_topci);
-					TextView tvMessage=(TextView) dialogView.findViewById(R.id.tv_message_to_author);
-					
-					tvAuthurDetail.setOnClickListener(new OnClickListener() {
-						@Override
-						public void onClick(View v) {
-							//MyToast.toast("作者详情"+topicInfo.authorUrl);
-							handleShowUserDetail(topicInfo,dialog);
-							
-						}
-					});
-					
-					tvModifyTopic.setOnClickListener(new OnClickListener() {
-						
-						@Override
-						public void onClick(View v) {
-							MyToast.toast("修改帖子"+topicInfo.title);
-							
-							
-						}
-					});
-					
-					tvDeleteTopic.setOnClickListener(new OnClickListener() {
-						@Override
-						public void onClick(View v) {
-	//						MyToast.toast("删除帖子"+topicInfo.contentUrl);
-	//						LogUtil.d("帖子链接："+topicInfo.contentUrl);
-							
-							//处理删帖逻辑
-							handleDeleteTopic(topicInfo, dialog);
-							
-						}
-					});
-					tvMessage.setOnClickListener(new OnClickListener() {
-						
-						@Override
-						public void onClick(View v) {
-							//MyToast.toast("站内"+topicInfo.authorUrl);
-							//发送站内信
-							dialog.dismiss();
-							Intent intent=new Intent(BoardDetailActivity.this,MailNewActivity.class);
-							if(topicInfo!=null){
-								intent.putExtra("receiver",topicInfo.author);
-							}
-							startActivity(intent);
-							
-							
-						}
-					});
-				}
 			});
+			
 			//设置上拉加载更多刷新
 			plv.setOnRefreshListener(new OnRefreshListener<ListView>() {
 				@Override
 				public void onRefresh(PullToRefreshBase<ListView> refreshView) {
+					
 					plv.getLoadingLayoutProxy().setRefreshingLabel("正在加载...嘿咻嘿咻");
 					plv.getLoadingLayoutProxy().setPullLabel("上拉加载更多");
 					plv.getLoadingLayoutProxy().setReleaseLabel("松手开始加载");
@@ -355,6 +271,84 @@ public class BoardDetailActivity extends BaseActivity {
 					android.R.color.holo_blue_light);
 			return sr;
 		}
+	
+	/**
+	 * 处理条目点击
+	 * @param position
+	 */
+	private void handleItemClick(int position) {
+		TopicInfo info = dataList.get(position-1);
+		Intent intent = new Intent(getApplicationContext(),TopicDetailActivity.class);
+		info.board =board;
+		info.boardUrl = boardUrl;
+		intent.putExtra("topicInfo", info);
+		
+		//标记为读过；
+		String readedTopics = SPutils.getFromSP("readedTopics");
+		String readUrl=info.contentUrl;
+		if(TextUtils.isEmpty(readedTopics)){//没有记录
+			SPutils.saveToSP("readedTopics",readUrl );
+		}else{
+			if(!readedTopics.contains(readUrl)){//没读过
+				SPutils.saveToSP("readedTopics", readedTopics+"#"+readUrl);
+			}
+		}
+		adapter.notifyDataSetChanged();
+		
+		startActivity(intent);
+	}
+	/**
+	 * 处理长点击
+	 * @param position
+	 */
+	private void handleLongClickItem(int position) {
+		final TopicInfo topicInfo = dataList.get(position-1);
+		
+		AlertDialog.Builder  builder=new AlertDialog.Builder(BoardDetailActivity.this);
+		
+		OptionsDialogHolder holder=new OptionsDialogHolder(getApplicationContext(), topicInfo.author);
+		
+		builder.setTitle("请选择操作");
+		builder.setView(holder.getRootView());
+		
+		builder.setNegativeButton("取消", new AlertDialog.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				dialog.dismiss();
+			}
+		});
+		
+		final AlertDialog dialog = builder.create();
+		
+		holder.setListener(new MyOnclickListener() {
+			
+			@Override
+			public void onDelete() {
+				handleDeleteTopic(topicInfo, dialog);
+			}
+			
+			@Override
+			public void OnQueryAuthurDetail() {
+				handleShowUserDetail(topicInfo,dialog);
+			}
+			
+			@Override
+			public void OnModify() {
+				MyToast.toast("修改了哦");
+			}
+			
+			@Override
+			public void OnMailTo() {
+				dialog.dismiss();
+				Intent intent=new Intent(BoardDetailActivity.this,MailNewActivity.class);
+				if(topicInfo!=null){
+					intent.putExtra("receiver",topicInfo.author);
+				}
+				startActivity(intent);
+			}
+		});
+		dialog.show();
+	}
 	/**
 	 * 处理收藏版面
 	 * @param isChecked
@@ -553,8 +547,6 @@ public class BoardDetailActivity extends BaseActivity {
 	}
 	/**
 	 * 处理长按删帖逻辑
-	 * @param topicInfo
-	 * @param dialog
 	 */
 	private void handleDeleteTopic(final TopicInfo topicInfo,
 			final AlertDialog dialog) {
