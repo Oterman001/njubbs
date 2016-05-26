@@ -1,4 +1,4 @@
-package com.oterman.njubbs.activity;
+package com.oterman.njubbs.activity.mail;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -20,7 +20,9 @@ import com.lidroid.xutils.http.ResponseStream;
 import com.lidroid.xutils.http.client.HttpRequest.HttpMethod;
 import com.oterman.njubbs.BaseApplication;
 import com.oterman.njubbs.R;
+import com.oterman.njubbs.activity.BaseActivity;
 import com.oterman.njubbs.bean.MailInfo;
+import com.oterman.njubbs.dialog.WaitDialog;
 import com.oterman.njubbs.protocol.MailContentProtocol;
 import com.oterman.njubbs.utils.Constants;
 import com.oterman.njubbs.utils.LogUtil;
@@ -30,7 +32,6 @@ import com.oterman.njubbs.utils.ThreadManager;
 import com.oterman.njubbs.view.LoadingView.LoadingState;
 import com.oterman.njubbs.view.MyTagHandler;
 import com.oterman.njubbs.view.URLImageParser;
-import com.oterman.njubbs.view.WaitDialog;
 
 /**
  * ∞Ê√ÊœÍ«È

@@ -12,12 +12,13 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.oterman.njubbs.BaseApplication;
 import com.oterman.njubbs.R;
 import com.oterman.njubbs.activity.LoginActivity;
-import com.oterman.njubbs.activity.MailBoxActicity;
+import com.oterman.njubbs.activity.mail.MailBoxActicity;
 import com.oterman.njubbs.bean.UserInfo;
 import com.oterman.njubbs.utils.LogUtil;
 import com.oterman.njubbs.utils.MyToast;
@@ -37,6 +38,7 @@ public class AboutMeFragment  extends Fragment implements OnClickListener {
 	private TextView tvUnlogin;
 	private ViewGroup llUserContainer;
 	private TextView tvMail;
+	private LinearLayout llMail;
 
 	@Override
 	@Nullable
@@ -50,11 +52,12 @@ public class AboutMeFragment  extends Fragment implements OnClickListener {
 		userInfo=BaseApplication.getLogedUser();//获取登录的user
 		
 		btnLogin = (Button) rootView.findViewById(R.id.btn_login);
-		tvMail = (TextView) rootView.findViewById(R.id.tv_mail);
+		llMail = (LinearLayout) rootView.findViewById(R.id.ll_mail);
 		
 		btnLogin.setOnClickListener(this);//登陆、注销按钮
-		tvMail.setOnClickListener(this);//站内
 		
+		//tvMail.setOnClickListener(this);//站内
+		llMail.setOnClickListener(this);
 		
 		initUserViews();
 		
@@ -161,7 +164,7 @@ public class AboutMeFragment  extends Fragment implements OnClickListener {
 			}
 			break;
 			
-		case R.id.tv_mail://点击的是站内
+		case R.id.ll_mail://点击的是站内
 			Intent intent2=new Intent(getContext(),MailBoxActicity.class);
 			startActivity(intent2);
 			break;

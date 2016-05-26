@@ -37,6 +37,7 @@ import com.lidroid.xutils.http.client.HttpRequest.HttpMethod;
 import com.oterman.njubbs.BaseApplication;
 import com.oterman.njubbs.R;
 import com.oterman.njubbs.bean.UserInfo;
+import com.oterman.njubbs.dialog.WaitDialog;
 import com.oterman.njubbs.protocol.UserProtocol;
 import com.oterman.njubbs.utils.Constants;
 import com.oterman.njubbs.utils.LogUtil;
@@ -44,7 +45,6 @@ import com.oterman.njubbs.utils.MyToast;
 import com.oterman.njubbs.utils.SPutils;
 import com.oterman.njubbs.utils.ThreadManager;
 import com.oterman.njubbs.utils.UiUtils;
-import com.oterman.njubbs.view.WaitDialog;
 
 @SuppressLint("NewApi")
 public class LoginActivity extends MyActionBarActivity  implements OnClickListener {

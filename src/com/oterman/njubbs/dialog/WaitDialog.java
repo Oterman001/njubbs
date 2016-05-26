@@ -1,4 +1,4 @@
-package com.oterman.njubbs.view;
+package com.oterman.njubbs.dialog;
 
 import android.app.Dialog;
 import android.content.Context;

@@ -1,5 +1,7 @@
 package com.oterman.njubbs.view;
 
+import com.oterman.njubbs.dialog.WaitDialog;
+
 public interface DialogControl {
 
 	public abstract void hideWaitDialog();

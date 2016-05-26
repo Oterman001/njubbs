@@ -11,6 +11,7 @@ import org.jsoup.nodes.Document;
 
 import com.oterman.njubbs.bean.UserInfo;
 import com.oterman.njubbs.utils.Constants;
+import com.oterman.njubbs.utils.LogUtil;
 
 public class UserProtocol {
 
@@ -66,6 +67,7 @@ public class UserProtocol {
 					} else {
 						info.isOnline = false;
 					}
+					LogUtil.d("从网上获取用户数据："+info.id);
 					return info;
 				}
 

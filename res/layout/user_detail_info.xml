@@ -14,52 +14,52 @@
         android:textSize="22sp" />
 
     <TextView
-         android:id="@+id/tv_user_detail_nickname"
+        android:id="@+id/tv_user_detail_nickname"
         style="@style/user_item_style"
         android:text="昵称：加载中.." />
 
     <TextView
-          android:id="@+id/tv_user_detail_xingzuo"
+        android:id="@+id/tv_user_detail_xingzuo"
         style="@style/user_item_style"
         android:text="星座：加载中.." />
 
     <TextView
-          android:id="@+id/tv_user_detail_jingyan"
+        android:id="@+id/tv_user_detail_jingyan"
         style="@style/user_item_style"
         android:text="经验：加载中.." />
 
     <TextView
-          android:id="@+id/tv_user_detail_biaoxian"
+        android:id="@+id/tv_user_detail_biaoxian"
         style="@style/user_item_style"
         android:text="表现：加载中.." />
 
     <TextView
-          android:id="@+id/tv_user_detail_life"
+        android:id="@+id/tv_user_detail_life"
         style="@style/user_item_style"
         android:text="生命力：加载中.." />
 
     <TextView
-          android:id="@+id/tv_user_detail_online"
+        android:id="@+id/tv_user_detail_online"
         style="@style/user_item_style"
         android:text="是否在线：加载中.." />
 
     <TextView
-          android:id="@+id/tv_user_detail_totalvisit"
+        android:id="@+id/tv_user_detail_totalvisit"
         style="@style/user_item_style"
         android:text="上站次数：加载中.." />
 
     <TextView
-          android:id="@+id/tv_user_detail_totalpost"
+        android:id="@+id/tv_user_detail_totalpost"
         style="@style/user_item_style"
         android:text="发文章数：加载中.." />
 
     <TextView
-          android:id="@+id/tv_user_detail_lastvisitip"
+        android:id="@+id/tv_user_detail_lastvisitip"
         style="@style/user_item_style"
         android:text="来访地址：加载中.." />
 
     <TextView
-          android:id="@+id/tv_user_detail_lastvisittime"
+        android:id="@+id/tv_user_detail_lastvisittime"
         style="@style/user_item_style"
         android:text="上次来访：加载中.." />
 
@@ -71,24 +71,25 @@
         android:weightSum="2" >
 
         <Button
+            android:id="@+id/btn_add_friend"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:background="@null"
-            android:text="发站内信"
-            android:textColor="#fff"
+            android:text="加为好友"
+            android:textColor="@color/main_green"
             android:textSize="18sp"
-            android:visibility="invisible" />
+            android:visibility="visible" />
 
         <Button
             android:id="@+id/btn_send_mail"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
             android:layout_weight="1"
             android:background="@null"
             android:text="发站内信"
             android:textColor="@color/main_green"
-            android:layout_marginBottom="10dp"
             android:textSize="18sp" />
     </LinearLayout>
 

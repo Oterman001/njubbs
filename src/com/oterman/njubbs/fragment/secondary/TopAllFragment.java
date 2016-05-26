@@ -17,7 +17,7 @@ import android.widget.ExpandableListView.OnChildClickListener;
 import android.widget.TextView;
 
 import com.oterman.njubbs.R;
-import com.oterman.njubbs.activity.TopicDetailActivity;
+import com.oterman.njubbs.activity.topic.TopicDetailActivity;
 import com.oterman.njubbs.bean.TopicInfo;
 import com.oterman.njubbs.fragment.BaseFragment;
 import com.oterman.njubbs.protocol.TopAllProtocol;

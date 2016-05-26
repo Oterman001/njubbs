@@ -15,8 +15,9 @@ import com.lidroid.xutils.http.ResponseInfo;
 import com.lidroid.xutils.http.callback.RequestCallBack;
 import com.lidroid.xutils.http.client.HttpRequest.HttpMethod;
 import com.oterman.njubbs.R;
-import com.oterman.njubbs.activity.MailNewActivity;
+import com.oterman.njubbs.activity.mail.MailNewActivity;
 import com.oterman.njubbs.bean.UserInfo;
+import com.oterman.njubbs.dialog.AddFriendDialog;
 import com.oterman.njubbs.protocol.UserProtocol;
 import com.oterman.njubbs.utils.Constants;
 import com.oterman.njubbs.utils.LogUtil;
@@ -42,6 +43,9 @@ public class UserDetailHolder implements OnClickListener {
 	private Button btnSendMail;
 	private UserInfo info;
 	Context context;
+	private Button btnAddFriend;
+	private String id;
+	AlertDialog  ownerDialog;
 
 	public UserDetailHolder(Context context) {
 		rootView = View.inflate(UiUtils.getContext(), R.layout.user_detail_info, null);
@@ -73,9 +77,12 @@ public class UserDetailHolder implements OnClickListener {
 				.findViewById(R.id.tv_user_detail_lastvisitip);
 		tvOnline = (TextView) rootView.findViewById(R.id.tv_user_detail_online);
 		
-		btnSendMail = (Button) rootView.findViewById(R.id.btn_send_mail);
+		btnSendMail = (Button)rootView.findViewById(R.id.btn_send_mail);
+		btnAddFriend = (Button) rootView.findViewById(R.id.btn_add_friend);
 		
 		btnSendMail.setOnClickListener(this);
+		btnAddFriend.setOnClickListener(this);
+		
 	}
 
 	public View getRootView() {
@@ -83,14 +90,14 @@ public class UserDetailHolder implements OnClickListener {
 	}
 
 	public void updateStatus(final String userId) {
+		id = userId;
 		// 新开线程，联网更新
 		ThreadManager.getInstance().createLongPool().execute(new Runnable() {
-			
-
 			@Override
 			public void run() {
 
 				UserProtocol protocol = new UserProtocol();
+				
 				info = protocol.getUserInfoFromServer(userId);
 				
 				// 根据ip获取地址
@@ -107,6 +114,10 @@ public class UserDetailHolder implements OnClickListener {
 										result = result.replaceAll("中国", "")
 												.trim();
 									}
+									
+									result=result.replaceAll("(\\d|\\.)*", "").trim();
+									
+									
 									LogUtil.d(info.lastVistiIP + ":" + result);
 
 									tvLastVisitIp.setText(Html.fromHtml(UiUtils
@@ -124,6 +135,8 @@ public class UserDetailHolder implements OnClickListener {
 
 								}
 							});
+				}else{
+					
 				}
 
 				// 更新界面
@@ -194,7 +207,7 @@ public class UserDetailHolder implements OnClickListener {
 							}
 							MyToast.toast("加载成功。");
 						}else{
-							MyToast.toast("加载失败，请检查网络");
+							MyToast.toast("加载失败，该用户不存在！");
 						}
 
 					}
@@ -218,10 +231,22 @@ public class UserDetailHolder implements OnClickListener {
 			context.startActivity(intent);
 			
 			break;
-
+			
+		case R.id.btn_add_friend://添加好友
+			//弹出对话框
+			if(ownerDialog!=null){
+				ownerDialog.dismiss();
+			}
+			AddFriendDialog dialog=new AddFriendDialog(context);
+			dialog.setAddId(id);
+			dialog.show();
+			break;
 		default:
 			break;
 		}
 	}
 
+	public void setOwnerDialog(AlertDialog dialog){
+		this.ownerDialog=dialog;
+	}
 }

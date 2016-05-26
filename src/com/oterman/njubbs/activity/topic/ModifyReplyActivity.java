@@ -1,4 +1,4 @@
-package com.oterman.njubbs.activity;
+package com.oterman.njubbs.activity.topic;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,6 +6,11 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.sql.Date;
+import java.text.SimpleDateFormat;
+import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import android.app.Activity;
 import android.content.Context;
@@ -19,7 +24,6 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 
@@ -29,27 +33,30 @@ import com.lidroid.xutils.http.ResponseStream;
 import com.lidroid.xutils.http.client.HttpRequest.HttpMethod;
 import com.oterman.njubbs.BaseApplication;
 import com.oterman.njubbs.R;
+import com.oterman.njubbs.activity.MyActionBarActivity;
+import com.oterman.njubbs.bean.TopicDetailInfo;
+import com.oterman.njubbs.dialog.WaitDialog;
 import com.oterman.njubbs.smiley.SelectFaceHelper;
 import com.oterman.njubbs.smiley.SelectFaceHelper.OnFaceOprateListener;
 import com.oterman.njubbs.utils.Constants;
 import com.oterman.njubbs.utils.LogUtil;
 import com.oterman.njubbs.utils.MyToast;
+import com.oterman.njubbs.utils.SmileyParser;
 import com.oterman.njubbs.utils.ThreadManager;
-import com.oterman.njubbs.view.WaitDialog;
 
-public class NewTopicActivity extends MyActionBarActivity implements
+public class ModifyReplyActivity extends MyActionBarActivity implements
 		OnClickListener {
 
 	private EditText etTitle;
 	private EditText etContent;
 	private String board;
 	private WaitDialog dialog;
-	private String boardUrl;
 	private ImageButton ibSmiley;
 	private View addFaceToolView;
 	private SelectFaceHelper mFaceHelper;
 	private ImageButton ibPost;
 	boolean isVisbilityFace=false;
+	private TopicDetailInfo topicDetailInfo;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -65,7 +72,7 @@ public class NewTopicActivity extends MyActionBarActivity implements
 		
 		ibPost.setOnClickListener(this);
 			
-		etTitle = (EditText) this.findViewById(R.id.et_titile);
+		etTitle = (EditText) this.findViewById(R.id.et_titile);//标题
 
 		etContent = (EditText) this.findViewById(R.id.et_content);
 		
@@ -75,7 +82,6 @@ public class NewTopicActivity extends MyActionBarActivity implements
 		
 		addFaceToolView=this.findViewById(R.id.add_tool);
 
-		//btnSend.setOnClickListener(this);
 		
 		etContent.setOnTouchListener(new OnTouchListener() {
 			@Override
@@ -94,11 +100,19 @@ public class NewTopicActivity extends MyActionBarActivity implements
 				return false;
 			}
 		});	
-
+		
+		//回去要修改回帖的数据
 		Intent intent = getIntent();
-
-		board = intent.getStringExtra("board");
-		boardUrl = intent.getStringExtra("boardUrl");
+		topicDetailInfo = (TopicDetailInfo) intent.getSerializableExtra("topicDetailInfo");
+		
+		//初始化
+		etTitle.setText("Re:"+topicDetailInfo.title);
+		etTitle.setEnabled(false);
+		
+		SmileyParser sp=SmileyParser.getInstance(getApplicationContext());
+		String content=topicDetailInfo.content.replaceAll("<br>","\n");
+		etContent.setText(sp.strToSmiley(content));
+		
 	}
 
 	//点击脸表情，调出所有表情
@@ -106,7 +120,7 @@ public class NewTopicActivity extends MyActionBarActivity implements
 			@Override
 			public void onClick(View v) {
 				if (null == mFaceHelper) {
-					mFaceHelper = new SelectFaceHelper(NewTopicActivity.this, addFaceToolView);
+					mFaceHelper = new SelectFaceHelper(ModifyReplyActivity.this, addFaceToolView);
 					//点击表情时，设置监听
 					mFaceHelper.setFaceOpreateListener(mOnFaceOprateListener2);
 				}
@@ -116,7 +130,7 @@ public class NewTopicActivity extends MyActionBarActivity implements
 				} else {
 					isVisbilityFace = true;
 					addFaceToolView.setVisibility(View.VISIBLE);
-					hideInputManager(NewTopicActivity.this);//隐藏软键盘
+					hideInputManager(ModifyReplyActivity.this);//隐藏软键盘
 				}
 			}
 		};
@@ -131,20 +145,6 @@ public class NewTopicActivity extends MyActionBarActivity implements
 			}
 		}
 		
-		
-		/*
-		public static void showSoftKeyboard(View view) {
-			((InputMethodManager) BaseApplication.context().getSystemService(
-			Context.INPUT_METHOD_SERVICE)).showSoftInput(view,
-			InputMethodManager.SHOW_FORCED);
-		}
-		
-		public static void toogleSoftKeyboard(View view) {
-			((InputMethodManager) BaseApplication.context().getSystemService(
-			Context.INPUT_METHOD_SERVICE)).toggleSoftInput(0,
-			InputMethodManager.HIDE_NOT_ALWAYS);
-		}
-		 */
 		
 		//表情点击的监听事件
 		OnFaceOprateListener mOnFaceOprateListener2 = new OnFaceOprateListener() {
@@ -176,7 +176,7 @@ public class NewTopicActivity extends MyActionBarActivity implements
 	
 	@Override
 	protected String getBarTitle() {
-		return "发帖";
+		return "修改回帖";
 	}
 
 	@Override
@@ -184,13 +184,7 @@ public class NewTopicActivity extends MyActionBarActivity implements
 		switch (v.getId()) {
 		case R.id.btn_post_topic:// 处理发帖
 			// 获取数据
-			String title = etTitle.getText().toString();
 			String content = etContent.getText().toString();
-
-			if (TextUtils.isEmpty(title)) {
-				MyToast.toast("请输入标题");
-				return;
-			}
 
 			if (TextUtils.isEmpty(content)) {
 				MyToast.toast("请输入内容");
@@ -198,8 +192,7 @@ public class NewTopicActivity extends MyActionBarActivity implements
 			}
 
 			// 处理发帖逻辑
-			handleNewTopic(title, content);
-
+			handleModifyReply(content);
 			// MyToast.toast("发帖："+board);
 
 			break;
@@ -211,15 +204,15 @@ public class NewTopicActivity extends MyActionBarActivity implements
 	}
 
 	/**
-	 * 处理发帖逻辑
+	 * 处理
 	 * 
 	 * @param title
 	 * @param content
 	 */
-	private void handleNewTopic(final String title, final String content) {
+	private void handleModifyReply( final String content) {
 
 		dialog = new WaitDialog(this);
-		dialog.setMessage("努力的发帖中。。。");
+		dialog.setMessage("努力修改回帖中。。。");
 		dialog.show();
 
 		ThreadManager.getInstance().createLongPool().execute(new Runnable() {
@@ -237,25 +230,48 @@ public class NewTopicActivity extends MyActionBarActivity implements
 					//服务器编码为gbk
 					RequestParams params = new RequestParams("gbk");
 					
-					//处理中文问题
-					String title2=URLEncoder.encode(title, "gbk");
-					params.addBodyParameter("title", title);
+					//bbspst?board=WorldFootball&amp;file=M.1462286742.A
 					
-					params.addBodyParameter("pid", 0 + "");
-					params.addBodyParameter("reid", 0 + "");
-					params.addBodyParameter("signature", 1 + "");
-					params.addBodyParameter("autocr", "on");
+					String replyUrl=topicDetailInfo.replyUrl;
+					String file=replyUrl.substring(replyUrl.lastIndexOf("=")+1);
 					
-					String content2=URLEncoder.encode(content, "gbk");
-					params.addBodyParameter("text", content);
+					Pattern p=Pattern.compile(".*?board=(.*?)\\&.*file=(.*?)");
+					Matcher matcher = p.matcher(replyUrl);
+					String board=null;
+					if(matcher.find()){
+						board=matcher.group(1);
+					}
+					
+					
+					params.addBodyParameter("type", 1 + "");
+					params.addBodyParameter("file", file);
+					params.addBodyParameter("board", board);
+					/*
+	 发信人: 1Q84 (天天移动的肾形石), 信区: WorldFootball 
+	  标 题: Re: 20年一晃而过，写在拜仁被淘汰前。 
+	  发信站: 南京大学小百合站 (Tue May 3 22:45:42 2016) 
+					 */
+					
+					StringBuffer header=new StringBuffer();
+					header.append("发信人: "+topicDetailInfo.author).append(", 信区: ").append(board);
+					header.append("\n").append("标 题: Re: ").append(topicDetailInfo.title);
+					Date date=new Date(System.currentTimeMillis());
+					
+					SimpleDateFormat format=new SimpleDateFormat("EEE MMM dd HH:mm:ss yyyy",Locale.ENGLISH);
+					String dateStr=format.format(date);
+					
+					header.append("\n").append("发信站: 南京大学小百合站 ("+dateStr+")\n\n ");
+					
+					content.replaceAll("<br>", "\n");
+					header.append(content).append("\n\n--  ");
+					
+					params.addBodyParameter("text", header.toString());
 				
 					
 					//添加cookie
 					String cookie = BaseApplication.getCookie();
 					if(cookie==null){//自动登陆
-						
 						cookie=BaseApplication.autoLogin();
-						
 						if(cookie!=null){
 							runOnUiThread(new Runnable() {
 								@Override
@@ -267,55 +283,36 @@ public class NewTopicActivity extends MyActionBarActivity implements
 					}
 					
 					params.addHeader("Cookie", cookie);
-					ResponseStream stream = httpUtils.sendSync(HttpMethod.POST,Constants.getNewTopicUrl(board), params);
+					String modifyUrl=Constants.getModifyReplyUrl();
+					ResponseStream stream = httpUtils.sendSync(HttpMethod.POST,modifyUrl, params);
 					
-					String result = StreamToStr(stream);
-					LogUtil.d("发帖结果：" + result);
+					String result = BaseApplication.StreamToStr(stream);
+					LogUtil.d("修改回帖结果：" + result);
 					
-					if(result.contains("匆匆过客")){
-						//登陆失败，手动登录
-						runOnUiThread(new Runnable() {
-							@Override
-							public void run() {
-								if (dialog != null) {
-									dialog.dismiss();
-								}
-								MyToast.toast("自动登陆失败，请登录！");
-								// 跳转到登陆页面
-								Intent intent = new Intent(
-										NewTopicActivity.this,
-										LoginActivity.class);
-								startActivity(intent);
-							}
-						});
+					if(result.contains("发文间隔过密")){
 						
-					}else if(result.contains("发文间隔过密")){
 						runOnUiThread(new Runnable() {
 							@Override
 							public void run() {
 								if (dialog != null) {
 									dialog.dismiss();
 								}
-								MyToast.toast("发文间隔过密，稍后重试！");
-//								Intent intent=new Intent(getApplicationContext(),BoardDetailActivity.class);
-//								intent.putExtra("boardUrl", boardUrl);
-//								startActivity(intent);
+								MyToast.toast("修改成功！");
 								//finish();
 							}
 						});
-						
-					} else{//成功
+					}else{
 						runOnUiThread(new Runnable() {
 							@Override
 							public void run() {
 								if (dialog != null) {
 									dialog.dismiss();
 								}
-								MyToast.toast("发帖成功！");
-								Intent intent=new Intent(getApplicationContext(),BoardDetailActivity.class);
-								
-								intent.putExtra("boardUrl", boardUrl);
-								startActivity(intent);
+								MyToast.toast("修改成功！");
+//								Intent intent=new Intent(getApplicationContext(),BoardDetailActivity.class);
+//								
+//								intent.putExtra("boardUrl", boardUrl);
+//								startActivity(intent);
 								
 								finish();
 							}
@@ -331,18 +328,4 @@ public class NewTopicActivity extends MyActionBarActivity implements
 
 	}
 
-	private String StreamToStr(ResponseStream responseStream)
-			throws UnsupportedEncodingException, IOException {
-		InputStream is = responseStream.getBaseStream();
-
-		BufferedReader br = new BufferedReader(new InputStreamReader(is, "gbk"));
-
-		String line = null;
-		StringBuffer sb = new StringBuffer();
-
-		while ((line = br.readLine()) != null) {
-			sb.append(line);
-		}
-		return sb.toString();
-	}
 }

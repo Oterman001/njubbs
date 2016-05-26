@@ -32,5 +32,13 @@
     <string name="life">生命力：</string>
     <string name="xingzuo">星座：</string>
     -->
+    
+    <string name="update_log">
+        v0.93:\n
+        	1.优化了长按显示操作的逻辑，不该显示的不显示；\n
+        	2.十大的帖子也可长按啦。\n
+        	3.站内信容量显示，新站内有标记。\n
+        	4.实现以长按查看用户详情。
+    </string>
 
 </resources>

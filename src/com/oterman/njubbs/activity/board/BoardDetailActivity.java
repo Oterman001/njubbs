@@ -1,4 +1,4 @@
-package com.oterman.njubbs.activity;
+package com.oterman.njubbs.activity.board;
 
 import java.util.List;
 import java.util.Random;
@@ -41,7 +41,12 @@ import com.lidroid.xutils.http.ResponseStream;
 import com.lidroid.xutils.http.client.HttpRequest.HttpMethod;
 import com.oterman.njubbs.BaseApplication;
 import com.oterman.njubbs.R;
+import com.oterman.njubbs.activity.BaseActivity;
+import com.oterman.njubbs.activity.mail.MailNewActivity;
+import com.oterman.njubbs.activity.topic.NewTopicActivity;
+import com.oterman.njubbs.activity.topic.TopicDetailActivity;
 import com.oterman.njubbs.bean.TopicInfo;
+import com.oterman.njubbs.dialog.WaitDialog;
 import com.oterman.njubbs.holders.OptionsDialogHolder;
 import com.oterman.njubbs.holders.OptionsDialogHolder.MyOnclickListener;
 import com.oterman.njubbs.holders.UserDetailHolder;
@@ -54,7 +59,6 @@ import com.oterman.njubbs.utils.ThreadManager;
 import com.oterman.njubbs.utils.UiUtils;
 import com.oterman.njubbs.view.LoadingView.LoadingState;
 import com.oterman.njubbs.view.MySwipeRefreshLayout;
-import com.oterman.njubbs.view.WaitDialog;
 
 /**
  * 版面详情
@@ -306,7 +310,7 @@ public class BoardDetailActivity extends BaseActivity {
 		
 		AlertDialog.Builder  builder=new AlertDialog.Builder(BoardDetailActivity.this);
 		
-		OptionsDialogHolder holder=new OptionsDialogHolder(getApplicationContext(), topicInfo.author);
+		OptionsDialogHolder holder=new OptionsDialogHolder(getApplicationContext(), topicInfo.author,false);
 		
 		builder.setTitle("请选择操作");
 		builder.setView(holder.getRootView());
@@ -345,6 +349,11 @@ public class BoardDetailActivity extends BaseActivity {
 					intent.putExtra("receiver",topicInfo.author);
 				}
 				startActivity(intent);
+			}
+
+			@Override
+			public void onReplyFloor() {
+				
 			}
 		});
 		dialog.show();
@@ -536,13 +545,14 @@ public class BoardDetailActivity extends BaseActivity {
 		
 		dialog.dismiss();
 		AlertDialog.Builder builder=new AlertDialog.Builder(BoardDetailActivity.this);
-		
+		AlertDialog dialog2=null;
 		UserDetailHolder holder=new UserDetailHolder(this);
 		//更新用户详情
 		holder.updateStatus(topicInfo.author);
 		
 		builder.setView(holder.getRootView());
-		builder.show();
+		dialog2=builder.show();
+		holder.setOwnerDialog(dialog2);
 		
 	}
 	/**

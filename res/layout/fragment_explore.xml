@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical" >
+
+    <LinearLayout
+        android:id="@+id/ll_friends"
+        style="@style/option_item_rl"
+        android:layout_marginTop="@dimen/space_20" >
+
+        <ImageView
+            style="@style/option_item_img"
+            android:layout_marginRight="@dimen/space_10"
+            android:background="@drawable/icon_explore_friends"
+            android:contentDescription="@null" />
+
+        <TextView
+            style="@style/option_item_text"
+            android:text="我的好友" />
+    </LinearLayout>
+    
+        <View
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:background="@color/list_divider_color"
+        android:visibility="visible" />
+
+    <LinearLayout
+        android:id="@+id/rl_city"
+        style="@style/option_item_rl"
+        android:visibility="visible" >
+
+        <ImageView
+            style="@style/option_item_img"
+            android:background="@drawable/icon_explore_finduser"
+            android:contentDescription="@null" />
+
+        <TextView
+            style="@style/option_item_text"
+            android:text="查找版面" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/rl_find_osc"
+        style="@style/option_item_rl"
+        android:layout_marginTop="@dimen/space_20" >
+
+        <ImageView
+            style="@style/option_item_img"
+            android:layout_marginRight="@dimen/space_10"
+            android:background="@drawable/icon_explore_scan"
+            android:contentDescription="@null" />
+
+        <TextView
+            style="@style/option_item_text"
+            android:text="找人" />
+    </LinearLayout>
+
+
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:background="@color/list_divider_color" />
+
+    <LinearLayout
+        android:id="@+id/rl_activities"
+        style="@style/option_item_rl" >
+
+        <ImageView
+            style="@style/option_item_img"
+            android:background="@drawable/icon_explore_event"
+            android:contentDescription="@null" />
+
+        <TextView
+            style="@style/option_item_text"
+            android:text="找帖子" />
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:background="@color/list_divider_color" />
+
+    <LinearLayout
+        android:id="@+id/rl_scan"
+        style="@style/option_item_rl"
+        android:layout_marginTop="@dimen/space_20" >
+
+        <ImageView
+            style="@style/option_item_img"
+            android:background="@drawable/icon_explore_topic2"
+            android:contentDescription="@null" />
+
+        <TextView
+            style="@style/option_item_text"
+            android:text="我的帖子" />
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:background="@color/list_divider_color" />
+
+    <LinearLayout
+        android:id="@+id/ll_colleages"
+        style="@style/option_item_rl" >
+
+        <ImageView
+            style="@style/option_item_img"
+            android:background="@drawable/icon_explore_samecity"
+            android:contentDescription="@null" />
+
+        <TextView
+            style="@style/option_item_text"
+            android:text="其他高校" />
+    </LinearLayout>
+
+</LinearLayout>

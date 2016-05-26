@@ -1,7 +1,5 @@
 package com.oterman.njubbs.holders;
 
-import java.security.acl.Owner;
-
 import android.content.Context;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -23,29 +21,36 @@ public class OptionsDialogHolder implements OnClickListener {
 	private String ownerId;
 	
 	MyOnclickListener listener;
+	private Button btnReply;
+	
+	private boolean isInsideTopic;
 	
 	public void setListener(MyOnclickListener listener) {
 		this.listener = listener;
 	}
 
-	public OptionsDialogHolder(Context context,String ownerId) {
+	public OptionsDialogHolder(Context context,String ownerId,boolean isInsideTopic) {
 		rootView = View.inflate(UiUtils.getContext(), R.layout.item_long_click, null);
 		this.context=context;
 		this.ownerId=ownerId;
+		this.isInsideTopic=isInsideTopic;
 		initViews();
 	}
 
 	private void initViews() {
 		
 		btnAuthorDetail = (Button) rootView.findViewById(R.id.btn_author_detail);
+		
 		btnMail = (Button) rootView.findViewById(R.id.btn_mail_to_author);
 		btnDelete = (Button) rootView.findViewById(R.id.btn_delete_topci);
 		btnModify = (Button) rootView.findViewById(R.id.btn_modify_topic);
+		btnReply = (Button) rootView.findViewById(R.id.btn_reply_floor);
 		
 		btnAuthorDetail.setOnClickListener(this);
 		btnMail.setOnClickListener(this);
 		btnDelete.setOnClickListener(this);
 		btnModify.setOnClickListener(this);
+		btnReply.setOnClickListener(this);
 		
 		updateVisibility();
 		
@@ -61,6 +66,12 @@ public class OptionsDialogHolder implements OnClickListener {
 		}else{//不是同一人
 			this.btnDelete.setVisibility(View.GONE);
 			this.btnModify.setVisibility(View.GONE);
+		}
+		
+		if(isInsideTopic){//帖子内部点击
+			this.btnReply.setVisibility(View.VISIBLE);
+		}else{
+			this.btnReply.setVisibility(View.GONE);
 		}
 		
 	}
@@ -94,6 +105,11 @@ public class OptionsDialogHolder implements OnClickListener {
 				listener.OnModify();
 			}
 			break;
+		case R.id.btn_reply_floor:
+			if(listener!=null){
+				listener.onReplyFloor();
+			}
+			break;
 
 		default:
 			break;
@@ -106,6 +122,7 @@ public class OptionsDialogHolder implements OnClickListener {
 		public void OnQueryAuthurDetail();
 		public void OnModify();
 		public void OnMailTo();
+		public void onReplyFloor();
 	}
 
 }

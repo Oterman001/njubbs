@@ -13,6 +13,8 @@ public class Constants {
 	public static final String REPLY_MAIL_URL = "http://bbs.nju.edu.cn/bbssndmail";
 	public static final String ALL_BOARDS_URL = "http://bbs.nju.edu.cn/bbsall";
 	public static final String FAV_BOARD_URL = "http://bbs.nju.edu.cn/bbsmybrd?type=1&confirm1=1";
+	public static final String BBS_FRIEND_ALL_URL = "http://bbs.nju.edu.cn/bbsfall";
+	public static final String BBS_ADD_FRIEND_URL = "http://bbs.nju.edu.cn/bbsfadd";
 	
 	
 	

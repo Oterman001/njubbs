@@ -25,8 +25,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.oterman.njubbs.R;
-import com.oterman.njubbs.activity.MailNewActivity;
-import com.oterman.njubbs.activity.TopicDetailActivity;
+import com.oterman.njubbs.activity.mail.MailNewActivity;
+import com.oterman.njubbs.activity.topic.TopicDetailActivity;
 import com.oterman.njubbs.bean.TopicInfo;
 import com.oterman.njubbs.fragment.BaseFragment;
 import com.oterman.njubbs.holders.OptionsDialogHolder;
@@ -108,7 +108,7 @@ public class TopTenFragment extends BaseFragment implements OnRefreshListener {
 				
 				AlertDialog.Builder  builder=new AlertDialog.Builder(getActivity());
 				
-				OptionsDialogHolder holder=new OptionsDialogHolder(getContext(), topicInfo.author);
+				OptionsDialogHolder holder=new OptionsDialogHolder(getContext(), topicInfo.author,false);
 				builder.setTitle("请选择操作");
 				builder.setView(holder.getRootView());
 				builder.setNegativeButton("取消", new AlertDialog.OnClickListener() {
@@ -141,6 +141,10 @@ public class TopTenFragment extends BaseFragment implements OnRefreshListener {
 						}
 						startActivity(intent);
 					}
+					@Override
+					public void onReplyFloor() {
+						
+					}
 				});
 				dialog.show();
 				return true;
@@ -168,13 +172,14 @@ public class TopTenFragment extends BaseFragment implements OnRefreshListener {
 	protected void handleShowUserDetail(TopicInfo topicInfo, AlertDialog dialog) {
 		dialog.dismiss();
 		AlertDialog.Builder builder=new AlertDialog.Builder(getActivity());
-		
+		AlertDialog dialog2=null;
 		UserDetailHolder holder=new UserDetailHolder(getContext());
 		//更新用户详情
 		holder.updateStatus(topicInfo.author);
 		
 		builder.setView(holder.getRootView());
-		builder.show();
+		dialog2=builder.show();
+		holder.setOwnerDialog(dialog2);
 	}
 
 	/**

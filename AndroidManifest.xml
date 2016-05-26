@@ -35,12 +35,12 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.oterman.njubbs.activity.TopicDetailActivity"
+            android:name="com.oterman.njubbs.activity.topic.TopicDetailActivity"
             android:windowSoftInputMode="adjustResize|stateHidden" />
 
         <!-- android:windowSoftInputMode="adjustPan|stateHidden" -->
         <activity
-            android:name="com.oterman.njubbs.activity.BoardDetailActivity"
+            android:name="com.oterman.njubbs.activity.board.BoardDetailActivity"
             android:launchMode="singleTask" />
         <!-- android:launchMode="singleTask" -->
         <activity
@@ -50,19 +50,23 @@
             android:name="com.oterman.njubbs.activity.BigImageActivity"
             android:label="图片" />
         <activity
-            android:name="com.oterman.njubbs.activity.NewTopicActivity"
+            android:name="com.oterman.njubbs.activity.topic.NewTopicActivity"
             android:windowSoftInputMode="adjustResize|stateVisible" />
         <activity
-            android:name="com.oterman.njubbs.activity.ModifyReplyActivity"
+            android:name="com.oterman.njubbs.activity.topic.ModifyReplyActivity"
             android:windowSoftInputMode="adjustResize|stateVisible" />
-        <activity android:name=".activity.MailBoxActicity" />
-        <activity android:name=".activity.MailContentActicity" />
+        <activity android:name="com.oterman.njubbs.activity.mail.MailBoxActicity" />
+        <activity android:name="com.oterman.njubbs.activity.mail.MailContentActicity" />
         <activity
-            android:name="com.oterman.njubbs.activity.MailReplyActivity"
+            android:name="com.oterman.njubbs.activity.mail.MailReplyActivity"
             android:windowSoftInputMode="adjustResize|stateHidden" />
         <activity
-            android:name="com.oterman.njubbs.activity.MailNewActivity"
+            android:name="com.oterman.njubbs.activity.mail.MailNewActivity"
             android:windowSoftInputMode="adjustResize|stateVisible" />
+        
+        <activity android:name="com.oterman.njubbs.activity.expore.ColleageContentActivity"/>
+        <activity android:name="com.oterman.njubbs.activity.expore.ColleagesActivity"/>
+        <activity android:name="com.oterman.njubbs.activity.expore.FriendsActivity"/>
     </application>
 
 </manifest>

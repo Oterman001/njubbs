@@ -112,16 +112,16 @@ public abstract class BaseActivity extends FragmentActivity {
 	}
 	
 
+	/*
+	 * 从服务器中加载数据
+	 */
+	public abstract LoadingState loadDataFromServer();
+
 	/**
 	 * 加载数据成功后 创建视图
 	 * @return
 	 */
 	public abstract View createSuccessView();
-
-	/*
-	 * 从服务器中加载数据
-	 */
-	public abstract LoadingState loadDataFromServer();
 
 
 }

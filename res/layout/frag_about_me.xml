@@ -26,17 +26,18 @@
         <include layout="@layout/hodler_user_info"  android:id="@+id/user_container" android:visibility="invisible"/>
     </RelativeLayout>
 
-    <include layout="@layout/holder_me_middle" />
+    <include layout="@layout/holder_me_middle_new" />
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="4" >
+        android:layout_weight="3" >
         <Button
             android:id="@+id/btn_login"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
+            android:layout_marginTop="30dp"
             android:layout_marginLeft="40dp"
             android:layout_marginRight="40dp"
             android:background="@color/main_green"

@@ -17,7 +17,7 @@ import android.widget.ProgressBar;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 import com.oterman.njubbs.R;
-import com.oterman.njubbs.view.WaitDialog;
+import com.oterman.njubbs.dialog.WaitDialog;
 @SuppressLint("NewApi")
 public class BigImageActivity  extends MyActionBarActivity {
 

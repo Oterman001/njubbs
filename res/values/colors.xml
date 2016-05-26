@@ -45,6 +45,7 @@
     <color name="list_divider_color">#DADADA</color>
     <color name="list_item_background_normal">@color/white</color>
     <color name="teamlist_item_background_normal">#ffffff</color>
+    <color name="list_item_background_pressed2">#6BBB</color>
     <color name="list_item_background_pressed">#efefef</color>
     
  	<color name="drawer_menu_item_background_normal">#e2e2e2</color>

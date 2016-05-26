@@ -1,4 +1,4 @@
-package com.oterman.njubbs.activity;
+package com.oterman.njubbs.activity.topic;
 
 import java.util.List;
 import java.util.Random;
@@ -26,9 +26,9 @@ import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
-import android.text.method.ScrollingMovementMethod;
 import android.text.style.BackgroundColorSpan;
 import android.text.style.ForegroundColorSpan;
+import android.text.util.Linkify;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -61,11 +61,16 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.listener.PauseOnScrollListener;
 import com.oterman.njubbs.BaseApplication;
 import com.oterman.njubbs.R;
+import com.oterman.njubbs.activity.BaseActivity;
+import com.oterman.njubbs.activity.LoginActivity;
+import com.oterman.njubbs.activity.board.BoardDetailActivity;
+import com.oterman.njubbs.activity.mail.MailNewActivity;
 import com.oterman.njubbs.bean.TopicDetailInfo;
 import com.oterman.njubbs.bean.TopicInfo;
+import com.oterman.njubbs.dialog.WaitDialog;
 import com.oterman.njubbs.holders.OptionsDialogHolder;
-import com.oterman.njubbs.holders.UserDetailHolder;
 import com.oterman.njubbs.holders.OptionsDialogHolder.MyOnclickListener;
+import com.oterman.njubbs.holders.UserDetailHolder;
 import com.oterman.njubbs.protocol.TopicDetailProtocol;
 import com.oterman.njubbs.smiley.SelectFaceHelper;
 import com.oterman.njubbs.smiley.SelectFaceHelper.OnFaceOprateListener;
@@ -79,7 +84,6 @@ import com.oterman.njubbs.utils.UiUtils;
 import com.oterman.njubbs.view.LoadingView.LoadingState;
 import com.oterman.njubbs.view.MyTagHandler;
 import com.oterman.njubbs.view.URLImageParser;
-import com.oterman.njubbs.view.WaitDialog;
 
 @SuppressLint("NewApi")
 public class TopicDetailActivity extends BaseActivity implements
@@ -264,11 +268,9 @@ public class TopicDetailActivity extends BaseActivity implements
 
 		// 设置长点击事件
 		lv.setOnItemLongClickListener(new OnItemLongClickListener() {
-
 			@Override
 			public boolean onItemLongClick(AdapterView<?> parent, View view,
 					int position, long id) {
-
 				handleItemLongClick(position);
 				return true;
 			}
@@ -358,7 +360,7 @@ public class TopicDetailActivity extends BaseActivity implements
 				detailInfo.author.indexOf('(')).trim();
 
 		OptionsDialogHolder holder = new OptionsDialogHolder(
-				getApplicationContext(), author);
+				getApplicationContext(), author,true);
 
 		builder.setTitle("请选择操作");
 		builder.setView(holder.getRootView());
@@ -407,6 +409,13 @@ public class TopicDetailActivity extends BaseActivity implements
 				}
 				startActivity(intent);
 			}
+
+			@Override
+			public void onReplyFloor() {
+				optionsDialog.dismiss();
+				//处理回复具体某一楼
+				etContent.setText("@"+author+":");
+			}
 		});
 
 		optionsDialog.show();
@@ -420,13 +429,13 @@ public class TopicDetailActivity extends BaseActivity implements
 	protected void handleShowUserDetail(String userId,final AlertDialog replyDialog) {
 		replyDialog.dismiss();
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
-
+		AlertDialog dialog=null;
 		UserDetailHolder holder = new UserDetailHolder(this);
 		// 更新用户详情
 		holder.updateStatus(userId);
 		builder.setView(holder.getRootView());
-		builder.show();
-
+		dialog=builder.show();
+		holder.setOwnerDialog(dialog);
 	}
 
 	/**
@@ -649,7 +658,9 @@ public class TopicDetailActivity extends BaseActivity implements
 				params.addBodyParameter("signature", 1 + "");
 				params.addBodyParameter("autocr", "on");
 				params.addBodyParameter("reusr", reusr);
-				params.addBodyParameter("text", content);
+				
+				String content2=content+"\n-\n"+"sent from 小百合\n";
+				params.addBodyParameter("text", content2);
 
 				params.addHeader("Cookie", cookie);
 			}
@@ -731,7 +742,7 @@ public class TopicDetailActivity extends BaseActivity implements
 			ViewHolder holder = null;
 			if (convertView == null) {
 				holder = new ViewHolder();
-				convertView = View.inflate(getApplicationContext(),
+				convertView = View.inflate(TopicDetailActivity.this,
 						R.layout.list_item_topic_detial, null);
 
 				holder.tvAuthor = (TextView) convertView
@@ -785,16 +796,16 @@ public class TopicDetailActivity extends BaseActivity implements
 					holder.tvAuthor.setText(author);
 				}
 			}
+			//超链接可点击
+			holder.tvContent.setAutoLinkMask(Linkify.WEB_URLS|Linkify.EMAIL_ADDRESSES);
 
-			holder.tvContent.setMovementMethod(ScrollingMovementMethod
-					.getInstance());// 设置可滚动
-			holder.tvContent
-					.setMovementMethod(LinkMovementMethod.getInstance());// 设置超链接可以打开网页
+			//holder.tvContent.setMovementMethod(ScrollingMovementMethod.getInstance());// 设置可滚动
+			holder.tvContent.setMovementMethod(LinkMovementMethod.getInstance());// 设置超链接可以打开网页
 
 			Spanned spanned = Html.fromHtml(info.content, new URLImageParser(
 					holder.tvContent),
 					new MyTagHandler(getApplicationContext()));
-
+			
 			holder.tvContent.setText(sp.strToSmiley(spanned));
 			holder.tvContent.invalidate();
 

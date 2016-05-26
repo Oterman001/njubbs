@@ -18,7 +18,7 @@ import android.widget.ExpandableListView.OnChildClickListener;
 import android.widget.TextView;
 
 import com.oterman.njubbs.R;
-import com.oterman.njubbs.activity.BoardDetailActivity;
+import com.oterman.njubbs.activity.board.BoardDetailActivity;
 import com.oterman.njubbs.bean.BoardInfo;
 import com.oterman.njubbs.db.BoardDao;
 import com.oterman.njubbs.protocol.FavBoardsProtocol;
