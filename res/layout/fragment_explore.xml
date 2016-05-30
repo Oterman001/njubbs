@@ -63,7 +63,7 @@
         android:background="@color/list_divider_color" />
 
     <LinearLayout
-        android:id="@+id/rl_activities"
+        android:id="@+id/ll_find_topic"
         style="@style/option_item_rl" >
 
         <ImageView

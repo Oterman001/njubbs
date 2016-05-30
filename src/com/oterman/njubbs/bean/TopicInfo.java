@@ -25,7 +25,17 @@ public class TopicInfo  implements Serializable{
 	public String id;//ÐòºÅ
 	public String loadMoreUrl;//ÏÂÒ»Ò³
 
-	
+	public TopicInfo(String board, String author, String title,
+			String contentUrl, String pubTime,String boardUrl) {
+		super();
+		this.board = board;
+		this.author = author;
+		this.title = title;
+		this.contentUrl = contentUrl;
+		this.pubTime = pubTime;
+		this.boardUrl=boardUrl;
+	}
+
 	public TopicInfo(String board, String author, String title,
 			String replyCount, String boardUrl, String contentUrl,
 			String authorUrl, String rankth) {
@@ -68,8 +78,6 @@ public class TopicInfo  implements Serializable{
 		super();
 	}
 
-	
-	
 	public TopicInfo(String board, String title, String boardUrl,
 			String contentUrl) {
 		super();

@@ -53,7 +53,6 @@ public class TopTenFragment extends BaseFragment implements OnRefreshListener {
 	@Override
 	public void onActivityCreated(@Nullable Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
-		
 		//初始化第一页
 		showViewFromServer();
 	}
