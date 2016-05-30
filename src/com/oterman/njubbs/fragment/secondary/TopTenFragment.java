@@ -153,8 +153,7 @@ public class TopTenFragment extends BaseFragment implements OnRefreshListener {
 		});
 		
 		srl.addView(lv);
-		srl.setColorSchemeResources(android.R.color.holo_green_light,
-									android.R.color.holo_blue_light);
+		srl.setColorSchemeResources(android.R.color.holo_green_light,android.R.color.holo_blue_light);
 		//下拉刷新 当下拉时 会出发该方法
 		srl.setOnRefreshListener(this);
 		

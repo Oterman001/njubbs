@@ -93,6 +93,15 @@
                 android:clickable="true"
                 android:src="@drawable/ic_ab_new_topic"
                 android:visibility="invisible" />
+            
+            <ImageButton
+                android:id="@+id/btn_add_friend"
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:background="@drawable/socialize_titlebar_item_background_selector"
+                android:clickable="true"
+                android:src="@drawable/actionbar_icon_add"
+                android:visibility="invisible" />
 
             <ImageButton
                 android:id="@+id/btn_mail_reply"

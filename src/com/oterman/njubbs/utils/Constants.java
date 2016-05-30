@@ -1,5 +1,8 @@
 package com.oterman.njubbs.utils;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+
 public class Constants {
 	public static final String NJU_BBS_BASE_URL = "http://bbs.nju.edu.cn/";
 	public static final String TOP_TEN_URL = "http://bbs.nju.edu.cn/bbstop10";
@@ -15,8 +18,23 @@ public class Constants {
 	public static final String FAV_BOARD_URL = "http://bbs.nju.edu.cn/bbsmybrd?type=1&confirm1=1";
 	public static final String BBS_FRIEND_ALL_URL = "http://bbs.nju.edu.cn/bbsfall";
 	public static final String BBS_ADD_FRIEND_URL = "http://bbs.nju.edu.cn/bbsfadd";
+	public static final String BBS_FRIEND_DEL_URL = "http://bbs.nju.edu.cn/bbsfdel";
+	public static final String BBS_QUERY_USER_URL = "http://bbs.nju.edu.cn/bbsqry?wild=on&userid=";
 	
 	
+	public static String getQueryUserUrl(String userid,boolean isnick) {
+		try {
+			userid=URLEncoder.encode(userid,"gbk");
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+		if(isnick){//Í¨¹ýêÇ³Æ
+			return BBS_QUERY_USER_URL+userid+"&nick=on";
+		}else{
+			return BBS_QUERY_USER_URL+userid;
+		}
+		
+	}
 	
 	public static String  getQueryIpUrl(String ip){
 		return "http://test.ip138.com/query/?ip="+ip+"&datatype=text";

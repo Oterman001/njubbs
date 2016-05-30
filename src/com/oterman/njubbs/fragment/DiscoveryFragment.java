@@ -10,6 +10,8 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
 import com.oterman.njubbs.R;
+import com.oterman.njubbs.activity.FindBoardActivity;
+import com.oterman.njubbs.activity.expore.AddFriendActivity;
 import com.oterman.njubbs.activity.expore.ColleagesActivity;
 import com.oterman.njubbs.activity.expore.FriendsActivity;
 
@@ -44,6 +46,8 @@ public class DiscoveryFragment extends Fragment implements OnClickListener {
 
 	private LinearLayout llColleages;
 	private LinearLayout llFriends;
+	private LinearLayout llFindUser;
+	private LinearLayout llFindBoard;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -51,11 +55,16 @@ public class DiscoveryFragment extends Fragment implements OnClickListener {
 
 		View view = View.inflate(getContext(), R.layout.fragment_explore, null);
 		llColleages = (LinearLayout) view.findViewById(R.id.ll_colleages);
-		
 		llFriends = (LinearLayout) view.findViewById(R.id.ll_friends);
+		llFindUser=(LinearLayout) view.findViewById(R.id.ll_find_user);
+		llFindBoard=(LinearLayout) view.findViewById(R.id.ll_find_board);
 		
+		//…Ë÷√º‡Ã˝
 		llColleages.setOnClickListener(this);
 		llFriends.setOnClickListener(this);
+		llFindUser.setOnClickListener(this);
+		llFindBoard.setOnClickListener(this);
+		
 		return view;
 	}
 
@@ -69,6 +78,15 @@ public class DiscoveryFragment extends Fragment implements OnClickListener {
 		case R.id.ll_friends:
 			Intent intent2=new Intent(getContext(),FriendsActivity.class);
 			startActivity(intent2);
+			break;
+		case R.id.ll_find_user:
+			Intent findIntent=new Intent(getContext(),AddFriendActivity.class);
+			startActivity(findIntent);
+			break;
+			
+		case R.id.ll_find_board:
+			Intent findBoardIntent=new Intent(getContext(),FindBoardActivity.class);
+			startActivity(findBoardIntent);
 			break;
 
 		default:

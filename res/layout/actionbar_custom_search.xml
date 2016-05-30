@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="horizontal"
+    android:background="@color/main_green" >
+
+    <ImageButton
+        android:id="@+id/btn_back2"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:background="@drawable/socialize_titlebar_item_background_selector"
+        android:contentDescription="@null"
+        android:paddingLeft="8dip"
+        android:paddingRight="8dip"
+        android:src="@drawable/ic_ab_back" />
+
+    <ImageButton
+        android:id="@+id/ib_search"
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent"
+        android:layout_marginLeft="20dp"
+        android:background="@drawable/socialize_titlebar_item_background_selector"
+        android:clickable="true"
+        android:src="@drawable/actionbar_search_icon"
+        android:visibility="visible" />
+
+    <EditText
+        android:id="@+id/et_board"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:hint="查找版面"
+        android:textColor="@color/white"
+        android:textSize="18sp" />
+
+</LinearLayout>

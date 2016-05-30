@@ -67,6 +67,8 @@
         <activity android:name="com.oterman.njubbs.activity.expore.ColleageContentActivity"/>
         <activity android:name="com.oterman.njubbs.activity.expore.ColleagesActivity"/>
         <activity android:name="com.oterman.njubbs.activity.expore.FriendsActivity"/>
+        <activity android:name="com.oterman.njubbs.activity.expore.AddFriendActivity"/>
+        <activity android:name="com.oterman.njubbs.activity.FindBoardActivity"/>
     </application>
 
 </manifest>
