@@ -34,6 +34,11 @@ public class ColleagesActivity extends MyActionBarActivity{
 		dataMap.put("虎踞龙蟠（东大）", "http://sbbs.seu.edu.cn/frames.html");
 		dataMap.put("白云黄鹤（华中科大）", "http://bbs.whnet.edu.cn/main.html");
 		dataMap.put("瀚海星云（中科大）", "http://bbs.ustc.edu.cn/main.html");
+		dataMap.put("鼓浪听涛（厦大）", "http://bbs.xmu.edu.cn/frames.html");
+		dataMap.put("兵马俑站（西交）", "http://bbs.xjtu.edu.cn/BMYAAMWDQQHLCRGYRNCVILMFIPPIVILFOLSE_B/");
+		dataMap.put("蓝色星空（川大）", "http://bbs.scu.edu.cn/frames.html");
+		dataMap.put("天地人大（人大）", "http://www.tdrd.org/nForum/#!default");
+		dataMap.put("清水河畔（电子科大）", "http://www.tdrd.org/nForum/#!default");
 		list.addAll(dataMap.keySet());
 	}
 	private ColleageAdapter adapter;

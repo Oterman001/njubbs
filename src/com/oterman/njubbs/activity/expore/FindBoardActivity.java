@@ -1,4 +1,4 @@
-package com.oterman.njubbs.activity;
+package com.oterman.njubbs.activity.expore;
 
 import java.util.List;
 

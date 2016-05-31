@@ -80,7 +80,6 @@ public class MailNewActivity extends MyActionBarActivity implements
 		etContent = (EditText) this.findViewById(R.id.et_content);
 		
 		
-		
 		ibSmiley = (ImageButton) this.findViewById(R.id.iv_pic);
 		ibSmiley.setOnClickListener(faceClick);
 		
@@ -89,9 +88,16 @@ public class MailNewActivity extends MyActionBarActivity implements
 		//获取接收人
 		Intent intent = getIntent();
 		String receiver=intent.getStringExtra("receiver");
-
+		String  title=intent.getStringExtra("title");
+		
 		if(!TextUtils.isEmpty(receiver)){
 			etReceiver.setText(receiver);
+		}
+		if(!TextUtils.isEmpty(title)){
+			etTitle.setText(title);
+			etContent.setFocusable(true);
+			etContent.setFocusableInTouchMode(true);
+			etContent.requestFocus();
 		}
 		
 		etContent.setOnTouchListener(new OnTouchListener() {

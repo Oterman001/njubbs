@@ -113,7 +113,7 @@ public class FriendsActivity extends BaseActivity implements OnClickListener, On
 				
 				AlertDialog.Builder builder=new AlertDialog.Builder(FriendsActivity.this);
 				AlertDialog dialog2=null;
-				UserDetailHolder holder=new UserDetailHolder(FriendsActivity.this);
+				UserDetailHolder holder=new UserDetailHolder(FriendsActivity.this,true);
 				holder.updateStatus(friendInfo.id);
 				
 				builder.setView(holder.getRootView());

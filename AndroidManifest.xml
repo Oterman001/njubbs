@@ -68,8 +68,9 @@
         <activity android:name="com.oterman.njubbs.activity.expore.ColleagesActivity"/>
         <activity android:name="com.oterman.njubbs.activity.expore.FriendsActivity"/>
         <activity android:name="com.oterman.njubbs.activity.expore.AddFriendActivity"/>
-        <activity android:name="com.oterman.njubbs.activity.FindBoardActivity"/>
+        <activity android:name="com.oterman.njubbs.activity.expore.FindBoardActivity"/>
         <activity android:name="com.oterman.njubbs.activity.expore.FindTopicActivity"/>
+        <activity android:name="com.oterman.njubbs.activity.expore.MyTopicActivity"/>
     </application>
 
 </manifest>

@@ -10,7 +10,18 @@
     <Button
         android:id="@+id/btn_author_detail"
         style="@style/options_btn_style"
-        android:text="查看作者" />
+        android:text="查看作者信息" />
+
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="1px"
+        android:background="#44000000"
+        android:paddingLeft="7dp" />
+
+    <Button
+        android:id="@+id/btn_topic_his"
+        style="@style/options_btn_style"
+        android:text="查看作者发帖" />
 
     <View
         android:layout_width="fill_parent"
@@ -44,7 +55,7 @@
         android:id="@+id/btn_modify_topic"
         style="@style/options_btn_style"
         android:text="修改帖子" />
-    
+
     <View
         android:layout_width="fill_parent"
         android:layout_height="1px"
@@ -54,7 +65,7 @@
     <Button
         android:id="@+id/btn_reply_floor"
         style="@style/options_btn_style"
-        android:visibility="gone"
-        android:text="回复该楼" />
+        android:text="回复该楼"
+        android:visibility="gone" />
 
 </LinearLayout>

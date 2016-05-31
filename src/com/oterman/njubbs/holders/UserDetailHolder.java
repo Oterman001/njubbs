@@ -52,6 +52,14 @@ public class UserDetailHolder implements OnClickListener {
 		this.context=context;
 		initViews();
 	}
+	public UserDetailHolder(Context context,boolean hideAddBtn) {
+		rootView = View.inflate(UiUtils.getContext(), R.layout.user_detail_info, null);
+		this.context=context;
+		initViews();
+		if(hideAddBtn){
+			btnAddFriend.setVisibility(View.INVISIBLE);
+		}
+	}
 
 	private void initViews() {
 		tvId = (TextView) rootView.findViewById(R.id.tv_user_detail_id);

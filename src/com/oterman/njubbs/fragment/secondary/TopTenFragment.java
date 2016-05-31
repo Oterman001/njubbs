@@ -25,6 +25,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.oterman.njubbs.R;
+import com.oterman.njubbs.activity.expore.MyTopicActivity;
 import com.oterman.njubbs.activity.mail.MailNewActivity;
 import com.oterman.njubbs.activity.topic.TopicDetailActivity;
 import com.oterman.njubbs.bean.TopicInfo;
@@ -143,6 +144,14 @@ public class TopTenFragment extends BaseFragment implements OnRefreshListener {
 					@Override
 					public void onReplyFloor() {
 						
+					}
+					@Override
+					public void onQueryTopicHis() {//查询作者的发帖记录
+						dialog.dismiss();
+						String author = topicInfo.author;
+						Intent intent=new Intent(getContext(),MyTopicActivity.class);
+						intent.putExtra("author", author);
+						startActivity(intent);
 					}
 				});
 				dialog.show();

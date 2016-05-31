@@ -1,5 +1,7 @@
 package com.oterman.njubbs.dialog;
 
+import java.lang.reflect.Field;
+
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -10,13 +12,11 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.lidroid.xutils.HttpUtils;
-import com.lidroid.xutils.exception.HttpException;
 import com.lidroid.xutils.http.RequestParams;
 import com.lidroid.xutils.http.ResponseStream;
 import com.lidroid.xutils.http.client.HttpRequest.HttpMethod;
 import com.oterman.njubbs.BaseApplication;
 import com.oterman.njubbs.R;
-import com.oterman.njubbs.activity.BaseActivity;
 import com.oterman.njubbs.utils.Constants;
 import com.oterman.njubbs.utils.LogUtil;
 import com.oterman.njubbs.utils.MyToast;
@@ -43,14 +43,30 @@ public class AddFriendDialog {
 		builder.setPositiveButton("添加", new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
-				
-				String str=etDesc.getText().toString();
-				if(TextUtils.isEmpty(str)){
-					MyToast.toast("备注不能为空哦");
-					return;
+
+				String str = etDesc.getText().toString();
+				try {
+					if (TextUtils.isEmpty(str)) {
+
+						Field field = dialog.getClass().getSuperclass()
+								.getDeclaredField("mShowing");
+						field.setAccessible(true);
+						field.set(dialog, false); // false -不能关闭
+						
+						MyToast.toast("备注不能为空哦");
+						return;
+					}else{
+						Field field = dialog.getClass().getSuperclass()
+								.getDeclaredField("mShowing");
+						field.setAccessible(true);
+						field.set(dialog, true); // true　关闭对话框
+						// 处理添加好友
+						handleAddFriend();
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
 				}
-				// 处理添加好友
-				handleAddFriend();
+
 			}
 		});
 
@@ -85,7 +101,7 @@ public class AddFriendDialog {
 
 					String result = BaseApplication.StreamToStr(stream);
 
-					LogUtil.d("添加好友结果："+result);
+					LogUtil.d("添加好友结果：" + result);
 					if (result.contains("已加入您的好友名单")) {// 成功
 						UiUtils.runOnUiThread(new Runnable() {
 							@Override

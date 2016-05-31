@@ -6,6 +6,8 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 
 import com.oterman.njubbs.R;
+import com.oterman.njubbs.activity.expore.MyTopicActivity;
+import com.oterman.njubbs.utils.MyToast;
 import com.oterman.njubbs.utils.SPutils;
 import com.oterman.njubbs.utils.UiUtils;
 
@@ -24,6 +26,7 @@ public class OptionsDialogHolder implements OnClickListener {
 	private Button btnReply;
 	
 	private boolean isInsideTopic;
+	private Button btnTopicHis;
 	
 	public void setListener(MyOnclickListener listener) {
 		this.listener = listener;
@@ -41,16 +44,20 @@ public class OptionsDialogHolder implements OnClickListener {
 		
 		btnAuthorDetail = (Button) rootView.findViewById(R.id.btn_author_detail);
 		
-		btnMail = (Button) rootView.findViewById(R.id.btn_mail_to_author);
-		btnDelete = (Button) rootView.findViewById(R.id.btn_delete_topci);
-		btnModify = (Button) rootView.findViewById(R.id.btn_modify_topic);
-		btnReply = (Button) rootView.findViewById(R.id.btn_reply_floor);
+		btnMail = (Button) rootView.findViewById(R.id.btn_mail_to_author);//站内
+		btnDelete = (Button) rootView.findViewById(R.id.btn_delete_topci);//删帖
+		btnModify = (Button) rootView.findViewById(R.id.btn_modify_topic);//修改
+		btnReply = (Button) rootView.findViewById(R.id.btn_reply_floor);//回帖
 		
+		btnTopicHis = (Button) rootView.findViewById(R.id.btn_topic_his);
+
 		btnAuthorDetail.setOnClickListener(this);
 		btnMail.setOnClickListener(this);
 		btnDelete.setOnClickListener(this);
 		btnModify.setOnClickListener(this);
 		btnReply.setOnClickListener(this);
+		
+		btnTopicHis.setOnClickListener(this);
 		
 		updateVisibility();
 		
@@ -110,6 +117,13 @@ public class OptionsDialogHolder implements OnClickListener {
 				listener.onReplyFloor();
 			}
 			break;
+			
+		case R.id.btn_topic_his:
+//			MyToast.toast("点击了");
+			if(listener!=null){
+				listener.onQueryTopicHis();
+			}
+			break;
 
 		default:
 			break;
@@ -123,6 +137,9 @@ public class OptionsDialogHolder implements OnClickListener {
 		public void OnModify();
 		public void OnMailTo();
 		public void onReplyFloor();
+		
+		public void onQueryTopicHis();
+		
 	}
 
 }

@@ -30,6 +30,7 @@ import com.oterman.njubbs.bean.BoardInfo;
 import com.oterman.njubbs.bean.UserInfo;
 import com.oterman.njubbs.db.BoardDao;
 import com.oterman.njubbs.protocol.AllBoardProtocol;
+import com.oterman.njubbs.protocol.CheckNewMailProtocol;
 import com.oterman.njubbs.protocol.UserProtocol;
 import com.oterman.njubbs.utils.Constants;
 import com.oterman.njubbs.utils.LogUtil;
@@ -47,6 +48,7 @@ public class BaseApplication extends Application {
 	private static HttpUtils httpUtil = null;
 	private static UserInfo userInfo = null;
 	private static UserProtocol userProtocol;
+	private static int newMailCount=-1;
 	
 	@Override
 	public void onCreate() {
@@ -78,7 +80,27 @@ public class BaseApplication extends Application {
 		ImageLoader.getInstance().init(configuration);
 		
 		prepateAllBoardsData();
+		
+		//检查是否有新的站内信
+		//checkHasNewMail();
+		
 	}
+	
+
+	private void checkHasNewMail() {
+		ThreadManager.getInstance().createLongPool().execute(new Runnable() {
+			@Override
+			public void run() {
+				LogUtil.d("检查是否有新邮件啦");
+				CheckNewMailProtocol protocol=new CheckNewMailProtocol();
+				String url=Constants.HAS_NEW_MAIL_URL;
+				newMailCount = protocol.checkFromServer(url);
+				LogUtil.d("检查结果："+newMailCount);
+				
+			}
+		});
+	}
+
 
 	//保存所有版面信息
 	private void prepateAllBoardsData() {

@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
@@ -24,23 +26,9 @@ public class QueryTopicProtocol {
 		String url=Constants.QUERY_TOPIC_URL;
 		try {
 			Connection conn = Jsoup.connect(url);
-			Map<String, String> map=new HashMap<>();
-			map.put("title3", "Re");//不包含
-			map.put("day2", "30");//180天
-			map.put("flag", "1");//
 			
-			map.put("day", "0");
-
-			String[] strs = keys.split("\\s+");
-			if(strs.length>=2){
-				map.put("title", strs[0].trim());//标题包含
-				map.put("title2", strs[1].trim());//标题还包含
-			}else{
-				map.put("title", strs[0].trim());//标题包含
-				map.put("title2", "");//标题还包含
-			}
-			
-			map.put("user", "");//作者
+			//处理参数
+			Map<String, String> map = handleParams(keys);
 			
 			Document doc = conn.data(map).postDataCharset("gbk").post();
 			Elements trEles = doc.select("tr");
@@ -88,6 +76,41 @@ public class QueryTopicProtocol {
 		}
 		return list.size()==0?null:list;
 	}
+
+	//根据作者来查询
+	public List<TopicInfo> queryByAuthor(String author) {
+		return loadFromServer(author);
+	}
+
+	private Map<String, String> handleParams(String keys) {
+			Map<String, String> map=new HashMap<>();
+			map.put("title3", "Re");//不包含
+	//		map.put("day2", "30");//180天
+			map.put("flag", "1");//
+			map.put("day", "0");
+	
+			String[] strs = keys.split("\\s+");
+			//判断是否输入的为id
+			Pattern p=Pattern.compile("[a-zA-Z0-9]+");
+			
+			Matcher matcher = p.matcher(strs[0]);
+			
+			if(matcher.matches()){//按照作者来查询  查询999天
+				map.put("user", strs[0]);//作者
+				map.put("day2", "999");//180天
+			}else{//按照内容来查询
+				if(strs.length>=2){
+					map.put("title", strs[0].trim());//标题包含
+					map.put("title2", strs[1].trim());//标题还包含
+				}else{
+					map.put("title", strs[0].trim());//标题包含
+					map.put("title2", "");//标题还包含
+				}
+				map.put("user", "");//作者
+				map.put("day2", "30");//180天
+			}
+			return map;
+		}
 	
 	
 }

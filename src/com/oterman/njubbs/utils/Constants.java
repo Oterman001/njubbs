@@ -21,6 +21,7 @@ public class Constants {
 	public static final String BBS_FRIEND_DEL_URL = "http://bbs.nju.edu.cn/bbsfdel";
 	public static final String BBS_QUERY_USER_URL = "http://bbs.nju.edu.cn/bbsqry?wild=on&userid=";
 	public static final String QUERY_TOPIC_URL = "http://bbs.nju.edu.cn/bbsfind";
+	public static final String HAS_NEW_MAIL_URL = "http://bbs.nju.edu.cn/bbsnewmail";
 	
 	
 	public static String getQueryUserUrl(String userid,boolean isnick) {

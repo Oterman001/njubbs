@@ -10,11 +10,12 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
 import com.oterman.njubbs.R;
-import com.oterman.njubbs.activity.FindBoardActivity;
 import com.oterman.njubbs.activity.expore.AddFriendActivity;
 import com.oterman.njubbs.activity.expore.ColleagesActivity;
+import com.oterman.njubbs.activity.expore.FindBoardActivity;
 import com.oterman.njubbs.activity.expore.FindTopicActivity;
 import com.oterman.njubbs.activity.expore.FriendsActivity;
+import com.oterman.njubbs.activity.expore.MyTopicActivity;
 
 
 /**
@@ -50,6 +51,7 @@ public class DiscoveryFragment extends Fragment implements OnClickListener {
 	private LinearLayout llFindUser;
 	private LinearLayout llFindBoard;
 	private LinearLayout llFindTopic;
+	private LinearLayout llMyTopic;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -61,6 +63,7 @@ public class DiscoveryFragment extends Fragment implements OnClickListener {
 		llFindUser=(LinearLayout) view.findViewById(R.id.ll_find_user);
 		llFindBoard=(LinearLayout) view.findViewById(R.id.ll_find_board);
 		llFindTopic=(LinearLayout) view.findViewById(R.id.ll_find_topic);
+		llMyTopic=(LinearLayout) view.findViewById(R.id.ll_my_topic);
 		
 		//…Ë÷√º‡Ã˝
 		llColleages.setOnClickListener(this);
@@ -68,6 +71,7 @@ public class DiscoveryFragment extends Fragment implements OnClickListener {
 		llFindUser.setOnClickListener(this);
 		llFindBoard.setOnClickListener(this);
 		llFindTopic.setOnClickListener(this);
+		llMyTopic.setOnClickListener(this);
 		
 		return view;
 	}
@@ -95,6 +99,10 @@ public class DiscoveryFragment extends Fragment implements OnClickListener {
 		case R.id.ll_find_topic:
 			Intent findTopicIntent=new Intent(getContext(),FindTopicActivity.class);
 			startActivity(findTopicIntent);
+			break;
+		case R.id.ll_my_topic:
+			Intent myIntent=new Intent(getContext(),MyTopicActivity.class);
+			startActivity(myIntent);
 			break;
 
 		default:

@@ -64,6 +64,7 @@ import com.oterman.njubbs.R;
 import com.oterman.njubbs.activity.BaseActivity;
 import com.oterman.njubbs.activity.LoginActivity;
 import com.oterman.njubbs.activity.board.BoardDetailActivity;
+import com.oterman.njubbs.activity.expore.MyTopicActivity;
 import com.oterman.njubbs.activity.mail.MailNewActivity;
 import com.oterman.njubbs.bean.TopicDetailInfo;
 import com.oterman.njubbs.bean.TopicInfo;
@@ -415,6 +416,16 @@ public class TopicDetailActivity extends BaseActivity implements
 				optionsDialog.dismiss();
 				//处理回复具体某一楼
 				etContent.setText("@"+author+":");
+			}
+
+			@Override
+			public void onQueryTopicHis() {
+				optionsDialog.dismiss();
+//				String author = topicInfo.author;
+				Intent intent=new Intent(getApplicationContext(),MyTopicActivity.class);
+				intent.putExtra("author", author);
+				startActivity(intent);
+				
 			}
 		});
 

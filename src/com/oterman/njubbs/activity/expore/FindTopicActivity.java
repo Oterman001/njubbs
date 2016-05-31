@@ -178,7 +178,7 @@ public  class FindTopicActivity extends FragmentActivity {
 		
 		View back = actionBarView.findViewById(R.id.btn_back2);
 		etTitle = (EditText) actionBarView.findViewById(R.id.et_board);
-		etTitle.setHint("请输入标题");
+		etTitle.setHint("请输入标题或作者id");
 		etTitle.setImeOptions(EditorInfo.IME_ACTION_SEND);  //回车
 		
 		ibSearch = (ImageButton) actionBarView.findViewById(R.id.ib_search);

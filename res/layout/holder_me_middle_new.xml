@@ -7,10 +7,11 @@
     android:orientation="vertical" >
 
     <LinearLayout
-        android:id="@+id/ll_mail"
+        android:id="@+id/ll_mail2"
         style="@style/option_item_rl2" >
 
         <ImageView
+            android:id="@+id/iv_mail"
             style="@style/option_item_img"
             android:background="@drawable/icon_my_message"
             android:contentDescription="@null" />
@@ -28,7 +29,7 @@
         android:background="@color/list_divider_color" />
 
     <LinearLayout
-        android:id="@+id/rl_blog"
+        android:id="@+id/ll_setting"
         style="@style/option_item_rl2" >
 
         <ImageView
@@ -47,7 +48,7 @@
         android:background="@color/list_divider_color" />
 
     <LinearLayout
-        android:id="@+id/rl_note"
+        android:id="@+id/ll_money"
         style="@style/option_item_rl2" >
 
         <ImageView
@@ -64,9 +65,8 @@
         android:layout_width="wrap_content"
         android:layout_height="1px"
         android:background="@color/list_divider_color" />
-
     <LinearLayout
-        android:id="@+id/rl_team"
+        android:id="@+id/ll_feedback"
         style="@style/option_item_rl2" >
 
         <ImageView

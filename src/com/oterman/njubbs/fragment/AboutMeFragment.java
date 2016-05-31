@@ -1,8 +1,9 @@
 package com.oterman.njubbs.fragment;
 
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -12,6 +13,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -19,10 +21,16 @@ import com.oterman.njubbs.BaseApplication;
 import com.oterman.njubbs.R;
 import com.oterman.njubbs.activity.LoginActivity;
 import com.oterman.njubbs.activity.mail.MailBoxActicity;
+import com.oterman.njubbs.activity.mail.MailNewActivity;
 import com.oterman.njubbs.bean.UserInfo;
+import com.oterman.njubbs.protocol.CheckNewMailProtocol;
+import com.oterman.njubbs.utils.Constants;
 import com.oterman.njubbs.utils.LogUtil;
 import com.oterman.njubbs.utils.MyToast;
+import com.oterman.njubbs.utils.ThreadManager;
+import com.oterman.njubbs.utils.UiUtils;
 
+@SuppressLint("NewApi")
 public class AboutMeFragment  extends Fragment implements OnClickListener {
 
 	private View rootView;
@@ -39,7 +47,26 @@ public class AboutMeFragment  extends Fragment implements OnClickListener {
 	private ViewGroup llUserContainer;
 	private TextView tvMail;
 	private LinearLayout llMail;
-
+	private LinearLayout llFeedback;
+	private LinearLayout llSetting;
+	private LinearLayout llMoney;
+	private ImageView ivMail;
+	
+	private int newMailCount;
+	
+	@Override
+	public void onResume() {
+		super.onResume();
+		LogUtil.d("AboutMeFragment-onResume：检查新邮件" );
+		
+		checkHasNewMail();
+		
+		//更新视图
+//		if(userInfo!=null){
+			updateViews();
+//		}
+	}
+	
 	@Override
 	@Nullable
 	public View onCreateView(LayoutInflater inflater,
@@ -52,18 +79,24 @@ public class AboutMeFragment  extends Fragment implements OnClickListener {
 		userInfo=BaseApplication.getLogedUser();//获取登录的user
 		
 		btnLogin = (Button) rootView.findViewById(R.id.btn_login);
-		llMail = (LinearLayout) rootView.findViewById(R.id.ll_mail);
+		llMail = (LinearLayout) rootView.findViewById(R.id.ll_mail2);//站内
+		llFeedback = (LinearLayout) rootView.findViewById(R.id.ll_feedback);//反馈
+		llSetting = (LinearLayout) rootView.findViewById(R.id.ll_setting);//反馈
+		llMoney = (LinearLayout) rootView.findViewById(R.id.ll_money);//反馈
+		ivMail = (ImageView) rootView.findViewById(R.id.iv_mail);
+		
+		
 		
 		btnLogin.setOnClickListener(this);//登陆、注销按钮
 		
 		//tvMail.setOnClickListener(this);//站内
 		llMail.setOnClickListener(this);
+		llFeedback.setOnClickListener(this);//反馈
+		llSetting.setOnClickListener(this);//反馈
+		llMoney.setOnClickListener(this);//反馈
 		
 		initUserViews();
 		
-		if(userInfo!=null){
-			updateViews();
-		}
 		
 		return rootView;
 	}
@@ -148,6 +181,40 @@ public class AboutMeFragment  extends Fragment implements OnClickListener {
 		
 	}
 
+	//检查是否有新的站内
+		public void checkHasNewMail() {
+			ThreadManager.getInstance().createLongPool().execute(new Runnable() {
+				@Override
+				public void run() {
+					LogUtil.d("检查是否有新邮件啦");
+					CheckNewMailProtocol protocol=new CheckNewMailProtocol();
+					String url=Constants.HAS_NEW_MAIL_URL;
+					newMailCount = protocol.checkFromServer(url);
+					LogUtil.d("检查结果："+newMailCount);
+					if(newMailCount>0){//有新邮件
+						//更新状态
+						UiUtils.runOnUiThread(new Runnable() {
+							@Override
+							public void run() {
+								Drawable drawable = getResources().getDrawable(R.drawable.icon_my_message2);
+	//							drawable.setBounds(0, 0, drawable.getMinimumWidth(),drawable.getMinimumHeight());
+								ivMail.setBackground(drawable);
+							}
+						});
+					}else{//没有新邮件
+						UiUtils.runOnUiThread(new Runnable() {
+							@Override
+							public void run() {
+								Drawable drawable = getResources().getDrawable(R.drawable.icon_my_message);
+	//							drawable.setBounds(0, 0, drawable.getMinimumWidth(),drawable.getMinimumHeight());
+								ivMail.setBackground(drawable);
+							}
+						});
+					}
+				}
+			});
+		}
+
 	@Override
 	public void onClick(View v) {
 		switch (v.getId()) {
@@ -164,9 +231,21 @@ public class AboutMeFragment  extends Fragment implements OnClickListener {
 			}
 			break;
 			
-		case R.id.ll_mail://点击的是站内
+		case R.id.ll_mail2://点击的是站内
 			Intent intent2=new Intent(getContext(),MailBoxActicity.class);
 			startActivity(intent2);
+			break;
+		case R.id.ll_feedback://点击的是站内
+			Intent intent3=new Intent(getContext(),MailNewActivity.class);
+			intent3.putExtra("receiver","oterman");
+			intent3.putExtra("title","反馈");
+			startActivity(intent3);
+			break;
+		case R.id.ll_setting://设置
+			MyToast.toast("不想设置");
+			break;
+		case R.id.ll_money://打赏
+			MyToast.toast("就不打赏");
 			break;
 		default:
 			break;

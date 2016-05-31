@@ -52,7 +52,6 @@
             android:drawableTop="@drawable/tab_me_selector"
             android:text="我"
             android:textColor="@drawable/btn_tab_text_selector" />
-
     </RadioGroup>
 
 </LinearLayout>

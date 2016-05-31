@@ -2,6 +2,7 @@ package com.oterman.njubbs.activity;
 
 import android.annotation.SuppressLint;
 import android.app.ActionBar;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -14,6 +15,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.RadioGroup.OnCheckedChangeListener;
 
@@ -26,12 +28,18 @@ import com.oterman.njubbs.fragment.AboutMeFragment;
 import com.oterman.njubbs.fragment.BaseFragment;
 import com.oterman.njubbs.fragment.DiscoveryFragment;
 import com.oterman.njubbs.fragment.factory.FragmentFactory;
+import com.oterman.njubbs.protocol.CheckNewMailProtocol;
+import com.oterman.njubbs.utils.Constants;
+import com.oterman.njubbs.utils.LogUtil;
+import com.oterman.njubbs.utils.ThreadManager;
 
 @SuppressLint("NewApi")
 public class MainActivity extends FragmentActivity {
 
 	private ViewPager vpPages;
 	private RadioGroup rgGroup;
+	private int newMailCount;
+	private RadioButton rbMe;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -46,7 +54,55 @@ public class MainActivity extends FragmentActivity {
 			window.setStatusBarColor(this.getResources().getColor(R.color.green));
 		}
 		initViews();
+		
+		//检查是否有新邮件
+		//checkHasNewMail();
 	}
+	
+	@Override
+	protected void onResume() {
+		// TODO Auto-generated method stub
+		super.onResume();
+		//检查新邮件
+		checkHasNewMail();
+		LogUtil.d("onResume  检查新邮件");
+	}
+	
+	//检查是否有新的站内
+	public void checkHasNewMail() {
+		ThreadManager.getInstance().createLongPool().execute(new Runnable() {
+			@Override
+			public void run() {
+				LogUtil.d("检查是否有新邮件啦");
+				CheckNewMailProtocol protocol=new CheckNewMailProtocol();
+				String url=Constants.HAS_NEW_MAIL_URL;
+				newMailCount = protocol.checkFromServer(url);
+				LogUtil.d("检查结果："+newMailCount);
+				if(newMailCount>0){//有新邮件
+					//更新状态
+					runOnUiThread(new Runnable() {
+						@Override
+						public void run() {
+							Drawable drawable = getResources().getDrawable(R.drawable.tab_me_selector_newmail);
+							drawable.setBounds(0, 0, drawable.getMinimumWidth(),drawable.getMinimumHeight());
+							rbMe.setCompoundDrawables(null, drawable, null, null);
+						}
+					});
+				}else{//没有新邮件
+					runOnUiThread(new Runnable() {
+						@Override
+						public void run() {
+							Drawable drawable = getResources().getDrawable(R.drawable.tab_me_selector);
+							drawable.setBounds(0, 0, drawable.getMinimumWidth(),drawable.getMinimumHeight());
+							rbMe.setCompoundDrawables(null, drawable, null, null);
+						}
+					});
+				}
+			}
+		});
+		
+	}
+
 
 	public void initViews() {
 		
@@ -62,8 +118,10 @@ public class MainActivity extends FragmentActivity {
 
 		//初始化radiogroup
 		rgGroup = (RadioGroup) this.findViewById(R.id.rg_bottom_group);
+		rbMe = (RadioButton) this.findViewById(R.id.rb_me);
 		
 		rgGroup.check(R.id.rb_hottopic);
+		
 		
 		//设置监听 同步viewpager
 		rgGroup.setOnCheckedChangeListener(new OnCheckedChangeListener() {
@@ -99,9 +157,9 @@ public class MainActivity extends FragmentActivity {
 //					//((BaseFragment)fragment).showViewFromServer();
 //				}
 //				
-				if(fragment instanceof AboutMeFragment){
-					((AboutMeFragment)fragment).updateViews();
-				}
+//				if(fragment instanceof AboutMeFragment){
+//					((AboutMeFragment)fragment).updateViews();
+//				}
 				
 				//选中页面时，切换到对应的radiobutton;
 				switch (position) {
