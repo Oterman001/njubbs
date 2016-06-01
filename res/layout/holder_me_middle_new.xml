@@ -26,14 +26,14 @@
             android:id="@+id/tv_new_mail_count"
             android:layout_width="20dp"
             android:layout_height="20dp"
-            android:layout_marginRight="25dp"
             android:layout_gravity="center_vertical"
+            android:layout_marginRight="25dp"
             android:background="@drawable/tips_circle"
             android:gravity="center"
             android:text="8"
-            android:visibility="invisible"
             android:textColor="@android:color/white"
-            android:textSize="14dip" />
+            android:textSize="14dip"
+            android:visibility="invisible" />
     </LinearLayout>
 
     <View
@@ -41,6 +41,45 @@
         android:layout_height="1px"
         android:background="@color/list_divider_color" />
 
+    <LinearLayout
+        android:id="@+id/ll_friends"
+        style="@style/option_item_rl2" >
+
+        <ImageView
+            style="@style/option_item_img"
+            android:background="@drawable/icon_my_team"
+            android:contentDescription="@null" />
+
+        <TextView
+            style="@style/option_item_text"
+            android:text="好友" />
+    </LinearLayout>
+
+    <View
+        android:layout_width="wrap_content"
+        android:layout_height="1px"
+        android:background="@color/list_divider_color" />
+
+    <LinearLayout
+        android:id="@+id/ll_my_topic"
+        style="@style/option_item_rl2" >
+
+        <ImageView
+            style="@style/option_item_img"
+            android:background="@drawable/icon_my_note"
+            android:contentDescription="@null" />
+
+        <TextView
+            style="@style/option_item_text"
+            android:text="帖子" />
+    </LinearLayout>
+
+    <View
+        android:layout_width="wrap_content"
+        android:layout_height="1px"
+        android:background="@color/list_divider_color" />
+
+    <!-- 设置 -->
     <LinearLayout
         android:id="@+id/ll_setting"
         style="@style/option_item_rl2" >
@@ -53,44 +92,6 @@
         <TextView
             style="@style/option_item_text"
             android:text="设置" />
-    </LinearLayout>
-
-    <View
-        android:layout_width="wrap_content"
-        android:layout_height="1px"
-        android:background="@color/list_divider_color" />
-
-    <LinearLayout
-        android:id="@+id/ll_money"
-        style="@style/option_item_rl2" >
-
-        <ImageView
-            style="@style/option_item_img"
-            android:background="@drawable/icon_my_note"
-            android:contentDescription="@null" />
-
-        <TextView
-            style="@style/option_item_text"
-            android:text="打赏" />
-    </LinearLayout>
-
-    <View
-        android:layout_width="wrap_content"
-        android:layout_height="1px"
-        android:background="@color/list_divider_color" />
-
-    <LinearLayout
-        android:id="@+id/ll_feedback"
-        style="@style/option_item_rl2" >
-
-        <ImageView
-            style="@style/option_item_img"
-            android:background="@drawable/icon_my_team"
-            android:contentDescription="@null" />
-
-        <TextView
-            style="@style/option_item_text"
-            android:text="反馈" />
     </LinearLayout>
 
     <View

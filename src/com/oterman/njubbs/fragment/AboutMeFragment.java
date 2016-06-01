@@ -20,6 +20,8 @@ import android.widget.TextView;
 import com.oterman.njubbs.BaseApplication;
 import com.oterman.njubbs.R;
 import com.oterman.njubbs.activity.LoginActivity;
+import com.oterman.njubbs.activity.expore.FriendsActivity;
+import com.oterman.njubbs.activity.expore.MyTopicActivity;
 import com.oterman.njubbs.activity.mail.MailBoxActicity;
 import com.oterman.njubbs.activity.mail.MailNewActivity;
 import com.oterman.njubbs.bean.UserInfo;
@@ -45,11 +47,13 @@ public class AboutMeFragment  extends Fragment implements OnClickListener {
 	private TextView tvQianming;
 	private TextView tvUnlogin;
 	private ViewGroup llUserContainer;
+	
 	private TextView tvMail;
 	private LinearLayout llMail;
-	private LinearLayout llFeedback;
+	private LinearLayout llFriends;
 	private LinearLayout llSetting;
-	private LinearLayout llMoney;
+	private LinearLayout llMyTopic;
+	
 	private ImageView ivMail;
 	
 	private int newMailCount;
@@ -81,9 +85,9 @@ public class AboutMeFragment  extends Fragment implements OnClickListener {
 		
 		btnLogin = (Button) rootView.findViewById(R.id.btn_login);
 		llMail = (LinearLayout) rootView.findViewById(R.id.ll_mail2);//站内
-		llFeedback = (LinearLayout) rootView.findViewById(R.id.ll_feedback);//反馈
-		llSetting = (LinearLayout) rootView.findViewById(R.id.ll_setting);//反馈
-		llMoney = (LinearLayout) rootView.findViewById(R.id.ll_money);//反馈
+		llFriends = (LinearLayout) rootView.findViewById(R.id.ll_friends);//好友
+		llSetting = (LinearLayout) rootView.findViewById(R.id.ll_setting);//设置
+		llMyTopic = (LinearLayout) rootView.findViewById(R.id.ll_my_topic);//我的帖子
 		ivMail = (ImageView) rootView.findViewById(R.id.iv_mail);
 		
 		tvNewMailCount = (TextView) rootView.findViewById(R.id.tv_new_mail_count);		
@@ -93,9 +97,9 @@ public class AboutMeFragment  extends Fragment implements OnClickListener {
 		
 		//tvMail.setOnClickListener(this);//站内
 		llMail.setOnClickListener(this);
-		llFeedback.setOnClickListener(this);//反馈
+		llFriends.setOnClickListener(this);//反馈
 		llSetting.setOnClickListener(this);//反馈
-		llMoney.setOnClickListener(this);//反馈
+		llMyTopic.setOnClickListener(this);//反馈
 		
 		initUserViews();
 		
@@ -234,17 +238,16 @@ public class AboutMeFragment  extends Fragment implements OnClickListener {
 			Intent intent2=new Intent(getContext(),MailBoxActicity.class);
 			startActivity(intent2);
 			break;
-		case R.id.ll_feedback://点击的是站内
-			Intent intent3=new Intent(getContext(),MailNewActivity.class);
-			intent3.putExtra("receiver","oterman");
-			intent3.putExtra("title","反馈");
-			startActivity(intent3);
+		case R.id.ll_friends://点击
+			Intent friendsIntent=new Intent(getContext(),FriendsActivity.class);
+			startActivity(friendsIntent);
 			break;
 		case R.id.ll_setting://设置
 			MyToast.toast("不想设置");
 			break;
-		case R.id.ll_money://打赏
-			MyToast.toast("就不打赏");
+		case R.id.ll_my_topic://我的帖子
+			Intent myIntent=new Intent(getContext(),MyTopicActivity.class);
+			startActivity(myIntent);
 			break;
 		default:
 			break;

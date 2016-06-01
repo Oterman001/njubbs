@@ -5,22 +5,21 @@
     android:orientation="vertical" >
 
     <LinearLayout
-        android:id="@+id/ll_friends"
-        style="@style/option_item_rl"
-        android:layout_marginTop="@dimen/space_20" >
+        android:id="@+id/ll_colleages"
+        android:layout_marginTop="@dimen/space_30"
+        style="@style/option_item_rl" >
 
         <ImageView
             style="@style/option_item_img"
-            android:layout_marginRight="@dimen/space_10"
-            android:background="@drawable/icon_explore_friends"
+            android:background="@drawable/icon_explore_samecity"
             android:contentDescription="@null" />
 
         <TextView
             style="@style/option_item_text"
-            android:text="我的好友" />
+            android:text="高校BBS" />
     </LinearLayout>
-    
-        <View
+
+    <View
         android:layout_width="match_parent"
         android:layout_height="1px"
         android:background="@color/list_divider_color"
@@ -30,19 +29,21 @@
         android:id="@+id/ll_find_board"
         style="@style/option_item_rl"
         android:visibility="gone" >
+
         <ImageView
             style="@style/option_item_img"
             android:background="@drawable/icon_explore_finduser"
             android:contentDescription="@null" />
+
         <TextView
             style="@style/option_item_text"
             android:text="查找版面" />
     </LinearLayout>
 
     <LinearLayout
-         android:id="@+id/ll_find_user"
+        android:id="@+id/ll_find_user"
         style="@style/option_item_rl"
-        android:layout_marginTop="@dimen/space_20" >
+        android:layout_marginTop="@dimen/space_30" >
 
         <ImageView
             style="@style/option_item_img"
@@ -54,8 +55,6 @@
             style="@style/option_item_text"
             android:text="找网友" />
     </LinearLayout>
-
-
 
     <View
         android:layout_width="match_parent"
@@ -81,10 +80,11 @@
         android:layout_height="1px"
         android:background="@color/list_divider_color" />
 
+    <!--我的帖子  -->
     <LinearLayout
-        android:id="@+id/ll_my_topic"
+        android:id="@+id/ll_feedback"
         style="@style/option_item_rl"
-        android:layout_marginTop="@dimen/space_20" >
+        android:layout_marginTop="@dimen/space_30" >
 
         <ImageView
             style="@style/option_item_img"
@@ -93,7 +93,7 @@
 
         <TextView
             style="@style/option_item_text"
-            android:text="我的帖子" />
+            android:text="反馈" />
     </LinearLayout>
 
     <View
@@ -101,18 +101,21 @@
         android:layout_height="1px"
         android:background="@color/list_divider_color" />
 
+    <!--我的好友  -->
     <LinearLayout
-        android:id="@+id/ll_colleages"
-        style="@style/option_item_rl" >
+        android:id="@+id/ll_money"
+        style="@style/option_item_rl"
+         >
 
         <ImageView
             style="@style/option_item_img"
-            android:background="@drawable/icon_explore_samecity"
+            android:layout_marginRight="@dimen/space_10"
+            android:background="@drawable/icon_explore_friends"
             android:contentDescription="@null" />
 
         <TextView
             style="@style/option_item_text"
-            android:text="其他高校" />
+            android:text="打赏" />
     </LinearLayout>
 
 </LinearLayout>

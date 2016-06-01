@@ -16,6 +16,8 @@ import com.oterman.njubbs.activity.expore.FindBoardActivity;
 import com.oterman.njubbs.activity.expore.FindTopicActivity;
 import com.oterman.njubbs.activity.expore.FriendsActivity;
 import com.oterman.njubbs.activity.expore.MyTopicActivity;
+import com.oterman.njubbs.activity.mail.MailNewActivity;
+import com.oterman.njubbs.utils.MyToast;
 
 
 /**
@@ -47,31 +49,37 @@ public class DiscoveryFragment extends Fragment implements OnClickListener {
 	
 
 	private LinearLayout llColleages;
-	private LinearLayout llFriends;
 	private LinearLayout llFindUser;
 	private LinearLayout llFindBoard;
 	private LinearLayout llFindTopic;
-	private LinearLayout llMyTopic;
+	
+//	private LinearLayout llFriends;
+//	private LinearLayout llMyTopic;
+	
+	private LinearLayout llMoney;
+	private LinearLayout llFeedback;
 
+	
+	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 
 		View view = View.inflate(getContext(), R.layout.fragment_explore, null);
 		llColleages = (LinearLayout) view.findViewById(R.id.ll_colleages);
-		llFriends = (LinearLayout) view.findViewById(R.id.ll_friends);
+		llMoney = (LinearLayout) view.findViewById(R.id.ll_money);
 		llFindUser=(LinearLayout) view.findViewById(R.id.ll_find_user);
 		llFindBoard=(LinearLayout) view.findViewById(R.id.ll_find_board);
 		llFindTopic=(LinearLayout) view.findViewById(R.id.ll_find_topic);
-		llMyTopic=(LinearLayout) view.findViewById(R.id.ll_my_topic);
+		llFeedback=(LinearLayout) view.findViewById(R.id.ll_feedback);
 		
 		//设置监听
 		llColleages.setOnClickListener(this);
-		llFriends.setOnClickListener(this);
+		llMoney.setOnClickListener(this);
 		llFindUser.setOnClickListener(this);
 		llFindBoard.setOnClickListener(this);
 		llFindTopic.setOnClickListener(this);
-		llMyTopic.setOnClickListener(this);
+		llFeedback.setOnClickListener(this);
 		
 		return view;
 	}
@@ -83,9 +91,10 @@ public class DiscoveryFragment extends Fragment implements OnClickListener {
 			Intent intent=new Intent(getContext(),ColleagesActivity.class);
 			startActivity(intent);
 			break;
-		case R.id.ll_friends:
-			Intent intent2=new Intent(getContext(),FriendsActivity.class);
-			startActivity(intent2);
+		case R.id.ll_money://打赏
+			MyToast.toast("不想打赏");
+//			Intent intent2=new Intent(getContext(),FriendsActivity.class);
+//			startActivity(intent2);
 			break;
 		case R.id.ll_find_user:
 			Intent findIntent=new Intent(getContext(),AddFriendActivity.class);
@@ -100,9 +109,13 @@ public class DiscoveryFragment extends Fragment implements OnClickListener {
 			Intent findTopicIntent=new Intent(getContext(),FindTopicActivity.class);
 			startActivity(findTopicIntent);
 			break;
-		case R.id.ll_my_topic:
-			Intent myIntent=new Intent(getContext(),MyTopicActivity.class);
-			startActivity(myIntent);
+		case R.id.ll_feedback://反馈
+//			Intent myIntent=new Intent(getContext(),MyTopicActivity.class);
+//			startActivity(myIntent);
+			Intent intent3=new Intent(getContext(),MailNewActivity.class);
+			intent3.putExtra("receiver","oterman");
+			intent3.putExtra("title","反馈");
+			startActivity(intent3);
 			break;
 
 		default:
