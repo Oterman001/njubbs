@@ -26,6 +26,7 @@ import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
+import android.text.style.AbsoluteSizeSpan;
 import android.text.style.BackgroundColorSpan;
 import android.text.style.ForegroundColorSpan;
 import android.text.util.Linkify;
@@ -783,8 +784,11 @@ public class TopicDetailActivity extends BaseActivity implements
 				SpannableStringBuilder ssb = new SpannableStringBuilder(author);
 				int start = 0;
 				int end = start + " Â¥Ö÷ ".length();
+				
 				ssb.setSpan(new BackgroundColorSpan(Color.RED), start, end,
 						Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+				ssb.setSpan(new AbsoluteSizeSpan(UiUtils.dip2px(12)), start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+				
 				ssb.setSpan(new ForegroundColorSpan(Color.WHITE), start, end,
 						Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 				holder.tvAuthor.setText(ssb);

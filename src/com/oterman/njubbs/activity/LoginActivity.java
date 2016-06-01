@@ -158,13 +158,13 @@ public class LoginActivity extends MyActionBarActivity  implements OnClickListen
 						logOk();
 						
 					}else if(result.contains("登录间隔过密")){//登陆间隔过密
-						loginFailed("登录间隔不能少于10秒！");
+						loginFailed("登录间隔不能少于10秒！",false);
 					}else if(result.contains("错误的使用者帐号")){//账号错误
-						loginFailed("错误的使用者帐号!");
+						loginFailed("错误的使用者帐号!",false);
 					}else if(result.contains("密码间隔不要小于10秒")){//密码错误且太平凡
-						loginFailed("密码错误且过于频繁！");
+						loginFailed("密码错误且过于频繁！",true);
 					}else {//密码错误
-						loginFailed("密码错误！");
+						loginFailed("密码错误！",true);
 					}
 					
 				} catch (Exception e) {//联网异常
@@ -198,12 +198,14 @@ public class LoginActivity extends MyActionBarActivity  implements OnClickListen
 			}
 			
 			//登陆失败
-			private void loginFailed(final String msg) {
+			private void loginFailed(final String msg,final boolean ifclear) {
 				runOnUiThread(new Runnable() {
 					@Override
 					public void run() {
 						MyToast.toast(msg);
-						etPwd.setText("");
+						if(ifclear){
+							etPwd.setText("");
+						}
 						dialog.dismiss();
 					}
 				});

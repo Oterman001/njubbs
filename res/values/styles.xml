@@ -118,5 +118,13 @@
         <item name="android:drawablePadding">@dimen/space_8</item>
         <item name="android:textColor">#666</item>
     </style>
+    
+    <style name="about_me_user_detail">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:padding">7dp</item>
+        <item name="android:textColor">#fff</item>
+        <item name="android:textSize">16sp</item>
+    </style>
 
 </resources>

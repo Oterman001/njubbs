@@ -3,13 +3,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:weightSum="12" >
+    android:weightSum="14" >
 
     <RelativeLayout
         android:layout_width="fill_parent"
         android:layout_height="0dp"
         android:layout_weight="4"
-        android:background="@drawable/user_center_bg" >
+        android:background="@drawable/user_center_bg2" >
 
         <TextView
             android:textStyle="bold"
@@ -31,7 +31,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="3" >
+        android:layout_weight="4" >
         <Button
             android:id="@+id/btn_login"
             android:layout_width="fill_parent"

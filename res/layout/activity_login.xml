@@ -36,7 +36,7 @@
         android:layout_height="wrap_content"
         android:textColor="#fff"
         android:layout_margin="20dp"
-        android:background="@color/main_green"
+        android:background="@drawable/login_bg_selector"
         android:gravity="center"
         android:text="登陆"
         android:textSize="22sp" />

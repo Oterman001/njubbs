@@ -23,6 +23,7 @@
     <string name="jingyan2"><![CDATA[<font color="white">经验：</font>]]></string>
     <string name="biaoxian2"><![CDATA[<font color="white">表现：</font>]]></string>
     <string name="life2"><![CDATA[<font color="white">生命力：</font>]]></string>
+     <string name="totalVisit2"><![CDATA[<font color="white">上站次数：</font>]]></string>
     <string name="qianmingdang2"><![CDATA[<font color="white">签名档：</font>]]></string>
 
     <!--

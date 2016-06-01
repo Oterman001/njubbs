@@ -1,82 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
     android:id="@+id/rl_user_container"
+    android:layout_width="match_parent"
     android:layout_height="match_parent" >
 
     <!-- android:background="@color/main_green" -->
+
     <TextView
         android:id="@+id/tv_user_id"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:padding="10dp"
-        android:text="id    ："
-        android:textColor="#fff"
-        android:textSize="16sp" />
+        style="@style/about_me_user_detail" />
 
     <TextView
         android:id="@+id/tv_user_nickname"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/tv_user_id"
-        android:padding="10dp"
-        android:text="昵称："
-        android:textColor="#fff"
-        android:textSize="16sp" />
+        style="@style/about_me_user_detail"
+        android:layout_below="@id/tv_user_id" />
 
     <TextView
         android:id="@+id/tv_user_biaoxianzhi"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        style="@style/about_me_user_detail"
         android:layout_alignParentRight="true"
-        android:layout_below="@id/tv_user_id"
-        android:padding="10dp"
-        android:text="表现值："
-        android:textColor="#fff"
-        android:textSize="16sp" />
+        android:layout_below="@id/tv_user_id" />
 
     <TextView
         android:id="@+id/tv_user_jingyan"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/tv_user_nickname"
-        android:padding="10dp"
-        android:text="经验： "
-        android:textColor="#fff"
-        android:textSize="16sp" />
+        style="@style/about_me_user_detail"
+        android:layout_below="@id/tv_user_nickname" />
+
+    <!-- 生命力 -->
 
     <TextView
         android:id="@+id/tv_user_shengmingli"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        style="@style/about_me_user_detail"
         android:layout_alignLeft="@id/tv_user_biaoxianzhi"
         android:layout_alignParentRight="true"
-        android:layout_below="@id/tv_user_nickname"
-        android:padding="10dp"
-        android:text="生命力："
-        android:textColor="#fff"
-        android:textSize="16sp" />
+        android:layout_below="@id/tv_user_nickname" />
+
+    <!-- 星座 -->
 
     <TextView
         android:id="@+id/tv_user_xingzuo"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/tv_user_jingyan"
-        android:padding="10dp"
-        android:text="星座："
-        android:textColor="#fff"
-        android:textSize="16sp" />
+        style="@style/about_me_user_detail"
+        android:layout_below="@id/tv_user_jingyan" />
+
+    <!-- 上站次数 -->
 
     <TextView
-        android:id="@+id/tv_user_qianmingdang"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:id="@+id/tv_user_totalvisit"
+        style="@style/about_me_user_detail"
         android:layout_alignLeft="@id/tv_user_biaoxianzhi"
         android:layout_alignParentRight="true"
-        android:layout_below="@id/tv_user_jingyan"
-        android:padding="10dp"
-        android:text="签名档： "
-        android:textColor="#fff"
-        android:textSize="16sp" />
+        android:layout_below="@id/tv_user_jingyan" />
 
 </RelativeLayout>

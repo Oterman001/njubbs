@@ -3,11 +3,17 @@ package com.oterman.njubbs.fragment;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.text.Html;
+import android.text.Spannable;
+import android.text.SpannableStringBuilder;
+import android.text.style.AbsoluteSizeSpan;
+import android.text.style.BackgroundColorSpan;
+import android.text.style.ForegroundColorSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -44,7 +50,7 @@ public class AboutMeFragment  extends Fragment implements OnClickListener {
 	private TextView tvJingyan;
 	private TextView tvLife;
 	private TextView tvBiaoxian;
-	private TextView tvQianming;
+	private TextView tvTotalVisit;
 	private TextView tvUnlogin;
 	private ViewGroup llUserContainer;
 	
@@ -137,7 +143,7 @@ public class AboutMeFragment  extends Fragment implements OnClickListener {
 		tvJingyan = (TextView) rootView.findViewById(R.id.tv_user_jingyan);
 		tvLife = (TextView) rootView.findViewById(R.id.tv_user_shengmingli);
 		tvBiaoxian = (TextView) rootView.findViewById(R.id.tv_user_biaoxianzhi);
-		tvQianming = (TextView) rootView.findViewById(R.id.tv_user_qianmingdang);
+		tvTotalVisit = (TextView) rootView.findViewById(R.id.tv_user_totalvisit);
 		
 	}
 
@@ -166,25 +172,61 @@ public class AboutMeFragment  extends Fragment implements OnClickListener {
 			llUserContainer.setVisibility(View.VISIBLE);
 			tvUnlogin.setVisibility(View.INVISIBLE);
 			btnLogin.setText("注销");
-			btnLogin.setBackgroundColor(0x88ff0000);
+//			btnLogin.setBackgroundColor(0x88ff0000);
+			btnLogin.setBackground(getResources().getDrawable(R.drawable.logout_bg_selector));
+//			btnLogin.setBackgroundColor(0x88ff0000);
 			
 		}else{//未登录
 			llUserContainer.setVisibility(View.INVISIBLE);
 			tvUnlogin.setVisibility(View.VISIBLE);
 			btnLogin.setText("登陆");
-			btnLogin.setBackgroundColor(getResources().getColor(R.color.main_green));
+//			btnLogin.setBackgroundColor(getResources().getColor(R.color.main_green));
+			btnLogin.setBackground(getResources().getDrawable(R.drawable.login_bg_selector));
 		}
 		
+		//更新视图
 		if(userInfo!=null){
-			tvId.setText(Html.fromHtml(getResources().getString(R.string.id2)+""+userInfo.id+""));
-			tvNickName.setText(Html.fromHtml(getResources().getString(R.string.nickname2)+userInfo.nickname));
-			tvXingzuo.setText(Html.fromHtml(getResources().getString(R.string.xingzuo2)+userInfo.xingzuo));
-			tvJingyan.setText(Html.fromHtml(getResources().getString(R.string.jingyan2)+userInfo.jingyan));
-			tvLife.setText(Html.fromHtml(getResources().getString(R.string.life2)+userInfo.life));
-			tvBiaoxian.setText(Html.fromHtml(getResources().getString(R.string.biaoxian2)+userInfo.biaoxian));
-			tvQianming.setText(Html.fromHtml(getResources().getString(R.string.qianmingdang2)+"暂无"));
+			updateUserDetail2();
 		}
 		
+	}
+	/*
+	 * 		SpannableStringBuilder ssb=new SpannableStringBuilder(title);
+			int start=0;
+			int end=start+" 置顶 ".length();
+			
+			ssb.setSpan(new AbsoluteSizeSpan(UiUtils.dip2px(15)), start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+			ssb.setSpan(new ForegroundColorSpan(Color.WHITE), start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+			holder.tvTitle.setText(ssb);
+	 * 
+	*/
+	private void updateUserDetail2() {
+		String id="id  ："+userInfo.id;
+		SpannableStringBuilder ssb=new SpannableStringBuilder(id);
+		int start="id  ：".length();
+		int end=start+userInfo.id.length();
+		ssb.setSpan(new AbsoluteSizeSpan(UiUtils.dip2px(26)), start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+//		ssb.setSpan(new ForegroundColorSpan(0xff8a2be2), start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+		
+		tvId.setText(ssb);
+		
+//		tvId.setText(Html.fromHtml(getResources().getString(R.string.id2)+""+userInfo.id+""));
+		
+		tvNickName.setText(Html.fromHtml(getResources().getString(R.string.nickname2)+userInfo.nickname));
+		tvXingzuo.setText(Html.fromHtml(getResources().getString(R.string.xingzuo2)+userInfo.xingzuo));
+		tvJingyan.setText(Html.fromHtml(getResources().getString(R.string.jingyan2)+userInfo.jingyan));
+		tvLife.setText(Html.fromHtml(getResources().getString(R.string.life2)+userInfo.life));
+		tvBiaoxian.setText(Html.fromHtml(getResources().getString(R.string.biaoxian2)+userInfo.biaoxian));
+		tvTotalVisit.setText(Html.fromHtml(getResources().getString(R.string.totalVisit2)+userInfo.totalVisit+"次"));
+	}
+	private void updateUserDetail() {
+		tvId.setText(Html.fromHtml(getResources().getString(R.string.id2)+""+userInfo.id+""));
+		tvNickName.setText(Html.fromHtml(getResources().getString(R.string.nickname2)+userInfo.nickname));
+		tvXingzuo.setText(Html.fromHtml(getResources().getString(R.string.xingzuo2)+userInfo.xingzuo));
+		tvJingyan.setText(Html.fromHtml(getResources().getString(R.string.jingyan2)+userInfo.jingyan));
+		tvLife.setText(Html.fromHtml(getResources().getString(R.string.life2)+userInfo.life));
+		tvBiaoxian.setText(Html.fromHtml(getResources().getString(R.string.biaoxian2)+userInfo.biaoxian));
+		tvTotalVisit.setText(Html.fromHtml(getResources().getString(R.string.totalVisit2)+userInfo.totalVisit+"次"));
 	}
 
 	//检查是否有新的站内

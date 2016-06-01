@@ -223,7 +223,7 @@ public class TopAllFragment extends BaseFragment implements OnRefreshListener {
 			TextView tvCount = (TextView) view
 					.findViewById(R.id.tv_group_count);
 
-			tvCount.setText("" + childCount);
+			tvCount.setText("(" + childCount+")");
 			tvTitle.setText(getGroup(groupPosition));
 
 			return view;
