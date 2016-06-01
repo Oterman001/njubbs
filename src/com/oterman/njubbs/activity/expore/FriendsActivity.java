@@ -68,7 +68,7 @@ public class FriendsActivity extends BaseActivity implements OnClickListener, On
 		}
 		
 		String url=Constants.BBS_FRIEND_ALL_URL;
-		list = protocol.loadFromCache(url);
+		list = protocol.loadFromCache(url,FriendsActivity.this);
 		return list==null?LoadingState.LOAD_FAILED:LoadingState.LOAD_SUCCESS;
 	}
 	
@@ -160,7 +160,7 @@ public class FriendsActivity extends BaseActivity implements OnClickListener, On
 				HttpUtils httpUtils=new HttpUtils();
 				String cookie=BaseApplication.getCookie();
 				if(cookie==null){
-					cookie=BaseApplication.autoLogin();
+					cookie=BaseApplication.autoLogin(FriendsActivity.this,true);
 				}
 				
 				RequestParams rp=new RequestParams();
@@ -294,7 +294,7 @@ public class FriendsActivity extends BaseActivity implements OnClickListener, On
 					protocol = new FriendsProtocol();
 				}
 				String url=Constants.BBS_FRIEND_ALL_URL;
-				List<FriendInfo> tempList = protocol.loadFromServer(url, false);
+				List<FriendInfo> tempList = protocol.loadFromServer(url, false,FriendsActivity.this);
 				
 				list=tempList;
 				

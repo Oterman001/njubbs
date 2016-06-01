@@ -1,28 +1,14 @@
 package com.oterman.njubbs.protocol;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 
-import android.text.TextUtils;
+import android.content.Context;
 
-import com.lidroid.xutils.HttpUtils;
-import com.lidroid.xutils.http.RequestParams;
-import com.lidroid.xutils.http.ResponseStream;
-import com.lidroid.xutils.http.client.HttpRequest.HttpMethod;
-import com.nostra13.universalimageloader.cache.disc.naming.HashCodeFileNameGenerator;
 import com.oterman.njubbs.BaseApplication;
-import com.oterman.njubbs.bean.MailInfo;
-import com.oterman.njubbs.utils.CacheUtilsNew;
 import com.oterman.njubbs.utils.LogUtil;
 /**
  * 检查是否有新的站内信  如果有，返回新的封数
@@ -33,11 +19,11 @@ public class CheckNewMailProtocol {
 	/**
 	 * 从服务器加载十大数据，解析并返回
 	 */
-	public int checkFromServer(String url) {
+	public int checkFromServer(String url,Context context) {
 		try {
 			String cookie = BaseApplication.getCookie();
 			if (cookie == null) {
-				cookie=BaseApplication.autoLogin();
+				cookie=BaseApplication.autoLogin(context,false);
 			}
 
 			//	"_U_NUM=xx;_U_UID=xx;_U_KEY=xx
@@ -50,7 +36,7 @@ public class CheckNewMailProtocol {
 				
 				Document doc= Jsoup.connect(url).cookies(cookies).get();
 				if(doc.select("td").size()==0){
-					BaseApplication.autoLogin();
+					BaseApplication.autoLogin(context,false);
 					cookie = BaseApplication.getCookie();
 					cookies.put("_U_NUM",strs[0].split("=")[1]);
 					cookies.put("_U_UID",strs[1].split("=")[1]);

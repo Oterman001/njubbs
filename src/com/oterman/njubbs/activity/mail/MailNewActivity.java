@@ -241,7 +241,7 @@ public class MailNewActivity extends MyActionBarActivity implements
 					//添加cookie
 					String cookie = BaseApplication.getCookie();
 					if(cookie==null){//自动登陆
-						cookie=BaseApplication.autoLogin();
+						cookie=BaseApplication.autoLogin(MailNewActivity.this,true);
 					}
 					
 					rp.addHeader("Cookie",cookie);
@@ -272,9 +272,9 @@ public class MailNewActivity extends MyActionBarActivity implements
 								}
 								MyToast.toast("自动登陆失败，请手动登录");
 								//跳转到登陆界面
-								Intent intent=new Intent(UiUtils.getContext(),LoginActivity.class);
-								intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-								UiUtils.getContext().startActivity(intent);
+//								Intent intent=new Intent(UiUtils.getContext(),LoginActivity.class);
+//								intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//								UiUtils.getContext().startActivity(intent);
 							}
 						});
 					}

@@ -258,7 +258,7 @@ public class NewTopicActivity extends MyActionBarActivity implements
 					String cookie = BaseApplication.getCookie();
 					if(cookie==null){//×Ô¶¯µÇÂ½
 						
-						cookie=BaseApplication.autoLogin();
+						cookie=BaseApplication.autoLogin(NewTopicActivity.this,true);
 						
 						if(cookie!=null){
 							runOnUiThread(new Runnable() {
@@ -286,10 +286,10 @@ public class NewTopicActivity extends MyActionBarActivity implements
 								}
 								MyToast.toast("×Ô¶¯µÇÂ½Ê§°Ü£¬ÇëµÇÂ¼£¡");
 								// Ìø×ªµ½µÇÂ½Ò³Ãæ
-								Intent intent = new Intent(
-										NewTopicActivity.this,
-										LoginActivity.class);
-								startActivity(intent);
+//								Intent intent = new Intent(
+//										NewTopicActivity.this,
+//										LoginActivity.class);
+//								startActivity(intent);
 							}
 						});
 						

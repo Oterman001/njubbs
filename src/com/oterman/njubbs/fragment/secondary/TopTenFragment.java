@@ -136,6 +136,7 @@ public class TopTenFragment extends BaseFragment implements OnRefreshListener {
 					public void OnMailTo() {
 						dialog.dismiss();
 						Intent intent=new Intent(getContext(),MailNewActivity.class);
+						
 						if(topicInfo!=null){
 							intent.putExtra("receiver",topicInfo.author);
 						}
@@ -265,7 +266,7 @@ public class TopTenFragment extends BaseFragment implements OnRefreshListener {
 			View view=null;
 			ViewHolder holder=null;
 			if(convertView==null){
-				view=View.inflate(getContext(), R.layout.list_item_topten, null);
+				view=View.inflate(getContext(), R.layout.list_item_topten_new, null);
 				holder=new ViewHolder();
 				holder.tvTitle=(TextView) view.findViewById(R.id.tv_top_item_title);
 				holder.tvBoard=(TextView) view.findViewById(R.id.tv_top_item_board);

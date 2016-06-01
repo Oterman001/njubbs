@@ -118,7 +118,7 @@ public class BoardsFragment extends BaseFragment implements OnRefreshListener {
 			favBoardProtocol=new FavBoardsProtocol();
 		}
 		String favUrl=Constants.BBSLEFT_URL;
-		favBoardsList=favBoardProtocol.loadFromCache(favUrl);
+		favBoardsList=favBoardProtocol.loadFromCache(favUrl,getContext());
 		
 		return hotBoardsList == null ? LoadingState.LOAD_FAILED: LoadingState.LOAD_SUCCESS;
 	}
@@ -164,7 +164,7 @@ public class BoardsFragment extends BaseFragment implements OnRefreshListener {
 			favBoardProtocol=new FavBoardsProtocol();
 		}
 		String favUrl=Constants.BBSLEFT_URL;
-		List<BoardInfo> list2 = favBoardProtocol.loadFromServer(favUrl, true);
+		List<BoardInfo> list2 = favBoardProtocol.loadFromServer(favUrl, true,getContext());
 		
 		if(list1!=null&&list1.size()!=0){
 			hotBoardsList=list1;

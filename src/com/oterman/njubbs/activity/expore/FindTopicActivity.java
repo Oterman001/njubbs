@@ -106,6 +106,12 @@ public  class FindTopicActivity extends FragmentActivity {
 
 	//联网获取查询结果
 	private void queryFromServer() {
+		//检查输入是否为空
+		String str=etTitle.getText().toString().trim();
+		if(TextUtils.isEmpty(str)){
+			MyToast.toast("没有输入，让我查啥捏");
+			return ;
+		}
 		if(waitDialog==null){
 			waitDialog = new WaitDialog(this);
 			waitDialog.setMessage("正在努力查询。。");
@@ -178,7 +184,7 @@ public  class FindTopicActivity extends FragmentActivity {
 		
 		View back = actionBarView.findViewById(R.id.btn_back2);
 		etTitle = (EditText) actionBarView.findViewById(R.id.et_board);
-		etTitle.setHint("请输入标题或作者id");
+		etTitle.setHint("查找帖子");
 		etTitle.setImeOptions(EditorInfo.IME_ACTION_SEND);  //回车
 		
 		ibSearch = (ImageButton) actionBarView.findViewById(R.id.ib_search);

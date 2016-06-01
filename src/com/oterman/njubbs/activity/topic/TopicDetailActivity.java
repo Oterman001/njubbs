@@ -93,7 +93,7 @@ public class TopicDetailActivity extends BaseActivity implements
 	private List<TopicDetailInfo> list;
 	private TopicDetailAdapter adapter;
 
-	private TopicInfo topicInfo;
+	private TopicInfo originTopicInfo;
 	private TopicDetailProtocol protocol;
 	private PullToRefreshListView pLv;
 	private View view;
@@ -133,8 +133,8 @@ public class TopicDetailActivity extends BaseActivity implements
 				LayoutParams.MATCH_PARENT);
 		actionBar.setCustomView(view, params);
 
-		topicInfo = (TopicInfo) getIntent().getSerializableExtra("topicInfo");
-		tvTitle.setText(topicInfo.board + "(点击进入)");
+		originTopicInfo = (TopicInfo) getIntent().getSerializableExtra("topicInfo");
+		tvTitle.setText(originTopicInfo.board + "(点击进入)");
 		tvTitle.setTextSize(22);
 
 		// 给actionbar添加点击事件 点击后进入到对应的版面
@@ -146,7 +146,7 @@ public class TopicDetailActivity extends BaseActivity implements
 				Intent intent = new Intent(getApplicationContext(),
 						BoardDetailActivity.class);
 
-				intent.putExtra("boardUrl", topicInfo.boardUrl);
+				intent.putExtra("boardUrl", originTopicInfo.boardUrl);
 
 				startActivity(intent);
 				// 结束掉
@@ -202,7 +202,7 @@ public class TopicDetailActivity extends BaseActivity implements
 	 * 从服务器中加载数据
 	 */
 	public LoadingState loadDataFromServer() {
-		String url = Constants.getContentUrl(topicInfo.contentUrl);
+		String url = Constants.getContentUrl(originTopicInfo.contentUrl);
 		protocol = new TopicDetailProtocol();
 		list = protocol.loadFromServer(url, false);
 		return list == null ? LoadingState.LOAD_FAILED
@@ -331,12 +331,12 @@ public class TopicDetailActivity extends BaseActivity implements
 		TextView tvTitle = (TextView) view.findViewById(R.id.tv_topic_titile);
 		TextView tvReplyeCount = (TextView) view
 				.findViewById(R.id.tv_topic_replycount);
-		tvTitle.setText(topicInfo.title);
+		tvTitle.setText(originTopicInfo.title);
 
-		if (topicInfo.replyCount == null) {
+		if (originTopicInfo.replyCount == null) {
 			tvReplyeCount.setText("共" + list.size() + "条回复");
 		} else {
-			String str = topicInfo.replyCount;
+			String str = originTopicInfo.replyCount;
 			if (str.contains("/")) {
 				str = str.split("/")[0];
 			}
@@ -394,7 +394,7 @@ public class TopicDetailActivity extends BaseActivity implements
 				// 跳转到修改页面
 				Intent intent = new Intent(TopicDetailActivity.this,
 						ModifyReplyActivity.class);
-				detailInfo.title = topicInfo.title;
+				detailInfo.title = originTopicInfo.title;
 				intent.putExtra("topicDetailInfo", detailInfo);
 				startActivityForResult(intent, 100);
 
@@ -405,8 +405,8 @@ public class TopicDetailActivity extends BaseActivity implements
 				optionsDialog.dismiss();
 				Intent intent = new Intent(getApplicationContext(),
 						MailNewActivity.class);
-				if (topicInfo != null) {
-					intent.putExtra("receiver", topicInfo.author);
+				if (originTopicInfo != null) {
+					intent.putExtra("receiver", author);
 				}
 				startActivity(intent);
 			}
@@ -471,7 +471,7 @@ public class TopicDetailActivity extends BaseActivity implements
 					// 先自动登陆
 					String cookie = BaseApplication.getCookie();
 					if (cookie == null) {
-						cookie = BaseApplication.autoLogin();
+						cookie = BaseApplication.autoLogin(TopicDetailActivity.this,true);
 					}
 
 					rp.addHeader("Cookie", cookie);
@@ -545,7 +545,7 @@ public class TopicDetailActivity extends BaseActivity implements
 					handlePostParams(content, params);
 					// post提交
 					ResponseStream stream = httpUtils.sendSync(HttpMethod.POST,
-							Constants.getNewTopicUrl(topicInfo.board), params);
+							Constants.getNewTopicUrl(originTopicInfo.board), params);
 
 					String result = BaseApplication.StreamToStr(stream);
 
@@ -563,10 +563,10 @@ public class TopicDetailActivity extends BaseActivity implements
 								MyToast.toast("自动登陆失败，请登录！");
 								cbSmiley.setChecked(false);
 								// 跳转到登陆页面
-								Intent intent = new Intent(
-										TopicDetailActivity.this,
-										LoginActivity.class);
-								startActivity(intent);
+//								Intent intent = new Intent(
+//										TopicDetailActivity.this,
+//										LoginActivity.class);
+//								startActivity(intent);
 							}
 						});
 
@@ -591,7 +591,7 @@ public class TopicDetailActivity extends BaseActivity implements
 						}
 						// 重新请求数据
 						String url = Constants
-								.getContentUrl(topicInfo.contentUrl);
+								.getContentUrl(originTopicInfo.contentUrl);
 						list = protocol.loadFromServer(url, false);
 
 						// 更新界面
@@ -639,13 +639,13 @@ public class TopicDetailActivity extends BaseActivity implements
 			 */
 			private void handlePostParams(final String content,
 					RequestParams params) {
-				String title = "Re:" + topicInfo.title;
+				String title = "Re:" + originTopicInfo.title;
 				// 处理中文问题
-				String reusr = topicInfo.author;
+				String reusr = originTopicInfo.author;
 
 				// file=M.1463541584.A 获取数字 reid 参数
 				Pattern p = Pattern.compile("file=M\\.(\\d+)\\.");
-				Matcher matcher = p.matcher(topicInfo.contentUrl);
+				Matcher matcher = p.matcher(originTopicInfo.contentUrl);
 				String reid = null;
 				if (matcher.find()) {
 					reid = matcher.group(1);
@@ -654,12 +654,12 @@ public class TopicDetailActivity extends BaseActivity implements
 				// 添加cookie 自动登陆；
 				String cookie = BaseApplication.getCookie();
 				if (cookie == null) {
-					cookie = BaseApplication.autoLogin();
+					cookie = BaseApplication.autoLogin(TopicDetailActivity.this,true);
 				}
 
 				// 获取pid
 				String pid = getPid(cookie,
-						Constants.getReplyPageUrl(topicInfo.contentUrl));
+						Constants.getReplyPageUrl(originTopicInfo.contentUrl));
 
 				// 添加参数 共有7个
 				params.addBodyParameter("title", title);
@@ -777,8 +777,8 @@ public class TopicDetailActivity extends BaseActivity implements
 			// author=author.replaceFirst("\\(","\n(" );
 
 			// 做标记
-			if (author != null && topicInfo.author != null
-					&& author.contains(topicInfo.author)) {
+			if (author != null && originTopicInfo.author != null
+					&& author.contains(originTopicInfo.author)) {
 				author = " 楼主 " + author;
 				SpannableStringBuilder ssb = new SpannableStringBuilder(author);
 				int start = 0;
@@ -893,7 +893,7 @@ public class TopicDetailActivity extends BaseActivity implements
 						@Override
 						public void run() {
 							String url = Constants
-									.getContentUrl(topicInfo.contentUrl);
+									.getContentUrl(originTopicInfo.contentUrl);
 							if (protocol == null) {
 								protocol = new TopicDetailProtocol();
 							}

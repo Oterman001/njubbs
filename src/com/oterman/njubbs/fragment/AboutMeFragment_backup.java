@@ -31,7 +31,7 @@ import com.oterman.njubbs.utils.ThreadManager;
 import com.oterman.njubbs.utils.UiUtils;
 
 @SuppressLint("NewApi")
-public class AboutMeFragment  extends Fragment implements OnClickListener {
+public class AboutMeFragment_backup  extends Fragment implements OnClickListener {
 
 	private View rootView;
 	private Button btnLogin;
@@ -53,7 +53,6 @@ public class AboutMeFragment  extends Fragment implements OnClickListener {
 	private ImageView ivMail;
 	
 	private int newMailCount;
-	private TextView tvNewMailCount;
 	
 	@Override
 	public void onResume() {
@@ -86,8 +85,7 @@ public class AboutMeFragment  extends Fragment implements OnClickListener {
 		llMoney = (LinearLayout) rootView.findViewById(R.id.ll_money);//反馈
 		ivMail = (ImageView) rootView.findViewById(R.id.iv_mail);
 		
-		tvNewMailCount = (TextView) rootView.findViewById(R.id.tv_new_mail_count);		
-
+		
 		
 		btnLogin.setOnClickListener(this);//登陆、注销按钮
 		
@@ -198,15 +196,18 @@ public class AboutMeFragment  extends Fragment implements OnClickListener {
 						UiUtils.runOnUiThread(new Runnable() {
 							@Override
 							public void run() {
-								tvNewMailCount.setVisibility(View.VISIBLE);
-								tvNewMailCount.setText(newMailCount+"");
+								Drawable drawable = getResources().getDrawable(R.drawable.icon_my_message2);
+	//							drawable.setBounds(0, 0, drawable.getMinimumWidth(),drawable.getMinimumHeight());
+								ivMail.setBackground(drawable);
 							}
 						});
 					}else{//没有新邮件
 						UiUtils.runOnUiThread(new Runnable() {
 							@Override
 							public void run() {
-								tvNewMailCount.setVisibility(View.INVISIBLE);
+								Drawable drawable = getResources().getDrawable(R.drawable.icon_my_message);
+	//							drawable.setBounds(0, 0, drawable.getMinimumWidth(),drawable.getMinimumHeight());
+								ivMail.setBackground(drawable);
 							}
 						});
 					}

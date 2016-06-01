@@ -33,6 +33,8 @@ public class HotTopicFragment extends Fragment implements OnPageChangeListener {
 	private ViewPager vpPager;
 	private HotTopicAdapter adapter;
 	private TabPageIndicator indicator;
+	
+	private boolean updated=false;
 
 	@Override
 	public void onActivityCreated(@Nullable Bundle savedInstanceState) {
@@ -114,7 +116,14 @@ public class HotTopicFragment extends Fragment implements OnPageChangeListener {
 		}else{
 			if(topAllFragment!=null){
 				topAllFragment.showViewFromServer();
+				
+				if(!updated){
+					LogUtil.d("第二页自动刷新了。。");
+					topAllFragment.refresh(false);
+					updated=true;
+				}
 			}
+			
 		}
 	}
 

@@ -21,6 +21,19 @@
             style="@style/option_item_text"
             android:clickable="true"
             android:text="站内" />
+
+        <TextView
+            android:id="@+id/tv_new_mail_count"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_marginRight="25dp"
+            android:layout_gravity="center_vertical"
+            android:background="@drawable/tips_circle"
+            android:gravity="center"
+            android:text="8"
+            android:visibility="invisible"
+            android:textColor="@android:color/white"
+            android:textSize="14dip" />
     </LinearLayout>
 
     <View
@@ -65,6 +78,7 @@
         android:layout_width="wrap_content"
         android:layout_height="1px"
         android:background="@color/list_divider_color" />
+
     <LinearLayout
         android:id="@+id/ll_feedback"
         style="@style/option_item_rl2" >

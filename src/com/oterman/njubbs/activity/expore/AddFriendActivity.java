@@ -51,7 +51,6 @@ public class AddFriendActivity extends MyActionBarActivity implements
 		ibSearch = (ImageButton) this.findViewById(R.id.ib_search);
 		lvResult = (ListView) this.findViewById(R.id.lv_result);
 		tvStatus = (TextView) this.findViewById(R.id.tv_status);
-
 		
 //		resultAdapter = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1, resultList);
 //		lvResult.setAdapter(resultAdapter);
@@ -60,7 +59,7 @@ public class AddFriendActivity extends MyActionBarActivity implements
 
 		List<String> list = new ArrayList<>();
 		list.add("按id查找");
-		list.add("按昵称查找");
+		list.add("按昵称查");
 
 		ArrayAdapter<String> spAdapter = new ArrayAdapter<String>(this,
 				android.R.layout.simple_spinner_item, list);

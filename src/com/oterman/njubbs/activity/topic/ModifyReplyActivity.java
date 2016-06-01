@@ -271,7 +271,7 @@ public class ModifyReplyActivity extends MyActionBarActivity implements
 					//Ìí¼Ócookie
 					String cookie = BaseApplication.getCookie();
 					if(cookie==null){//×Ô¶¯µÇÂ½
-						cookie=BaseApplication.autoLogin();
+						cookie=BaseApplication.autoLogin(ModifyReplyActivity.this,true);
 						if(cookie!=null){
 							runOnUiThread(new Runnable() {
 								@Override

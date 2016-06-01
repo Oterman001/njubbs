@@ -13,11 +13,11 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 
+import android.content.Context;
 import android.text.TextUtils;
 
 import com.oterman.njubbs.BaseApplication;
 import com.oterman.njubbs.bean.FriendInfo;
-import com.oterman.njubbs.bean.UserInfo;
 import com.oterman.njubbs.utils.CacheUtilsNew;
 import com.oterman.njubbs.utils.LogUtil;
 import com.oterman.njubbs.utils.SPutils;
@@ -31,12 +31,12 @@ public class FriendsProtocol {
 	/**
 	 * 从服务器加载十大数据，解析并返回
 	 */
-	public  List<FriendInfo> loadFromServer(String url,boolean saveToLocal) {
+	public  List<FriendInfo> loadFromServer(String url,boolean saveToLocal,Context context) {
 		 List<FriendInfo> list=null;
 		try {
 			String cookie = BaseApplication.getCookie();
 			if (cookie == null) {
-				cookie=BaseApplication.autoLogin();
+				cookie=BaseApplication.autoLogin(context,true);
 			}
 
 			//	"_U_NUM=xx;_U_UID=xx;_U_KEY=xx
@@ -50,7 +50,7 @@ public class FriendsProtocol {
 				Document doc= Jsoup.connect(url).cookies(cookies).get();
 				
 				if(doc.select("td").size()==0){
-					BaseApplication.autoLogin();
+					BaseApplication.autoLogin(context,true);
 					cookie = BaseApplication.getCookie();
 					cookies.put("_U_NUM",strs[0].split("=")[1]);
 					cookies.put("_U_UID",strs[1].split("=")[1]);
@@ -80,7 +80,7 @@ public class FriendsProtocol {
 	/**
 	 * 从本地加载数据
 	 */
-	public List<FriendInfo> loadFromCache(String url) {
+	public List<FriendInfo> loadFromCache(String url,Context context) {
 		String html = CacheUtilsNew.loadFromLocal(getSaveKey());
 
 		if (!TextUtils.isEmpty(html)) {
@@ -89,7 +89,7 @@ public class FriendsProtocol {
 
 			return parseHtml(doc);
 		} else {
-			return loadFromServer(url,true);
+			return loadFromServer(url,true,context);
 		}
 	}
 

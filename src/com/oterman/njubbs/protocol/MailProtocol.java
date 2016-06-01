@@ -10,6 +10,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import android.content.Context;
 import android.content.Intent;
 import android.text.TextUtils;
 
@@ -32,7 +33,7 @@ public class MailProtocol {
 	/**
 	 * 从服务器加载十大数据，解析并返回
 	 */
-	public List<MailInfo> loadFromServer(String url,boolean saveToLocal) {
+	public List<MailInfo> loadFromServer(String url,boolean saveToLocal,Context context) {
 		List<MailInfo> list = null;
 		try {
 			httpUtils = new HttpUtils();
@@ -41,7 +42,7 @@ public class MailProtocol {
 			String cookie = BaseApplication.getCookie();
 			
 			if (cookie == null) {
-				cookie=BaseApplication.autoLogin();
+				cookie=BaseApplication.autoLogin(context,true);
 			}
 
 			rp.addHeader("Cookie", cookie);
@@ -69,9 +70,9 @@ public class MailProtocol {
 					public void run() {
 						MyToast.toast("自动登陆失败，请手动登录");
 						//跳转到登陆界面
-						Intent intent=new Intent(UiUtils.getContext(),LoginActivity.class);
-						intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-						UiUtils.getContext().startActivity(intent);
+//						Intent intent=new Intent(UiUtils.getContext(),LoginActivity.class);
+//						intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//						UiUtils.getContext().startActivity(intent);
 					}
 				});
 
@@ -86,7 +87,7 @@ public class MailProtocol {
 	/**
 	 * 从本地加载数据
 	 */
-	public List<MailInfo> loadFromCache(String url) {
+	public List<MailInfo> loadFromCache(String url,Context context) {
 		String html = CacheUtilsNew.loadFromLocal(getSaveKey());
 
 		if (!TextUtils.isEmpty(html)) {
@@ -95,7 +96,7 @@ public class MailProtocol {
 
 			return parseHtml(doc);
 		} else {
-			return loadFromServer(url,true);
+			return loadFromServer(url,true,context);
 		}
 	}
 

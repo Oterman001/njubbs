@@ -94,7 +94,7 @@ public class MailBoxActicity extends BaseActivity implements OnClickListener {
 			protocol = new MailProtocol();
 		}
 	
-		dataList = protocol.loadFromServer(Constants.BBS_MAIL_URL, false);
+		dataList = protocol.loadFromServer(Constants.BBS_MAIL_URL, false,MailBoxActicity.this);
 	
 		return dataList == null ? LoadingState.LOAD_FAILED:LoadingState.LOAD_SUCCESS;
 	}
@@ -178,7 +178,7 @@ public class MailBoxActicity extends BaseActivity implements OnClickListener {
 								moreUrl = Constants.getMailMoreUrl(moreUrl);
 								if (moreUrl != null) {
 									moreList = protocol.loadFromServer(moreUrl,
-											false);
+											false,MailBoxActicity.this);
 								}
 								// 加载完后 更新主页面
 								UiUtils.runOnUiThread(new Runnable() {
@@ -226,7 +226,7 @@ public class MailBoxActicity extends BaseActivity implements OnClickListener {
 							protocol = new MailProtocol();
 						}
 						 List<MailInfo> list = protocol.loadFromServer(
-								Constants.BBS_MAIL_URL, false);
+								Constants.BBS_MAIL_URL, false,MailBoxActicity.this);
 						 
 						 if(list!=null){
 							 dataList=list;

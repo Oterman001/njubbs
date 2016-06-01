@@ -7,19 +7,15 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import android.content.Context;
 import android.text.TextUtils;
 
 import com.lidroid.xutils.HttpUtils;
-import com.lidroid.xutils.http.RequestParams;
-import com.lidroid.xutils.http.ResponseStream;
-import com.lidroid.xutils.http.client.HttpRequest.HttpMethod;
-import com.nostra13.universalimageloader.cache.disc.naming.HashCodeFileNameGenerator;
 import com.oterman.njubbs.BaseApplication;
 import com.oterman.njubbs.bean.MailInfo;
 import com.oterman.njubbs.utils.CacheUtilsNew;
@@ -36,12 +32,12 @@ public class MailContentProtocol {
 	/**
 	 * 从服务器加载十大数据，解析并返回
 	 */
-	public MailInfo loadFromServer(String url,boolean saveToLocal) {
+	public MailInfo loadFromServer(String url,boolean saveToLocal,Context context) {
 		MailInfo info=null;
 		try {
 			String cookie = BaseApplication.getCookie();
 			if (cookie == null) {
-				cookie=BaseApplication.autoLogin();
+				cookie=BaseApplication.autoLogin(context,true);
 			}
 
 			//	"_U_NUM=xx;_U_UID=xx;_U_KEY=xx
@@ -54,7 +50,7 @@ public class MailContentProtocol {
 				
 				Document doc= Jsoup.connect(url).cookies(cookies).get();
 				if(doc.select("td").size()==0){
-					BaseApplication.autoLogin();
+					BaseApplication.autoLogin(context,true);
 					cookie = BaseApplication.getCookie();
 					cookies.put("_U_NUM",strs[0].split("=")[1]);
 					cookies.put("_U_UID",strs[1].split("=")[1]);
@@ -81,7 +77,7 @@ public class MailContentProtocol {
 	/**
 	 * 从本地加载数据
 	 */
-	public MailInfo loadFromCache(String url) {
+	public MailInfo loadFromCache(String url,Context context) {
 		String html = CacheUtilsNew.loadFromLocal(getSaveKey());
 
 		if (!TextUtils.isEmpty(html)) {
@@ -90,7 +86,7 @@ public class MailContentProtocol {
 
 			return parseHtml(doc);
 		} else {
-			return loadFromServer(url,true);
+			return loadFromServer(url,true,context);
 		}
 	}
 

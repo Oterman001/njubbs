@@ -110,7 +110,7 @@ public class MailContentActicity extends BaseActivity implements OnClickListener
 			contentProtocol = new MailContentProtocol();
 		}
 		String url=Constants.getMailContentUrl(contentUrl);
-	    mailInfo = contentProtocol.loadFromServer(url,false);
+	    mailInfo = contentProtocol.loadFromServer(url,false,MailContentActicity.this);
 	  
 
 		return mailInfo == null ? LoadingState.LOAD_FAILED
@@ -156,7 +156,7 @@ public class MailContentActicity extends BaseActivity implements OnClickListener
 								String cookie=BaseApplication.getCookie();
 								
 								if(cookie==null){
-									cookie=BaseApplication.autoLogin();
+									cookie=BaseApplication.autoLogin(MailContentActicity.this,true);
 								}
 								rp.addHeader("Cookie", cookie);
 								String url=Constants.getMailDelUrl(mailInfo.delUrl);

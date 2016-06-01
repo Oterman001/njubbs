@@ -120,17 +120,7 @@ public  class FindBoardActivity extends FragmentActivity {
 			
 			@Override
 			public void afterTextChanged(Editable s) {
-				
 				updateResult();
-				
-//				String text=s.toString().trim();
-//				BoardDao dao=new BoardDao();
-//				List<BoardInfo> tempList= dao.queryByCondition(text);
-//				if(boardList!=null){
-//					boardList.clear();
-//					boardList.addAll(tempList);
-//				}
-//				adapter.notifyDataSetChanged();
 				
 			}
 		});
@@ -143,19 +133,6 @@ public  class FindBoardActivity extends FragmentActivity {
 			public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
 				
 				if (actionId==EditorInfo.IME_ACTION_SEND||(event!=null&&event.getKeyCode()==KeyEvent.KEYCODE_ENTER)) {
-					
-//					String text=etBoard.getText().toString().trim();
-//					MyToast.toast(text);
-//					
-//					BoardDao dao=new BoardDao();
-//					List<BoardInfo> tempList= dao.queryByCondition(text);
-//					
-//					if(boardList!=null){
-//						boardList.clear();
-//						boardList.addAll(tempList);
-//						
-//					}
-//					adapter.notifyDataSetChanged();
 					
 					updateResult();
 					

@@ -31,7 +31,9 @@ public class AddFriendDialog {
 	private EditText etDesc;
 	private String friendId;
 
+	private Context context;
 	public AddFriendDialog(Context context) {
+		this.context=context;
 		builder = new AlertDialog.Builder(context);
 		View view = View.inflate(context, R.layout.dialog_add_friend, null);
 
@@ -85,7 +87,7 @@ public class AddFriendDialog {
 
 				String cookie = BaseApplication.getCookie();
 				if (cookie == null) {
-					cookie = BaseApplication.autoLogin();
+					cookie = BaseApplication.autoLogin(context,true);
 				}
 				RequestParams rp = new RequestParams("gbk");
 				rp.addQueryStringParameter("userid", friendId);

@@ -19,7 +19,7 @@
     <TextView
         android:id="@+id/tv_top_item_board"
         style="@style/item_topten_style"
-        android:layout_below="@id/tv_top_item_title"
+        android:layout_above="@id/tv_top_item_title"
         android:layout_marginLeft="8dp"
         android:text="Picture" />
 

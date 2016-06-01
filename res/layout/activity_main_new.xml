@@ -1,0 +1,71 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#EBEBEB"
+    android:orientation="vertical"
+    tools:context="com.oterman.njubbs.activity.MainActivity" >
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/vp_pages"
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" >
+    </android.support.v4.view.ViewPager>
+
+    <FrameLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" >
+
+        <RadioGroup
+            android:id="@+id/rg_bottom_group"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/white"
+            android:orientation="horizontal" >
+
+            <RadioButton
+                android:id="@+id/rb_hottopic"
+                style="@style/BtttomTabStyle"
+                android:drawableTop="@drawable/tab_top_ten_selector"
+                android:text="热帖"
+                android:textColor="@drawable/btn_tab_text_selector" />
+
+            <RadioButton
+                android:id="@+id/rb_boards"
+                style="@style/BtttomTabStyle"
+                android:drawableTop="@drawable/tab_boards_selector"
+                android:text="版块"
+                android:textColor="@drawable/btn_tab_text_selector" />
+
+            <RadioButton
+                android:id="@+id/rb_find"
+                style="@style/BtttomTabStyle"
+                android:drawableTop="@drawable/tab_find_selector"
+                android:text="发现"
+                android:textColor="@drawable/btn_tab_text_selector" />
+
+            <RadioButton
+                android:id="@+id/rb_me"
+                style="@style/BtttomTabStyle"
+                android:drawableTop="@drawable/tab_me_selector"
+                android:text="我"
+                android:textColor="@drawable/btn_tab_text_selector" />
+        </RadioGroup>
+
+        <TextView
+            android:id="@+id/tv_new_mail_count"
+            android:layout_marginRight="25dp"
+            android:layout_marginTop="2dp"
+            android:layout_gravity="right"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:background="@drawable/tips_circle"
+            android:gravity="center"
+            android:text="8"
+            android:visibility="invisible"
+            android:textColor="@android:color/white"
+            android:textSize="14dip" />
+    </FrameLayout>
+
+</LinearLayout>

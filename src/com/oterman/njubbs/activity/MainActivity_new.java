@@ -21,6 +21,7 @@ import android.widget.ImageButton;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.RadioGroup.OnCheckedChangeListener;
+import android.widget.TextView;
 
 import com.oterman.njubbs.R;
 import com.oterman.njubbs.activity.expore.FindBoardActivity;
@@ -29,11 +30,10 @@ import com.oterman.njubbs.fragment.factory.FragmentFactory;
 import com.oterman.njubbs.protocol.CheckNewMailProtocol;
 import com.oterman.njubbs.utils.Constants;
 import com.oterman.njubbs.utils.LogUtil;
-import com.oterman.njubbs.utils.MyToast;
 import com.oterman.njubbs.utils.ThreadManager;
 
 @SuppressLint("NewApi")
-public class MainActivity extends FragmentActivity implements OnClickListener {
+public class MainActivity_new extends FragmentActivity implements OnClickListener {
 
 	private ViewPager vpPages;
 	private RadioGroup rgGroup;
@@ -45,6 +45,7 @@ public class MainActivity extends FragmentActivity implements OnClickListener {
 	private ImageButton ibSearch;
 	
 	private int currentPos=0;
+	private TextView tvNewMailCount;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -100,6 +101,9 @@ public class MainActivity extends FragmentActivity implements OnClickListener {
 		//初始化radiogroup
 		rgGroup = (RadioGroup) this.findViewById(R.id.rg_bottom_group);
 		rbMe = (RadioButton) this.findViewById(R.id.rb_me);
+		
+		tvNewMailCount = (TextView) this.findViewById(R.id.tv_new_mail_count);
+		
 		
 		rgGroup.check(R.id.rb_hottopic);
 		
@@ -186,25 +190,22 @@ public class MainActivity extends FragmentActivity implements OnClickListener {
 				LogUtil.d("检查是否有新邮件啦");
 				CheckNewMailProtocol protocol=new CheckNewMailProtocol();
 				String url=Constants.HAS_NEW_MAIL_URL;
-				newMailCount = protocol.checkFromServer(url,MainActivity.this);
+				newMailCount = protocol.checkFromServer(url,MainActivity_new.this);
 				LogUtil.d("检查结果："+newMailCount);
 				if(newMailCount>0){//有新邮件
 					//更新状态
 					runOnUiThread(new Runnable() {
 						@Override
 						public void run() {
-							Drawable drawable = getResources().getDrawable(R.drawable.tab_me_selector_newmail);
-							drawable.setBounds(0, 0, drawable.getMinimumWidth(),drawable.getMinimumHeight());
-							rbMe.setCompoundDrawables(null, drawable, null, null);
+							tvNewMailCount.setVisibility(View.VISIBLE);
+							tvNewMailCount.setText(newMailCount+"");
 						}
 					});
 				}else{//没有新邮件
 					runOnUiThread(new Runnable() {
 						@Override
 						public void run() {
-							Drawable drawable = getResources().getDrawable(R.drawable.tab_me_selector);
-							drawable.setBounds(0, 0, drawable.getMinimumWidth(),drawable.getMinimumHeight());
-							rbMe.setCompoundDrawables(null, drawable, null, null);
+							tvNewMailCount.setVisibility(View.INVISIBLE);
 						}
 					});
 				}

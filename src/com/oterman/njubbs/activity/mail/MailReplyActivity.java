@@ -281,7 +281,7 @@ public class MailReplyActivity extends MyActionBarActivity implements
 					//Ìí¼Ócookie
 					String cookie = BaseApplication.getCookie();
 					if(cookie==null){//×Ô¶¯µÇÂ½
-						cookie=BaseApplication.autoLogin();
+						cookie=BaseApplication.autoLogin(MailReplyActivity.this,true);
 					}
 					
 					rp.addHeader("Cookie",cookie);

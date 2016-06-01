@@ -24,12 +24,12 @@
         android:layout_width="match_parent"
         android:layout_height="1px"
         android:background="@color/list_divider_color"
-        android:visibility="visible" />
+        android:visibility="invisible" />
 
     <LinearLayout
         android:id="@+id/ll_find_board"
         style="@style/option_item_rl"
-        android:visibility="visible" >
+        android:visibility="gone" >
         <ImageView
             style="@style/option_item_img"
             android:background="@drawable/icon_explore_finduser"
@@ -47,12 +47,12 @@
         <ImageView
             style="@style/option_item_img"
             android:layout_marginRight="@dimen/space_10"
-            android:background="@drawable/icon_explore_scan"
+            android:background="@drawable/icon_explore_finduser"
             android:contentDescription="@null" />
 
         <TextView
             style="@style/option_item_text"
-            android:text="找人" />
+            android:text="找网友" />
     </LinearLayout>
 
 

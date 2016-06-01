@@ -13,50 +13,64 @@
     <!-- 楼层 -->
 
     <TextView
-        android:id="@+id/tv_topic_detail_item_floorth"
+        android:id="@+id/tv_top_item_rankth"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
+        android:layout_marginRight="6dp"
         android:layout_marginTop="5dp"
-        android:text="第1楼"
-        android:textColor="#7000" />
+        android:text="第一名"
+        android:textColor="#7000"
+        android:textSize="14sp" />
 
     <TextView
-        android:id="@+id/tv_topic_detail_item_content"
+        android:id="@+id/tv_top_item_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/tv_topic_detail_item_floorth"
+        android:layout_below="@id/tv_top_item_rankth"
         android:layout_marginBottom="5dp"
         android:layout_marginLeft="8dp"
         android:layout_marginTop="5dp"
-        android:text="这是回复内容"
+        android:text="这是标题标题"
         android:textColor="#000"
         android:textSize="17sp" />
 
-    <!-- 时间 -->
-
-    <TextView
-        android:id="@+id/tv_topic_detail_item_pubtime"
-        style="@style/item_topten_style"
-        android:layout_below="@id/tv_topic_detail_item_content"
-        android:layout_marginLeft="8dp"
-          android:textSize="14sp"
-        android:text="2016-02-02 18:50" />
     <!-- 作者 -->
 
     <TextView
-        android:id="@+id/tv_topic_detail_item_author"
+        android:id="@+id/tv_top_item_author"
+        style="@style/item_topten_style"
+        android:layout_below="@id/tv_top_item_title"
+        android:layout_marginLeft="8dp"
+        android:drawableLeft="@drawable/ic_gender_female"
+        android:text="Oterman"
+        android:textSize="14sp" />
+    <!-- 回复数 -->
+
+    <TextView
+        android:id="@+id/tv_top_item_replycount"
+        style="@style/item_topten_style"
+        android:layout_alignParentRight="true"
+        android:layout_below="@id/tv_top_item_title"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="6dp"
+        android:drawableLeft="@drawable/ic_item_comment2"
+        android:text="42"
+        android:textSize="14sp" />
+    <!-- 版面 -->
+
+    <TextView
+        android:id="@+id/tv_top_item_board"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_above="@id/tv_topic_detail_item_content"
         android:layout_alignParentLeft="true"
         android:layout_marginLeft="8dp"
         android:layout_marginTop="5dp"
-        android:drawableLeft="@drawable/ic_gender_female"
         android:ellipsize="middle"
         android:maxEms="15"
         android:singleLine="true"
-        android:text="Oterman"
+        android:text="Picture"
         android:textColor="#7000"
         android:textSize="14sp" />
 

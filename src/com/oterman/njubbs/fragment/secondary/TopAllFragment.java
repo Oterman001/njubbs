@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v4.widget.SwipeRefreshLayout.OnRefreshListener;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
@@ -24,6 +25,7 @@ import com.oterman.njubbs.protocol.TopAllProtocol;
 import com.oterman.njubbs.protocol.TopTenProtocol;
 import com.oterman.njubbs.utils.Constants;
 import com.oterman.njubbs.utils.MyToast;
+import com.oterman.njubbs.utils.SPutils;
 import com.oterman.njubbs.utils.ThreadManager;
 import com.oterman.njubbs.utils.UiUtils;
 import com.oterman.njubbs.view.LoadingView.LoadingState;
@@ -37,10 +39,11 @@ public class TopAllFragment extends BaseFragment implements OnRefreshListener {
 	private Map<String, List<TopicInfo>> dataMap;
 	private Map<Integer, String> keyMap;
 
+	
+	
 	@Override
 	public void onActivityCreated(@Nullable Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
-
 		// 初始化第一页
 		showViewFromServer();
 	}
@@ -67,18 +70,32 @@ public class TopAllFragment extends BaseFragment implements OnRefreshListener {
 					int groupPosition, int childPosition, long id) {
 				TopicInfo info = adapter.getChild(groupPosition, childPosition);
 
-				Intent intent = new Intent(getContext(),
-						TopicDetailActivity.class);
-
+				Intent intent = new Intent(getContext(),TopicDetailActivity.class);
 				intent.putExtra("topicInfo", info);
+				
+				//标记为读过；
+				String readedTopics = SPutils.getFromSP("readedTopics");
+				String readUrl=info.contentUrl;
+				if(TextUtils.isEmpty(readedTopics)){//没有记录
+					SPutils.saveToSP("readedTopics",readUrl );
+				}else{
+					if(!readedTopics.contains(readUrl)){//没读过
+						SPutils.saveToSP("readedTopics", readedTopics+"#"+readUrl);
+					}
+				}
+				
+				adapter.notifyDataSetChanged();
+				
 				startActivity(intent);
 				return true;
 			}
 		});
 		
-		for(int i=0;i<keyMap.size()/2;i++){
+		for(int i=0;i<keyMap.size();i++){
 			expLv.expandGroup(i);
 		}
+		//去掉箭头
+		expLv.setGroupIndicator(null);
 
 		srl.addView(expLv);
 		srl.setColorSchemeResources(android.R.color.holo_green_light,
@@ -96,6 +113,7 @@ public class TopAllFragment extends BaseFragment implements OnRefreshListener {
 		}
 
 		dataMap = protocol.loadFromCache(Constants.TOP_ALL_URL);
+//		dataMap = protocol.loadFromServer(Constants.TOP_ALL_URL,true);
 		keyMap = protocol.getKeyMap();
 
 		return dataMap == null ? LoadingState.LOAD_FAILED
@@ -104,6 +122,12 @@ public class TopAllFragment extends BaseFragment implements OnRefreshListener {
 
 	@Override
 	public void onRefresh() {
+		
+		refresh(true);
+		
+	}
+
+	public void refresh(final boolean showToast) {
 		ThreadManager.getInstance().createLongPool().execute(new Runnable() {
 			@Override
 			public void run() {
@@ -116,9 +140,13 @@ public class TopAllFragment extends BaseFragment implements OnRefreshListener {
 					public void run() {
 						if(result){
 							adapter.notifyDataSetChanged();
-							MyToast.toast("刷新成功!");
+							if(showToast){
+								MyToast.toast("刷新成功!");
+							}
 						}else{
-							MyToast.toast("刷新失败，请检查网络!");
+							if(showToast){
+								MyToast.toast("刷新失败，请检查网络!");
+							}
 						}
 						
 						srl.setRefreshing(false);
@@ -127,7 +155,6 @@ public class TopAllFragment extends BaseFragment implements OnRefreshListener {
 				
 			}
 		});
-		
 	}
 
 	/**
@@ -226,6 +253,14 @@ public class TopAllFragment extends BaseFragment implements OnRefreshListener {
 
 			TopicInfo info = getChild(groupPosition, childPosition);
 
+			//标记是否已读
+			String readedTopics = SPutils.getFromSP("readedTopics");
+			if(!TextUtils.isEmpty(readedTopics)&&readedTopics.contains(info.contentUrl)){
+				holder.tvTitle.setTextColor(0x70000000);
+			}else{
+				holder.tvTitle.setTextColor(0xff000000);
+			}
+			
 			holder.tvAuthor.setText(info.author);
 			holder.tvTitle.setText(info.title);
 			holder.tvBoard.setText(info.board);

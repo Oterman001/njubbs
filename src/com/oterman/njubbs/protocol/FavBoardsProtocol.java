@@ -8,18 +8,16 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import android.content.Context;
 import android.text.TextUtils;
 
 import com.lidroid.xutils.HttpUtils;
-import com.lidroid.xutils.exception.HttpException;
 import com.lidroid.xutils.http.RequestParams;
 import com.lidroid.xutils.http.ResponseStream;
 import com.lidroid.xutils.http.client.HttpRequest.HttpMethod;
 import com.oterman.njubbs.BaseApplication;
 import com.oterman.njubbs.bean.BoardInfo;
-import com.oterman.njubbs.bean.MailInfo;
 import com.oterman.njubbs.utils.CacheUtilsNew;
-import com.oterman.njubbs.utils.Constants;
 import com.oterman.njubbs.utils.LogUtil;
 import com.oterman.njubbs.utils.SPutils;
 /**
@@ -29,14 +27,14 @@ import com.oterman.njubbs.utils.SPutils;
 public class FavBoardsProtocol {
 	HttpUtils httpUtils=null;
 	//联网解析
-	public List<BoardInfo> loadFromServer(String url,boolean saveToLocal) {
+	public List<BoardInfo> loadFromServer(String url,boolean saveToLocal,Context context) {
 			
 			httpUtils=new HttpUtils();
 			
 			String cookie=BaseApplication.getCookie();
 			
 			if(cookie==null){
-				cookie=BaseApplication.autoLogin();
+				cookie=BaseApplication.autoLogin(context,true);
 			}
 			
 			RequestParams rp=new RequestParams();
@@ -64,14 +62,14 @@ public class FavBoardsProtocol {
 	}
 
 	//本地缓存解析
-	public List<BoardInfo> loadFromCache(String url) {
+	public List<BoardInfo> loadFromCache(String url,Context context) {
 		String html = CacheUtilsNew.loadFromLocal(getSaveKey());
 		if (!TextUtils.isEmpty(html)) {
 			Document doc = Jsoup.parse(html);
 			LogUtil.d("从本地缓存获取成功！");
 			return parseHtml(doc);
 		} else {
-			return loadFromServer(url,true);
+			return loadFromServer(url,true,context);
 		}
 	}
 

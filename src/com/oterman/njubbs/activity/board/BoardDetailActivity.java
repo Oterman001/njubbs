@@ -449,7 +449,7 @@ public class BoardDetailActivity extends BaseActivity {
 					
 					String cookie = BaseApplication.getCookie();
 					if(cookie==null){
-						cookie=BaseApplication.autoLogin();
+						cookie=BaseApplication.autoLogin(BoardDetailActivity.this,true);
 					}
 					
 					rp.addHeader("Cookie",cookie);
@@ -519,7 +519,7 @@ public class BoardDetailActivity extends BaseActivity {
 					
 					String cookie = BaseApplication.getCookie();
 					if(cookie==null){
-						cookie=BaseApplication.autoLogin();
+						cookie=BaseApplication.autoLogin(BoardDetailActivity.this,true);
 					}
 					
 					rp.addHeader("Cookie",cookie);
@@ -591,7 +591,7 @@ public class BoardDetailActivity extends BaseActivity {
 					String cookie=BaseApplication.getCookie();
 					
 					if(cookie==null){
-						cookie=BaseApplication.autoLogin();
+						cookie=BaseApplication.autoLogin(BoardDetailActivity.this,true);
 						LogUtil.d("Î´µÇÂ¼£¬×Ô¶¯µÇÂ½¡£¡££º"+cookie);
 					}
 					
