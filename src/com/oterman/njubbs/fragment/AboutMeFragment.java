@@ -3,8 +3,6 @@ package com.oterman.njubbs.fragment;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -12,8 +10,6 @@ import android.text.Html;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.style.AbsoluteSizeSpan;
-import android.text.style.BackgroundColorSpan;
-import android.text.style.ForegroundColorSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -26,10 +22,10 @@ import android.widget.TextView;
 import com.oterman.njubbs.BaseApplication;
 import com.oterman.njubbs.R;
 import com.oterman.njubbs.activity.LoginActivity;
+import com.oterman.njubbs.activity.SettingActivity;
 import com.oterman.njubbs.activity.expore.FriendsActivity;
 import com.oterman.njubbs.activity.expore.MyTopicActivity;
 import com.oterman.njubbs.activity.mail.MailBoxActicity;
-import com.oterman.njubbs.activity.mail.MailNewActivity;
 import com.oterman.njubbs.bean.UserInfo;
 import com.oterman.njubbs.protocol.CheckNewMailProtocol;
 import com.oterman.njubbs.utils.Constants;
@@ -285,7 +281,10 @@ public class AboutMeFragment  extends Fragment implements OnClickListener {
 			startActivity(friendsIntent);
 			break;
 		case R.id.ll_setting://设置
-			MyToast.toast("不想设置");
+//			MyToast.toast("不想设置");
+			Intent settingIntent=new Intent(getContext(),SettingActivity.class);
+			
+			startActivity(settingIntent);
 			break;
 		case R.id.ll_my_topic://我的帖子
 			Intent myIntent=new Intent(getContext(),MyTopicActivity.class);

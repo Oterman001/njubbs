@@ -22,6 +22,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.TextView;
 
 import com.lidroid.xutils.HttpUtils;
 import com.lidroid.xutils.http.RequestParams;
@@ -38,6 +39,7 @@ import com.oterman.njubbs.smiley.SelectFaceHelper.OnFaceOprateListener;
 import com.oterman.njubbs.utils.Constants;
 import com.oterman.njubbs.utils.LogUtil;
 import com.oterman.njubbs.utils.MyToast;
+import com.oterman.njubbs.utils.SPutils;
 import com.oterman.njubbs.utils.ThreadManager;
 
 public class NewTopicActivity extends MyActionBarActivity implements
@@ -71,6 +73,11 @@ public class NewTopicActivity extends MyActionBarActivity implements
 		etTitle = (EditText) this.findViewById(R.id.et_titile);
 
 		etContent = (EditText) this.findViewById(R.id.et_content);
+		
+		tvTail = (TextView) this.findViewById(R.id.tv_tail);
+		
+		//初始化数据
+		tvTail.setText(SPutils.getTailNoColor());
 		
 		ibSmiley = (ImageButton) this.findViewById(R.id.iv_pic);
 		
@@ -174,6 +181,7 @@ public class NewTopicActivity extends MyActionBarActivity implements
 				}
 			}
 		};
+		private TextView tvTail;
 		
 		
 	
@@ -249,9 +257,9 @@ public class NewTopicActivity extends MyActionBarActivity implements
 					params.addBodyParameter("signature", 1 + "");
 					params.addBodyParameter("autocr", "on");
 					
-					String content2=URLEncoder.encode(content, "gbk");
 					
-					params.addBodyParameter("text", content);
+					String content2=content+SPutils.getTail();
+					params.addBodyParameter("text", content2);
 				
 					
 					//添加cookie

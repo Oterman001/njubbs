@@ -671,7 +671,9 @@ public class TopicDetailActivity extends BaseActivity implements
 				params.addBodyParameter("autocr", "on");
 				params.addBodyParameter("reusr", reusr);
 				
-				String content2=content+"\n-\n"+"sent from 小百合\n";
+//				String content2=content+"\n-\n"+"sent from 小百合\n";
+				String content2=content+SPutils.getTail();
+				
 				params.addBodyParameter("text", content2);
 
 				params.addHeader("Cookie", cookie);

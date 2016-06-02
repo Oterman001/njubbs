@@ -7,20 +7,22 @@
     android:orientation="vertical" >
 
     <TextView
-        android:id="@+id/tv_addf_id"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="10dp"
         android:layout_marginTop="10dp"
-        android:text="添加id：mmlover"
-        android:textColor="@color/black"
+        android:text="给爪机来个酷炫的小尾巴吧!"
+        android:textColor="#8000"
         android:textSize="18sp" />
 
     <EditText
-        android:id="@+id/et_addf_desc"
+        android:layout_marginTop="20dp"
+        android:id="@+id/et_tail"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:hint="备注一下" />
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginBottom="10dp"
+        android:hint="小爪机" />
 
 </LinearLayout>

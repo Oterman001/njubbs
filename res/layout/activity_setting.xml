@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical" >
+
+    <LinearLayout
+        android:id="@+id/ll_post_tail"
+        android:layout_marginTop="@dimen/space_30"
+        style="@style/option_item_rl" >
+
+        <TextView
+            style="@style/option_item_text"
+            android:text="发帖小尾巴" />
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:visibility="invisible"
+        android:background="@color/list_divider_color"
+        />
+
+    <LinearLayout
+        android:layout_marginTop="@dimen/space_30"
+        android:id="@+id/ll_title_search"
+        style="@style/option_item_rl"
+        >
+
+        <TextView
+            style="@style/option_item_text"
+            android:text="按标题搜贴" />
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:background="@color/list_divider_color" />
+
+    <LinearLayout
+        android:id="@+id/ll_author_search"
+        style="@style/option_item_rl" >
+
+        <TextView
+            style="@style/option_item_text"
+            android:text="按作者搜贴" />
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:visibility="invisible"
+        android:background="@color/list_divider_color" />
+    <!--我的帖子  -->
+    <LinearLayout
+        android:id="@+id/ll_about_me"
+        style="@style/option_item_rl"
+        android:layout_marginTop="@dimen/space_30" >
+        <TextView
+            style="@style/option_item_text"
+            android:text="关于我" />
+    </LinearLayout>
+
+</LinearLayout>

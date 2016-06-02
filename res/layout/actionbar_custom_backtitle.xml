@@ -120,6 +120,15 @@
                 android:clickable="true"
                 android:src="@drawable/actionbar_send_icon"
                 android:visibility="invisible" />
+            
+            <ImageButton
+                android:id="@+id/btn_down_pic"
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:background="@drawable/socialize_titlebar_item_background_selector"
+                android:clickable="true"
+                android:src="@drawable/ic_pic_download"
+                android:visibility="invisible" />
         </FrameLayout>
     </LinearLayout>
 
