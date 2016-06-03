@@ -70,6 +70,7 @@
         <activity android:name="com.oterman.njubbs.activity.expore.AddFriendActivity"/>
         <activity android:name="com.oterman.njubbs.activity.expore.FindBoardActivity"/>
         <activity android:name="com.oterman.njubbs.activity.expore.FindTopicActivity"/>
+        <activity android:name="com.oterman.njubbs.activity.expore.FindTopicTotalActivity"/>
         <activity android:name="com.oterman.njubbs.activity.expore.MyTopicActivity"/>
         <activity android:name="com.oterman.njubbs.activity.SettingActivity"/>
     </application>

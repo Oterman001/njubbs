@@ -14,6 +14,7 @@ import com.oterman.njubbs.activity.expore.AddFriendActivity;
 import com.oterman.njubbs.activity.expore.ColleagesActivity;
 import com.oterman.njubbs.activity.expore.FindBoardActivity;
 import com.oterman.njubbs.activity.expore.FindTopicActivity;
+import com.oterman.njubbs.activity.expore.FindTopicTotalActivity;
 import com.oterman.njubbs.activity.expore.FriendsActivity;
 import com.oterman.njubbs.activity.expore.MyTopicActivity;
 import com.oterman.njubbs.activity.mail.MailNewActivity;
@@ -106,7 +107,8 @@ public class DiscoveryFragment extends Fragment implements OnClickListener {
 			startActivity(findBoardIntent);
 			break;
 		case R.id.ll_find_topic:
-			Intent findTopicIntent=new Intent(getContext(),FindTopicActivity.class);
+//			Intent findTopicIntent=new Intent(getContext(),FindTopicActivity.class);
+			Intent findTopicIntent=new Intent(getContext(),FindTopicTotalActivity.class);
 			startActivity(findTopicIntent);
 			break;
 		case R.id.ll_feedback://·´À¡

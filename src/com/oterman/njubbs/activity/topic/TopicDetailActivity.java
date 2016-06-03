@@ -108,47 +108,23 @@ public class TopicDetailActivity extends BaseActivity implements
 
 	@Override
 	public void initViews() {
-		// 显示返回箭头
-		// ActionBar actionBar = getActionBar();
-		// actionBar.setDisplayHomeAsUpEnabled(true);
-		// initActionBar();
 
-		// 自定义actionbar
-		actionBar = getActionBar();
-		actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
-
-		View view = View.inflate(getApplicationContext(),
-				R.layout.actionbar_custom_backtitle, null);
-
-		View back = view.findViewById(R.id.btn_back);
-		back.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				onBackPressed();
-			}
-		});
-
-		TextView tvTitle = (TextView) view
-				.findViewById(R.id.tv_actionbar_title);
-		LayoutParams params = new LayoutParams(LayoutParams.MATCH_PARENT,
-				LayoutParams.MATCH_PARENT);
-		actionBar.setCustomView(view, params);
+		ibShare = (ImageButton) actionBarView.findViewById(R.id.btn_share);
+		ibShare.setVisibility(View.VISIBLE);
+		ibShare.setOnClickListener(this);
 
 		originTopicInfo = (TopicInfo) getIntent().getSerializableExtra("topicInfo");
-		tvTitle.setText(originTopicInfo.board + "(点击进入)");
-		tvTitle.setTextSize(22);
+		tvBarTitle.setText(originTopicInfo.board + "(点击进入)");
 
 		// 给actionbar添加点击事件 点击后进入到对应的版面
-		tvTitle.setClickable(true);
-		tvTitle.setOnClickListener(new View.OnClickListener() {
-
+		tvBarTitle.setClickable(true);
+		tvBarTitle.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				Intent intent = new Intent(getApplicationContext(),
 						BoardDetailActivity.class);
 
 				intent.putExtra("boardUrl", originTopicInfo.boardUrl);
-
 				startActivity(intent);
 				// 结束掉
 				finish();
@@ -726,6 +702,11 @@ public class TopicDetailActivity extends BaseActivity implements
 			handleReplyTopic(content);
 
 			break;
+			
+		case R.id.btn_share:
+			MyToast.toast("分享成功");
+			
+			break;
 
 		default:
 			break;
@@ -887,6 +868,7 @@ public class TopicDetailActivity extends BaseActivity implements
 			}
 		}
 	};
+	private ImageButton ibShare;
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {

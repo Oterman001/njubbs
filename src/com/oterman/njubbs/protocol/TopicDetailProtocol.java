@@ -36,7 +36,7 @@ public class TopicDetailProtocol  extends BaseProtocol<TopicDetailInfo>{
 		}
 
 		Elements tableEles = doc.select("tbody");
-		SimpleDateFormat dateFormat=new SimpleDateFormat("MM-dd HH:mm");
+		SimpleDateFormat dateFormat=new SimpleDateFormat("yyyy-MM-dd HH:mm");
 		for (int i = 0; i < tableEles.size(); i++) {
 			Elements tdEles = tableEles.get(i).select("td");
 			

@@ -83,7 +83,7 @@
         <FrameLayout
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_marginRight="10dp" >
+            android:layout_marginRight="6dp" >
 
             <ImageButton
                 android:id="@+id/btn_new_topic"
@@ -119,6 +119,15 @@
                 android:background="@drawable/socialize_titlebar_item_background_selector"
                 android:clickable="true"
                 android:src="@drawable/actionbar_send_icon"
+                android:visibility="invisible" />
+            
+            <ImageButton
+                android:id="@+id/btn_share"
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:background="@drawable/socialize_titlebar_item_background_selector"
+                android:clickable="true"
+                android:src="@drawable/ic_share"
                 android:visibility="invisible" />
             
             <ImageButton

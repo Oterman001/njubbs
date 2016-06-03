@@ -29,7 +29,7 @@
 
         <TextView
             style="@style/option_item_text"
-            android:text="按标题搜贴" />
+            android:text="按标题搜贴天数" />
     </LinearLayout>
 
     <View
@@ -43,7 +43,7 @@
 
         <TextView
             style="@style/option_item_text"
-            android:text="按作者搜贴" />
+            android:text="按作者搜贴天数" />
     </LinearLayout>
 
     <View

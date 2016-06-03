@@ -21,16 +21,13 @@ import com.oterman.njubbs.utils.UiUtils;
 
 public class QueryTopicProtocol {
 	
-	public List<TopicInfo> loadFromServer(String keys){
+	public List<TopicInfo> loadFromServer(Map<String, String> paramMap){
 		List<TopicInfo> list=new ArrayList<>();
 		String url=Constants.QUERY_TOPIC_URL;
 		try {
 			Connection conn = Jsoup.connect(url);
 			
-			//处理参数
-			Map<String, String> map = handleParams(keys);
-			
-			Document doc = conn.data(map).postDataCharset("gbk").post();
+			Document doc = conn.data(paramMap).postDataCharset("gbk").post();
 			Elements trEles = doc.select("tr");
 			if(trEles.size()<8){
 				LogUtil.d("查询结果："+doc.html());
@@ -75,6 +72,15 @@ public class QueryTopicProtocol {
 			e.printStackTrace();
 		}
 		return list.size()==0?null:list;
+		
+	}
+	
+	public List<TopicInfo> loadFromServer(String keys){
+		
+		Map<String, String> paramMap = handleParams(keys);
+		
+		return loadFromServer(paramMap);
+		
 	}
 
 	//根据作者来查询
@@ -82,6 +88,8 @@ public class QueryTopicProtocol {
 		return loadFromServer(author);
 	}
 
+	
+	
 	private Map<String, String> handleParams(String keys) {
 			Map<String, String> map=new HashMap<>();
 			map.put("title3", "Re");//不包含
@@ -111,6 +119,5 @@ public class QueryTopicProtocol {
 			}
 			return map;
 		}
-	
 	
 }

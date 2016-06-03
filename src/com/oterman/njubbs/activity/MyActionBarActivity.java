@@ -63,6 +63,10 @@ public abstract class MyActionBarActivity extends FragmentActivity {
 		tvBarTitle.setText(getBarTitle());
 		tvBarTitle.setTextSize(22);
 	}
+	
+	public void setBarTitle(String title){
+		tvBarTitle.setText(title);
+	}
 
 	protected String getBarTitle() {
 		return "Ð¡°ÙºÏ";
