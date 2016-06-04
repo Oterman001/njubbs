@@ -228,6 +228,7 @@ public class BoardDetailActivity extends BaseActivity {
 								@Override
 								public void run() {
 									if(moreList!=null&&moreList.size()!=0){
+										moreList.remove(0);
 										dataList.addAll(moreList);
 										adapter.notifyDataSetChanged();
 										MyToast.toast("º”‘ÿ≥…π¶£°");
@@ -597,7 +598,6 @@ public class BoardDetailActivity extends BaseActivity {
 					}
 					
 					rp.addHeader("Cookie", cookie);
-					
 					ResponseStream stream = httpUtils.sendSync(HttpMethod.GET, url,rp);
 					
 					final String result = BaseApplication.StreamToStr(stream);

@@ -5,24 +5,14 @@ import java.lang.reflect.Field;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.text.Html;
+import android.os.Build;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.TextView;
 
-import com.lidroid.xutils.HttpUtils;
-import com.lidroid.xutils.http.RequestParams;
-import com.lidroid.xutils.http.ResponseStream;
-import com.lidroid.xutils.http.client.HttpRequest.HttpMethod;
-import com.oterman.njubbs.BaseApplication;
 import com.oterman.njubbs.R;
-import com.oterman.njubbs.utils.Constants;
-import com.oterman.njubbs.utils.LogUtil;
 import com.oterman.njubbs.utils.MyToast;
 import com.oterman.njubbs.utils.SPutils;
-import com.oterman.njubbs.utils.ThreadManager;
-import com.oterman.njubbs.utils.UiUtils;
 
 /**
  * 发帖小尾巴
@@ -42,6 +32,7 @@ public class EditTailDialog {
 		View view = View.inflate(context, R.layout.dialog_edit_tail, null);
 
 		etTail = (EditText) view.findViewById(R.id.et_tail);
+		etTail.setHint(Build.MODEL+"");
 
 		//读取保存的值
 		String tail=SPutils.getFromSP("tail");

@@ -25,7 +25,7 @@ public class QueryTopicProtocol {
 		List<TopicInfo> list=new ArrayList<>();
 		String url=Constants.QUERY_TOPIC_URL;
 		try {
-			Connection conn = Jsoup.connect(url);
+			Connection conn = Jsoup.connect(url).timeout(10000);
 			
 			Document doc = conn.data(paramMap).postDataCharset("gbk").post();
 			Elements trEles = doc.select("tr");

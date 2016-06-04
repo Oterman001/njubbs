@@ -10,7 +10,6 @@ import org.jsoup.nodes.Document;
 
 import android.annotation.SuppressLint;
 import android.app.ActionBar;
-import android.app.ActionBar.LayoutParams;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -49,6 +48,8 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
+import cn.sharesdk.framework.ShareSDK;
+import cn.sharesdk.onekeyshare.OnekeyShare;
 
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshBase.Mode;
@@ -63,7 +64,6 @@ import com.nostra13.universalimageloader.core.listener.PauseOnScrollListener;
 import com.oterman.njubbs.BaseApplication;
 import com.oterman.njubbs.R;
 import com.oterman.njubbs.activity.BaseActivity;
-import com.oterman.njubbs.activity.LoginActivity;
 import com.oterman.njubbs.activity.board.BoardDetailActivity;
 import com.oterman.njubbs.activity.expore.MyTopicActivity;
 import com.oterman.njubbs.activity.mail.MailNewActivity;
@@ -192,7 +192,9 @@ public class TopicDetailActivity extends BaseActivity implements
 		view = View.inflate(getApplicationContext(),
 				R.layout.activity_topic_detail, null);
 		pLv = (PullToRefreshListView) view.findViewById(R.id.pLv);
-
+		
+		louzhu = list.get(0).author;
+		
 		// 初始化底部回帖view
 		initReplyViews();
 
@@ -704,14 +706,51 @@ public class TopicDetailActivity extends BaseActivity implements
 			break;
 			
 		case R.id.btn_share:
-			MyToast.toast("分享成功");
-			
+			//MyToast.toast("分享成功");
+			showShare();
 			break;
 
 		default:
 			break;
 		}
 	}
+	
+	private void showShare() {
+		 ShareSDK.initSDK(this);
+		 OnekeyShare oks = new OnekeyShare();
+		 //关闭sso授权
+		 oks.disableSSOWhenAuthorize(); 
+		 String url="http://bbs.nju.edu.cn/"+originTopicInfo.contentUrl;
+		 
+		 String content=list.get(0).content;
+		 content=content.replaceAll("<br>", "\n");
+		 content=content.replaceAll("\\s+<img.*?/>\\s+", "");
+		 
+		 String title=originTopicInfo.title;
+		 
+		// 分享时Notification的图标和文字  2.5.9以后的版本不调用此方法
+//		 oks.setNotification(R.drawable.ic_launcher, getString(R.string.app_name));
+		 // title标题，印象笔记、邮箱、信息、微信、人人网和QQ空间使用
+		 oks.setTitle(title);
+		 // titleUrl是标题的网络链接，仅在人人网和QQ空间使用
+		 oks.setTitleUrl(url);
+		 // text是分享文本，所有平台都需要这个字段
+		 oks.setText("标题：["+title+"]\n   "+content+" \n详情请查看:"+url+"\n--分享自小百合客户端");
+		 // imagePath是图片的本地路径，Linked-In以外的平台都支持此参数
+		 //oks.setImagePath("/sdcard/test.jpg");//确保SDcard下面存在此张图片
+		 // url仅在微信（包括好友和朋友圈）中使用
+		 oks.setUrl(url);
+		 // comment是我对这条分享的评论，仅在人人网和QQ空间使用
+//		 oks.setComment("我是测试评论文本");
+		 // site是分享此内容的网站名称，仅在QQ空间使用
+//		 oks.setSite(getString(R.string.app_name));
+		 // siteUrl是分享此内容的网站地址，仅在QQ空间使用
+		 oks.setSiteUrl(url);
+
+		// 启动分享GUI
+		 oks.show(this);
+		 }
+	
 
 	class TopicDetailAdapter extends BaseAdapter {
 		SmileyParser sp = SmileyParser.getInstance(getApplicationContext());
@@ -761,8 +800,10 @@ public class TopicDetailActivity extends BaseActivity implements
 			// author=author.replaceFirst("\\(","\n(" );
 
 			// 做标记
-			if (author != null && originTopicInfo.author != null
-					&& author.contains(originTopicInfo.author)) {
+//			if (author != null && originTopicInfo.author != null
+//					&& author.contains(originTopicInfo.author)) {
+				if (author != null && louzhu!= null
+						&& author.equals(louzhu)) {
 				author = " 楼主 " + author;
 				SpannableStringBuilder ssb = new SpannableStringBuilder(author);
 				int start = 0;
@@ -869,6 +910,7 @@ public class TopicDetailActivity extends BaseActivity implements
 		}
 	};
 	private ImageButton ibShare;
+	private String louzhu;
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {

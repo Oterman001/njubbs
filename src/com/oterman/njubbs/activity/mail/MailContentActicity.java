@@ -111,7 +111,6 @@ public class MailContentActicity extends BaseActivity implements OnClickListener
 		}
 		String url=Constants.getMailContentUrl(contentUrl);
 	    mailInfo = contentProtocol.loadFromServer(url,false,MailContentActicity.this);
-	  
 
 		return mailInfo == null ? LoadingState.LOAD_FAILED
 				: LoadingState.LOAD_SUCCESS;
@@ -131,7 +130,7 @@ public class MailContentActicity extends BaseActivity implements OnClickListener
 		case R.id.btn_mail_delete:
 			AlertDialog.Builder builder=new AlertDialog.Builder(this);
 			
-			builder.setTitle("警告！");
+			builder.setTitle("亲！");
 			builder.setMessage("确定要删除吗？");
 			builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
 				

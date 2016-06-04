@@ -41,7 +41,9 @@ public class SPutils {
 		if(!TextUtils.isEmpty(tail)){
 			return "Sent From  "+tail;
 		}else{
-			return "Sent From Ð¡°ÙºÏ";
+			String model = android.os.Build.MODEL;
+			LogUtil.d(model);
+			return "Sent From "+model;
 		}
 	}
 }

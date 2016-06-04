@@ -1,27 +1,34 @@
 package com.oterman.njubbs.activity.topic;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.net.URLEncoder;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.Bitmap.CompressFormat;
+import android.graphics.BitmapFactory;
+import android.graphics.BitmapFactory.Options;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.os.SystemClock;
 import android.text.SpannableString;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.Display;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.lidroid.xutils.HttpUtils;
@@ -30,9 +37,10 @@ import com.lidroid.xutils.http.ResponseStream;
 import com.lidroid.xutils.http.client.HttpRequest.HttpMethod;
 import com.oterman.njubbs.BaseApplication;
 import com.oterman.njubbs.R;
-import com.oterman.njubbs.activity.LoginActivity;
 import com.oterman.njubbs.activity.MyActionBarActivity;
 import com.oterman.njubbs.activity.board.BoardDetailActivity;
+import com.oterman.njubbs.dialog.ChosePicDialog;
+import com.oterman.njubbs.dialog.ShowChosedPicDialog;
 import com.oterman.njubbs.dialog.WaitDialog;
 import com.oterman.njubbs.smiley.SelectFaceHelper;
 import com.oterman.njubbs.smiley.SelectFaceHelper.OnFaceOprateListener;
@@ -80,6 +88,9 @@ public class NewTopicActivity extends MyActionBarActivity implements
 		tvTail.setText(SPutils.getTailNoColor());
 		
 		ibSmiley = (ImageButton) this.findViewById(R.id.iv_pic);
+		
+		ibChosePic = (ImageButton) this.findViewById(R.id.iv_chose_pic);
+		ibChosePic.setOnClickListener(this);
 		
 		ibSmiley.setOnClickListener(faceClick);
 		
@@ -142,6 +153,7 @@ public class NewTopicActivity extends MyActionBarActivity implements
 		}
 		
 		
+		
 		/*
 		public static void showSoftKeyboard(View view) {
 			((InputMethodManager) BaseApplication.context().getSystemService(
@@ -180,8 +192,12 @@ public class NewTopicActivity extends MyActionBarActivity implements
 					etContent.getText().delete(selection - 1, selection);
 				}
 			}
+
 		};
 		private TextView tvTail;
+		private ImageButton ibChosePic;
+		private ChosePicDialog picDialog;
+		private ShowChosedPicDialog showChosedPicDialog;
 		
 		
 	
@@ -197,36 +213,199 @@ public class NewTopicActivity extends MyActionBarActivity implements
 			// 获取数据
 			String title = etTitle.getText().toString();
 			String content = etContent.getText().toString();
-
 			if (TextUtils.isEmpty(title)) {
 				MyToast.toast("请输入标题");
 				return;
 			}
-
 			if (TextUtils.isEmpty(content)) {
 				MyToast.toast("请输入内容");
 				return;
 			}
-
 			// 处理发帖逻辑
 			handleNewTopic(title, content);
 
-			// MyToast.toast("发帖："+board);
-
 			break;
-			
+		case R.id.iv_chose_pic:
+			picDialog = new ChosePicDialog(this);
+			picDialog.show();
+			break;
 		default:
 			break;
 		}
-
+	}
+	
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		
+		if(resultCode==RESULT_OK){
+			if(requestCode==100){//图库选择
+				Uri uri = data.getData();
+				LogUtil.d("选择图片："+uri);
+				if(showChosedPicDialog!=null){
+					showChosedPicDialog.dismiss();
+				}
+				try {
+					AlertDialog.Builder builder=new AlertDialog.Builder(this);
+					ImageView iv=new ImageView(this);
+					final Bitmap bitmap=parseUriToBm(uri);
+					//将bitmap存到本地
+					
+					iv.setImageBitmap(bitmap);
+					iv.setPadding(6, 6, 6, 6);
+					builder.setTitle("选择图片");
+					builder.setView(iv);
+					builder.setNegativeButton("重新选择",new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							Intent intent=new Intent();
+							intent.setType("image/*");
+							intent.setAction(Intent.ACTION_GET_CONTENT);
+							startActivityForResult(intent, 100);
+						}
+					});
+					builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+//							MyToast.toast("正在上传。。");
+							handleUploadPic(bitmap);
+							
+							}
+						});
+//					builder.setCancelable(false);
+					AlertDialog diglog2 = builder.show();
+					
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		super.onActivityResult(requestCode, resultCode, data);
+	}
+	
+	//处理上传图片
+	protected void handleUploadPic(final Bitmap bitmap) {
+		final WaitDialog waitDialog=new WaitDialog(NewTopicActivity.this);
+		waitDialog.setMessage("正在努力上传。。");
+		waitDialog.show();
+		
+		ThreadManager.getInstance().createLongPool().execute(new Runnable() {
+			@Override
+			public void run() {
+				HttpUtils httpUtils=new HttpUtils();
+				RequestParams rp=new RequestParams();
+				
+				//将bitmap缓存到本地
+				String dirPath=Environment.getExternalStorageDirectory().getAbsolutePath()+"/njubbs/photo/";
+				File dirFile=new File(dirPath);
+				if(!dirFile.exists())dirFile.mkdirs();
+				
+				String filename="njubbs_upload"+SystemClock.elapsedRealtime()+".jpg";
+				saveBitmapToLocal(bitmap,filename);
+				
+				File file=new File(dirFile, filename);
+				
+				rp.addBodyParameter("up", file,filename,"image/jpeg","gbk");
+				
+				String cookie=BaseApplication.getCookie();
+				if(cookie==null){
+					cookie=BaseApplication.autoLogin(getApplicationContext(), true);
+				}
+				
+				rp.addHeader("Cookie", cookie);
+				rp.addBodyParameter("exp", "xixi");
+				rp.addBodyParameter("ptext", "text");
+				rp.addBodyParameter("board", "Pictures");
+				
+				try {
+					String url=Constants.getUploadUrl();
+					ResponseStream stream = httpUtils.sendSync(HttpMethod.POST, url, rp);
+					String result = BaseApplication.StreamToStr(stream);
+					LogUtil.d("上传结果："+result);
+					
+					runOnUiThread(new Runnable() {
+						@Override
+						public void run() {
+							if(waitDialog!=null){
+								waitDialog.dismiss();
+							}
+						}
+					});
+					
+				} catch (Exception e) {
+					e.printStackTrace();
+					runOnUiThread(new Runnable() {
+						@Override
+						public void run() {
+							if(waitDialog!=null){
+								waitDialog.dismiss();
+								MyToast.toast("上传失败");
+							}
+						}
+					});
+				}
+			}
+		});
+	}
+	
+	//将bitmap缓存到本地
+	protected void saveBitmapToLocal(Bitmap bitmap, String filename) {
+		String dirPath=Environment.getExternalStorageDirectory().getAbsolutePath()+"/njubbs/photo/";
+		File dirFile=new File(dirPath);
+		if(!dirFile.exists())
+			dirFile.mkdirs();
+		FileOutputStream fos=null;
+		try {
+			fos=new FileOutputStream(dirPath+filename);
+			bitmap.compress(CompressFormat.JPEG, 90, fos);
+			
+			fos.flush();
+			fos.close();
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
 	}
 
-	/**
-	 * 处理发帖逻辑
-	 * 
-	 * @param title
-	 * @param content
-	 */
+	private Bitmap parseUriToBm(Uri uri) {
+		// file:///storage/emulated/0/DCIM/Camera/IMG_20160604_065624.jpg
+		String url = uri.toString();
+		url = url.substring(url.indexOf("/") + 2);
+
+		System.out.println("选中图片地址：" + url);
+
+		// 解析图片时需要使用到的参数都封装在这个对象里了
+		Options opt = new Options();
+		// 不为像素申请内存，只获取图片宽高
+		opt.inJustDecodeBounds = true;
+		BitmapFactory.decodeFile(url, opt);
+		// 拿到图片宽高
+		int imageWidth = opt.outWidth;
+		int imageHeight = opt.outHeight;
+
+		Display dp = getWindowManager()
+				.getDefaultDisplay();
+		// 拿到屏幕宽高
+		int screenWidth = dp.getWidth() / 2;
+		int screenHeight = dp.getHeight() / 2;
+
+		// 计算缩放比例
+		int scale = 1;
+		int scaleWidth = imageWidth / screenWidth;
+		int scaleHeight = imageHeight / screenHeight;
+		if (scaleWidth >= scaleHeight && scaleWidth >= 1) {
+			scale = scaleWidth;
+		} else if (scaleWidth < scaleHeight && scaleHeight >= 1) {
+			scale = scaleHeight;
+		}
+
+		// 设置缩放比例
+		opt.inSampleSize = scale;
+		opt.inJustDecodeBounds = false;
+		Bitmap bitmap = BitmapFactory.decodeFile(url, opt);
+		return bitmap;
+	}
+
 	private void handleNewTopic(final String title, final String content) {
 
 		dialog = new WaitDialog(this);
@@ -281,7 +460,7 @@ public class NewTopicActivity extends MyActionBarActivity implements
 					params.addHeader("Cookie", cookie);
 					ResponseStream stream = httpUtils.sendSync(HttpMethod.POST,Constants.getNewTopicUrl(board), params);
 					
-					String result = StreamToStr(stream);
+					String result = BaseApplication.StreamToStr(stream);
 					LogUtil.d("发帖结果：" + result);
 					
 					if(result.contains("匆匆过客")){
@@ -343,18 +522,9 @@ public class NewTopicActivity extends MyActionBarActivity implements
 
 	}
 
-	private String StreamToStr(ResponseStream responseStream)
-			throws UnsupportedEncodingException, IOException {
-		InputStream is = responseStream.getBaseStream();
 
-		BufferedReader br = new BufferedReader(new InputStreamReader(is, "gbk"));
-
-		String line = null;
-		StringBuffer sb = new StringBuffer();
-
-		while ((line = br.readLine()) != null) {
-			sb.append(line);
-		}
-		return sb.toString();
-	}
 }
+
+		
+	
+

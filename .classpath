@@ -12,5 +12,19 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry exported="true" kind="lib" path="E:/0学习/2开源项目/Android-Universal-Image-Loader-master/downloads/universal-image-loader-1.9.5.jar"/>
+	<classpathentry kind="lib" path="libs/MobCommons-2016.0426.1819.jar"/>
+	<classpathentry kind="lib" path="libs/MobTools-2016.0426.1819.jar"/>
+	<classpathentry kind="lib" path="libs/ShareSDK-Core-2.7.2.jar"/>
+	<classpathentry kind="lib" path="libs/ShareSDK-Email-2.7.2.jar"/>
+	<classpathentry kind="lib" path="libs/ShareSDK-Evernote-2.7.2.jar"/>
+	<classpathentry kind="lib" path="libs/ShareSDK-QQ-2.7.2.jar"/>
+	<classpathentry kind="lib" path="libs/ShareSDK-QZone-2.7.2.jar"/>
+	<classpathentry kind="lib" path="libs/ShareSDK-ShortMessage-2.7.2.jar"/>
+	<classpathentry kind="lib" path="libs/ShareSDK-SinaWeibo-2.7.2.jar"/>
+	<classpathentry kind="lib" path="libs/ShareSDK-Wechat-2.7.2.jar"/>
+	<classpathentry kind="lib" path="libs/ShareSDK-Wechat-Core-2.7.2.jar"/>
+	<classpathentry kind="lib" path="libs/ShareSDK-Wechat-Favorite-2.7.2.jar"/>
+	<classpathentry kind="lib" path="libs/ShareSDK-Wechat-Moments-2.7.2.jar"/>
+	<classpathentry kind="lib" path="libs/ShareSDK-YouDao-2.7.2.jar"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>

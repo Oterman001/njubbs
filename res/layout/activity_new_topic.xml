@@ -43,14 +43,23 @@
         android:layout_height="wrap_content"
         android:background="@color/list_item_background_normal"
         android:orientation="horizontal" >
-
+	
         <ImageButton
             android:id="@+id/iv_pic"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@null"
-            android:padding="8dp"
-            android:src="@drawable/btn_emoji" />
+            android:layout_marginLeft="8dp"
+            android:padding="15dp"
+            android:src="@drawable/compose_toolbar_emoji_normal" />
+        <ImageButton
+            android:id="@+id/iv_chose_pic"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@null"
+            android:layout_marginLeft="20dp"
+            android:padding="15dp"
+            android:src="@drawable/compose_toolbar_picture_normal" />
     </LinearLayout>
 
     <View

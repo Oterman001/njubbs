@@ -55,7 +55,7 @@
                 android:layout_height="fill_parent"
                 android:background="@drawable/socialize_titlebar_item_background_selector"
                 android:clickable="true"
-                android:src="@drawable/delete"
+                android:src="@drawable/delete_72"
                 android:visibility="invisible" />
 
             <CheckBox
@@ -109,7 +109,7 @@
                 android:layout_height="fill_parent"
                 android:background="@drawable/socialize_titlebar_item_background_selector"
                 android:clickable="true"
-                android:src="@drawable/ic_mail_reply"
+                android:src="@drawable/ic_reply_white_18dp"
                 android:visibility="invisible" />
 
             <ImageButton
