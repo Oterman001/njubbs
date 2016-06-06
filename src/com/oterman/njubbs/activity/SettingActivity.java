@@ -9,6 +9,8 @@ import android.widget.LinearLayout;
 
 import com.oterman.njubbs.R;
 import com.oterman.njubbs.dialog.EditTailDialog;
+import com.oterman.njubbs.dialog.SettingByAuthorDialog;
+import com.oterman.njubbs.dialog.SettingTitlelDialog;
 import com.oterman.njubbs.utils.MyToast;
 @SuppressLint("NewApi")
 public class SettingActivity  extends MyActionBarActivity implements OnClickListener {
@@ -51,13 +53,15 @@ public class SettingActivity  extends MyActionBarActivity implements OnClickList
 //			MyToast.toast("小尾巴");
 			break;
 		case R.id.ll_author_search:
-			MyToast.toast("作者搜贴设置");
+			SettingByAuthorDialog authorDialog=new SettingByAuthorDialog(this);
+			authorDialog.show();
 			break;
 		case R.id.ll_title_search:
-			MyToast.toast("按标题搜贴设置");
+			SettingTitlelDialog titleDialog=new SettingTitlelDialog(this);
+			titleDialog.show();
 			break;
 		case R.id.ll_about_me:
-			MyToast.toast("关于我");
+			MyToast.toast("我就是我，不一样的烟火!");
 			break;
 
 		default:

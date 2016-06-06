@@ -18,6 +18,7 @@ import com.oterman.njubbs.activity.expore.FindTopicTotalActivity;
 import com.oterman.njubbs.activity.expore.FriendsActivity;
 import com.oterman.njubbs.activity.expore.MyTopicActivity;
 import com.oterman.njubbs.activity.mail.MailNewActivity;
+import com.oterman.njubbs.activity.mail.MailSpecialActivity;
 import com.oterman.njubbs.utils.MyToast;
 
 
@@ -93,8 +94,9 @@ public class DiscoveryFragment extends Fragment implements OnClickListener {
 			startActivity(intent);
 			break;
 		case R.id.ll_money://打赏
-			MyToast.toast("不想打赏");
-//			Intent intent2=new Intent(getContext(),FriendsActivity.class);
+			//跳转到求祝福页面
+//			MyToast.toast("不想打赏");
+//			Intent intent2=new Intent(getContext(),MailSpecialActivity.class);
 //			startActivity(intent2);
 			break;
 		case R.id.ll_find_user:

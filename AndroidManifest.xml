@@ -24,7 +24,7 @@
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.MANAGE_ACCOUNTS" />
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
         android:name="com.oterman.njubbs.BaseApplication"
@@ -82,6 +82,11 @@
         <activity android:name="com.oterman.njubbs.activity.expore.FindTopicTotalActivity" />
         <activity android:name="com.oterman.njubbs.activity.expore.MyTopicActivity" />
         <activity android:name="com.oterman.njubbs.activity.SettingActivity" />
+        <activity
+            android:name="com.oterman.njubbs.activity.mail.MailSpecialActivity"
+            android:windowSoftInputMode="adjustResize|stateVisible" />
+        
+        <activity android:name="com.oterman.njubbs.activity.topic.TopicReplyActivity"/>
 
         <!-- 分享 -->
         <activity
@@ -114,7 +119,6 @@
             android:exported="true"
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
-
     </application>
 
 </manifest>

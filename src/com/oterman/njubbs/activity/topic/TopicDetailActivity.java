@@ -25,6 +25,7 @@ import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
+import android.text.method.ScrollingMovementMethod;
 import android.text.style.AbsoluteSizeSpan;
 import android.text.style.BackgroundColorSpan;
 import android.text.style.ForegroundColorSpan;
@@ -123,14 +124,12 @@ public class TopicDetailActivity extends BaseActivity implements
 			public void onClick(View v) {
 				Intent intent = new Intent(getApplicationContext(),
 						BoardDetailActivity.class);
-
 				intent.putExtra("boardUrl", originTopicInfo.boardUrl);
 				startActivity(intent);
 				// 结束掉
 				finish();
 			}
 		});
-
 	}
 
 	/**
@@ -838,7 +837,7 @@ public class TopicDetailActivity extends BaseActivity implements
 			//超链接可点击
 			holder.tvContent.setAutoLinkMask(Linkify.WEB_URLS|Linkify.EMAIL_ADDRESSES);
 
-			//holder.tvContent.setMovementMethod(ScrollingMovementMethod.getInstance());// 设置可滚动
+			holder.tvContent.setMovementMethod(ScrollingMovementMethod.getInstance());// 设置可滚动
 			holder.tvContent.setMovementMethod(LinkMovementMethod.getInstance());// 设置超链接可以打开网页
 
 			Spanned spanned = Html.fromHtml(info.content, new URLImageParser(

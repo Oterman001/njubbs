@@ -34,6 +34,7 @@ import com.oterman.njubbs.R;
 import com.oterman.njubbs.R.color;
 import com.oterman.njubbs.activity.BaseActivity;
 import com.oterman.njubbs.activity.topic.TopicDetailActivity;
+import com.oterman.njubbs.activity.topic.TopicReplyActivity;
 import com.oterman.njubbs.bean.TopicInfo;
 import com.oterman.njubbs.dialog.WaitDialog;
 import com.oterman.njubbs.protocol.QueryTopicProtocol;
@@ -109,11 +110,31 @@ public  class MyTopicActivity extends BaseActivity {
 				@Override
 				public void onItemClick(AdapterView<?> parent, View view,
 						int position, long id) {
+					
+					
+//					TopicInfo topicInfo = topicList.get(position);
+//					//MyToast.toast("position:"+position+"	:"+topicInfo.toString());
+//					Intent intent=new Intent(getApplicationContext(),TopicDetailActivity.class);
+//					intent.putExtra("topicInfo", topicInfo);
+//					startActivity(intent);
+					
+					
+					//判断点击的是否为回帖
 					TopicInfo topicInfo = topicList.get(position);
-					//MyToast.toast("position:"+position+"	:"+topicInfo.toString());
-					Intent intent=new Intent(getApplicationContext(),TopicDetailActivity.class);
-					intent.putExtra("topicInfo", topicInfo);
-					startActivity(intent);
+					
+					if(topicInfo.title.contains("Re")){//为回帖
+//						MyToast.toast("回帖"+topicInfo.title+topicInfo.contentUrl);
+						Intent intent=new Intent(getApplicationContext(),TopicReplyActivity.class);
+						intent.putExtra("topicInfo", topicInfo);
+						startActivity(intent);
+					}else{
+						Intent intent=new Intent(getApplicationContext(),TopicDetailActivity.class);
+						intent.putExtra("topicInfo", topicInfo);
+						startActivity(intent);
+					}
+					
+					
+					
 				}
 			});
 		}

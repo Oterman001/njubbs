@@ -119,6 +119,10 @@ public class Constants {
 		
 		return null;
 	}
+
+	public static String getTopicReplyUrl(String contentUrl) {
+		return NJU_BBS_BASE_URL+contentUrl;
+	}
 	
 	
 }

@@ -22,7 +22,7 @@ import com.oterman.njubbs.utils.MyToast;
 import com.oterman.njubbs.utils.SPutils;
 import com.oterman.njubbs.utils.UiUtils;
 
-public class QueryTopicProtocol {
+public class QueryTopicProtocol_backup {
 	
 	public List<TopicInfo> loadFromServer(String keys){
 		Map<String, String> paramMap = handleParams(keys);
@@ -190,14 +190,11 @@ public class QueryTopicProtocol {
 					 
 					 String contentUrl=tdEle.select("a").get(0).attr("href");
 					 
-					 if(!title.contains("Re")){//²»ÊÇ»ØÌû
-						 contentUrl=contentUrl.replaceFirst("bbscon", "bbstcon");
-						 contentUrl=contentUrl.substring(0, contentUrl.lastIndexOf('&'));
-					 }
+					 contentUrl=contentUrl.replaceFirst("bbscon", "bbstcon");
 					 
+					 contentUrl=contentUrl.substring(0, contentUrl.lastIndexOf('&'));
 					 String board=contentUrl.substring(contentUrl.indexOf('=')+1,contentUrl.indexOf('&')).trim();
 					 String boardUrl="bbstdoc?board="+board;
-					 
 					 TopicInfo info=new TopicInfo(board, author, title, contentUrl, date,boardUrl);
 					 list.add(info);
 				 }

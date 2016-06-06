@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:orientation="horizontal" >
+
+        <EditText
+            android:id="@+id/et_titile"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:text="祝福 "
+            android:hint="标题" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:orientation="horizontal" >
+
+        <EditText
+            android:id="@+id/et_mailto"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:visibility="gone"
+            android:hint="收件人"
+            android:textColor="#000"
+            android:textSize="16sp" />
+    </LinearLayout>
+
+    <EditText
+        android:id="@+id/et_content"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:layout_weight="1"
+        android:padding="5dp"
+        android:background="@color/main_background"
+        android:gravity="top"
+        android:hint="嘻嘻！\n我和女友在一起四年多了，马上就要修成正果了。\n最近她老是抱怨我敲代码疏远了她，为了给她个小惊喜，所以在这里加了个小功能，求百合网友帮忙发站内小小的祝福下。\n感谢大家！"
+        android:textSize="17sp" >
+
+    </EditText>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:background="#22000000" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/list_item_background_normal"
+        android:orientation="horizontal" >
+
+        <ImageButton
+            android:id="@+id/iv_pic"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@null"
+            android:padding="8dp"
+            android:src="@drawable/btn_emoji" />
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:background="#22000000" />
+
+    <include
+        android:id="@+id/add_tool"
+        layout="@layout/send_msg_tool"
+        android:visibility="gone" />
+
+</LinearLayout>

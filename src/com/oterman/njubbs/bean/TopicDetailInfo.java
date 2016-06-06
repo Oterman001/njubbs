@@ -8,17 +8,42 @@ public class TopicDetailInfo implements Serializable{
 	public String pubTime;
 	public String content;
 	
+	public String board;
 	public String title;
 	
+	public String rootUrl;//同主题的url;
 	
 	public String loadMoreUrl;//下一页
-	
 	public String replyUrl;//回复本文
 	
 	public TopicDetailInfo() {
 		super();
 	}
-	
+
+
+
+
+
+	public TopicDetailInfo(String pubTime, String content, String title,
+			String rootUrl) {
+		super();
+		this.pubTime = pubTime;
+		this.content = content;
+		this.title = title;
+		this.rootUrl = rootUrl;
+	}
+
+
+
+
+
+
+
+
+
+
+
+
 	public TopicDetailInfo(String author, String floorth, String pubTime,
 			String content, String loadMoreUrl, String replyUrl) {
 		super();

@@ -1,6 +1,5 @@
 package com.oterman.njubbs.activity.expore;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -12,9 +11,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
-import android.text.Editable;
 import android.text.TextUtils;
-import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -33,12 +30,12 @@ import android.widget.TextView.OnEditorActionListener;
 
 import com.oterman.njubbs.R;
 import com.oterman.njubbs.activity.topic.TopicDetailActivity;
+import com.oterman.njubbs.activity.topic.TopicReplyActivity;
 import com.oterman.njubbs.bean.TopicInfo;
 import com.oterman.njubbs.dialog.WaitDialog;
 import com.oterman.njubbs.protocol.QueryTopicProtocol;
 import com.oterman.njubbs.utils.LogUtil;
 import com.oterman.njubbs.utils.MyToast;
-import com.oterman.njubbs.utils.SPutils;
 import com.oterman.njubbs.utils.ThreadManager;
 
 @SuppressLint("NewApi")
@@ -93,11 +90,21 @@ public  class FindTopicActivity extends FragmentActivity {
 				@Override
 				public void onItemClick(AdapterView<?> parent, View view,
 						int position, long id) {
+					//判断点击的是否为回帖
 					TopicInfo topicInfo = topicList.get(position);
-					//MyToast.toast("position:"+position+"	:"+topicInfo.toString());
-					Intent intent=new Intent(getApplicationContext(),TopicDetailActivity.class);
-					intent.putExtra("topicInfo", topicInfo);
-					startActivity(intent);
+					
+					if(topicInfo.title.contains("Re")){//为回帖
+//						MyToast.toast("回帖"+topicInfo.title+topicInfo.contentUrl);
+						Intent intent=new Intent(getApplicationContext(),TopicReplyActivity.class);
+						intent.putExtra("topicInfo", topicInfo);
+						startActivity(intent);
+					}else{
+						Intent intent=new Intent(getApplicationContext(),TopicDetailActivity.class);
+						intent.putExtra("topicInfo", topicInfo);
+						startActivity(intent);
+					}
+					
+
 				}
 			});
 		}

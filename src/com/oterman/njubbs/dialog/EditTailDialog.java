@@ -31,7 +31,7 @@ public class EditTailDialog {
 		builder = new AlertDialog.Builder(context);
 		View view = View.inflate(context, R.layout.dialog_edit_tail, null);
 
-		etTail = (EditText) view.findViewById(R.id.et_tail);
+		etTail = (EditText) view.findViewById(R.id.et_content);
 		etTail.setHint(Build.MODEL+"");
 
 		//读取保存的值
@@ -71,14 +71,10 @@ public class EditTailDialog {
 				}
 
 			}
-
-
 		});
-
 		builder.setNegativeButton("取消", null);
 		builder.setTitle("编辑小尾巴");
 		dialog = builder.create();
-
 	}
 	
 	private void handleSaveTail() {
