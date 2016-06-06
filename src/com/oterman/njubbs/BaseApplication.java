@@ -257,7 +257,10 @@ public class BaseApplication extends Application {
 			Integer _U_NUM = Integer.parseInt(matcher.group(1)) + 2;
 			String _U_UID = matcher.group(2);
 			Integer _U_KEY = Integer.parseInt(matcher.group(3)) - 2;
-
+			
+			//¥¶¿Ìcookie
+			//NetUtils2.setMyCookie(_U_NUM+"", _U_UID, _U_KEY+"");
+			
 			cookie2 = "_U_NUM=" + _U_NUM + ";_U_UID=" + _U_UID + ";_U_KEY="
 					+ _U_KEY;
 

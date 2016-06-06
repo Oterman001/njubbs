@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
+	<classpathentry exported="true" kind="lib" path="libs/android-async-http-1.4.9.jar" sourcepath="E:/0学习/2开源项目/async-http-client-master/client/src/main/java/org"/>
+	<classpathentry exported="true" kind="lib" path="libs/httpclient-4.3.6.jar"/>
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK"/>
 	<classpathentry exported="true" kind="con" path="com.android.ide.eclipse.adt.LIBRARIES"/>
 	<classpathentry exported="true" kind="con" path="com.android.ide.eclipse.adt.DEPENDENCIES"/>
@@ -26,5 +28,7 @@
 	<classpathentry kind="lib" path="libs/ShareSDK-Wechat-Favorite-2.7.2.jar"/>
 	<classpathentry kind="lib" path="libs/ShareSDK-Wechat-Moments-2.7.2.jar"/>
 	<classpathentry kind="lib" path="libs/ShareSDK-YouDao-2.7.2.jar"/>
+	<classpathentry kind="lib" path="libs/commons-codec-1.6.jar"/>
+	<classpathentry kind="lib" path="libs/httpmime-4.1.jar"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>

@@ -113,6 +113,12 @@ public class Constants {
 		// bbsdelmail?file=M.1463837094.A
 		return NJU_BBS_BASE_URL+delUrl;
 	}
+
+	public static String getUploadUrl2(String filename,String board) {
+		String str=NJU_BBS_BASE_URL+"bbsupload2?board="+board+"";;
+		
+		return null;
+	}
 	
 	
 }

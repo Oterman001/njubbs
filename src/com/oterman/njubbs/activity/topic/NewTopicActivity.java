@@ -3,12 +3,15 @@ package com.oterman.njubbs.activity.topic;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.net.URLEncoder;
+import java.sql.Date;
+import java.text.SimpleDateFormat;
 
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
 import android.graphics.BitmapFactory;
@@ -17,6 +20,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.SystemClock;
+import android.provider.MediaStore;
 import android.text.SpannableString;
 import android.text.TextUtils;
 import android.util.Log;
@@ -47,6 +51,7 @@ import com.oterman.njubbs.smiley.SelectFaceHelper.OnFaceOprateListener;
 import com.oterman.njubbs.utils.Constants;
 import com.oterman.njubbs.utils.LogUtil;
 import com.oterman.njubbs.utils.MyToast;
+import com.oterman.njubbs.utils.NetUtils;
 import com.oterman.njubbs.utils.SPutils;
 import com.oterman.njubbs.utils.ThreadManager;
 
@@ -239,15 +244,34 @@ public class NewTopicActivity extends MyActionBarActivity implements
 		
 		if(resultCode==RESULT_OK){
 			if(requestCode==100){//图库选择
-				Uri uri = data.getData();
-				LogUtil.d("选择图片："+uri);
+				//content://media/external/images/media/660109
+		        Uri selectedImage = data.getData();
+		        String[] filePathColumn = { MediaStore.Images.Media.DATA };
+		 
+		        Cursor cursor = getContentResolver().query(selectedImage,filePathColumn, null, null, null);
+		        String picturePath=null;
+		        if(cursor!=null){
+		        	cursor.moveToFirst();
+			        int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+					
+			         picturePath = cursor.getString(columnIndex);
+					
+		        }else{
+		        	 picturePath = selectedImage.getPath();
+		        	//根据path处理文件
+		        }
+		        
+
+				//Uri uri = data.getData();
+				//LogUtil.d("选择图片："+uri);
 				if(showChosedPicDialog!=null){
 					showChosedPicDialog.dismiss();
 				}
+				
 				try {
 					AlertDialog.Builder builder=new AlertDialog.Builder(this);
 					ImageView iv=new ImageView(this);
-					final Bitmap bitmap=parseUriToBm(uri);
+					final Bitmap bitmap=parseUriToBm(picturePath);
 					//将bitmap存到本地
 					
 					iv.setImageBitmap(bitmap);
@@ -257,9 +281,12 @@ public class NewTopicActivity extends MyActionBarActivity implements
 					builder.setNegativeButton("重新选择",new DialogInterface.OnClickListener() {
 						@Override
 						public void onClick(DialogInterface dialog, int which) {
-							Intent intent=new Intent();
-							intent.setType("image/*");
-							intent.setAction(Intent.ACTION_GET_CONTENT);
+							Intent intent = new Intent(Intent.ACTION_PICK,
+									android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+//							Intent intent=new Intent();
+//							intent.setType("image/*");
+//							intent.setAction(Intent.ACTION_GET_CONTENT);
+							
 							startActivityForResult(intent, 100);
 						}
 					});
@@ -267,7 +294,7 @@ public class NewTopicActivity extends MyActionBarActivity implements
 						@Override
 						public void onClick(DialogInterface dialog, int which) {
 //							MyToast.toast("正在上传。。");
-							handleUploadPic(bitmap);
+							handleUploadPic2(bitmap);
 							
 							}
 						});
@@ -281,6 +308,28 @@ public class NewTopicActivity extends MyActionBarActivity implements
 		}
 		super.onActivityResult(requestCode, resultCode, data);
 	}
+	protected void handleUploadPic2(final Bitmap bitmap) {
+		final WaitDialog waitDialog=new WaitDialog(NewTopicActivity.this);
+		waitDialog.setMessage("正在努力上传。。");
+		waitDialog.show();
+		
+		//将bitmap缓存到本地
+		String dirPath=Environment.getExternalStorageDirectory().getAbsolutePath()+"/njubbs/photo/";
+		File dirFile=new File(dirPath);
+		if(!dirFile.exists())dirFile.mkdirs();
+		//njubbskdsadjkfa.jpg
+		Date date=new Date(System.currentTimeMillis());
+		SimpleDateFormat sdf=new SimpleDateFormat("yyMMddHHmmss");
+		String date2 = sdf.format(date);
+		
+		String filename="nju_bbs"+date2+".jpg";
+		saveBitmapToLocal(bitmap,filename);
+		
+		File file=new File(dirFile, filename);
+		
+		NetUtils.uploadFile2(this, waitDialog,file);
+		
+	}
 	
 	//处理上传图片
 	protected void handleUploadPic(final Bitmap bitmap) {
@@ -292,7 +341,10 @@ public class NewTopicActivity extends MyActionBarActivity implements
 			@Override
 			public void run() {
 				HttpUtils httpUtils=new HttpUtils();
+				httpUtils.configTimeout(100000);
+//				httpUtils.configResponseTextCharset("gbk");
 				RequestParams rp=new RequestParams();
+				rp.setContentType("multipart/form-data");
 				
 				//将bitmap缓存到本地
 				String dirPath=Environment.getExternalStorageDirectory().getAbsolutePath()+"/njubbs/photo/";
@@ -304,8 +356,9 @@ public class NewTopicActivity extends MyActionBarActivity implements
 				
 				File file=new File(dirFile, filename);
 				
-				rp.addBodyParameter("up", file,filename,"image/jpeg","gbk");
+				rp.addBodyParameter("up", file);
 				
+				rp.addHeader("Accept-Encoding", "identity");
 				String cookie=BaseApplication.getCookie();
 				if(cookie==null){
 					cookie=BaseApplication.autoLogin(getApplicationContext(), true);
@@ -318,6 +371,22 @@ public class NewTopicActivity extends MyActionBarActivity implements
 				
 				try {
 					String url=Constants.getUploadUrl();
+					
+//					httpUtils.send(HttpMethod.POST, url, rp, new RequestCallBack<String>() {
+//
+//						@Override
+//						public void onSuccess(ResponseInfo<String> responseInfo) {
+//							String result=responseInfo.result;
+//							LogUtil.d("jiegou:"+result);
+//							
+//						}
+//						@Override
+//						public void onFailure(HttpException error, String msg) {
+//							System.err.println(msg);
+//							error.printStackTrace();
+//						}
+//					});
+					
 					ResponseStream stream = httpUtils.sendSync(HttpMethod.POST, url, rp);
 					String result = BaseApplication.StreamToStr(stream);
 					LogUtil.d("上传结果："+result);
@@ -367,11 +436,16 @@ public class NewTopicActivity extends MyActionBarActivity implements
 		
 	}
 
-	private Bitmap parseUriToBm(Uri uri) {
+	private Bitmap parseUriToBm(String url) {
 		// file:///storage/emulated/0/DCIM/Camera/IMG_20160604_065624.jpg
-		String url = uri.toString();
-		url = url.substring(url.indexOf("/") + 2);
-
+		//content://media/external/images/media/523090
+		
+//		String url = uri.toString();
+//		LogUtil.d("uri:"+uri);
+//		//url = url.substring(url.indexOf("/") + 2);
+//		url=url.substring(url.indexOf("a")+1);
+		
+		
 		System.out.println("选中图片地址：" + url);
 
 		// 解析图片时需要使用到的参数都封装在这个对象里了

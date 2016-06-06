@@ -35,18 +35,17 @@ public class ChosePicDialog extends Dialog {
 		init(context);
 
 	}
-	
-	
+
 	private void init(Context context2) {
-		this.context=context2;
+		this.context = context2;
 		String[] strs = new String[] { "打开图库", "打开相机" };
 		lv = new ListView(context);
 		ArrayAdapter<String> adapter = new ArrayAdapter<>(context,
 				android.R.layout.simple_list_item_1, strs);
-	
+
 		lv.setAdapter(adapter);
 		lv.setOnItemClickListener(new OnItemClickListener() {
-	
+
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {
@@ -60,27 +59,32 @@ public class ChosePicDialog extends Dialog {
 					handleChoseFromCamera();
 				}
 			}
-	
+
 		});
-		
+
 		setContentView(lv);
 		this.setTitle("请选择");
-		
+
 	}
 
 	private void handleChoseFromCamera() {
-		
+
 	}
 
 	/*
 	 * 打开图库
 	 */
 	private void handleChoseFromGallery() {
-		Intent intent=new Intent();
-		intent.setType("image/*");
-		intent.setAction(Intent.ACTION_GET_CONTENT);
-		if(context instanceof  FragmentActivity){
-			((FragmentActivity)context).startActivityForResult(intent, 100);
+
+		Intent intent = new Intent(Intent.ACTION_PICK,
+				android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+
+
+//		Intent intent = new Intent();
+//		intent.setType("image/*");
+//		intent.setAction(Intent.ACTION_GET_CONTENT);
+		if (context instanceof FragmentActivity) {
+			((FragmentActivity) context).startActivityForResult(intent, 100);
 		}
 	}
 
