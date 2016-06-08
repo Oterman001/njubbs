@@ -77,8 +77,9 @@ public class OptionsDialogHolder implements OnClickListener {
 		
 		if(isInsideTopic){//帖子内部点击
 			this.btnReply.setVisibility(View.VISIBLE);
-		}else{
+		}else{//帖子外部点击  不显示修改
 			this.btnReply.setVisibility(View.GONE);
+			this.btnModify.setVisibility(View.GONE);
 		}
 		
 	}

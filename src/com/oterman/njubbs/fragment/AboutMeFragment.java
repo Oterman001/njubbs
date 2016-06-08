@@ -102,9 +102,7 @@ public class AboutMeFragment  extends Fragment implements OnClickListener {
 		llFriends.setOnClickListener(this);//·´À¡
 		llSetting.setOnClickListener(this);//·´À¡
 		llMyTopic.setOnClickListener(this);//·´À¡
-		
 		initUserViews();
-		
 		
 		return rootView;
 	}

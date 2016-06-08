@@ -168,12 +168,10 @@ public class MailReplyActivity extends MyActionBarActivity implements
 		OnFaceOprateListener mOnFaceOprateListener2 = new OnFaceOprateListener() {
 			@Override
 			public void onFaceSelected(SpannableString spanEmojiStr) {
+				
 				if (null != spanEmojiStr) {
 					//在光标处插入表情
 					String oriText=etContent.getText().toString();//原始文字
-					
-					
-					
 					int index=Math.max(etContent.getSelectionStart(),0);//获取光标处位置，没有光标，返回-1
 					
 					StringBuffer sb=new StringBuffer(oriText);
@@ -184,10 +182,10 @@ public class MailReplyActivity extends MyActionBarActivity implements
 					CharSequence text = SmileyParser.getInstance(getApplicationContext()).strToSmiley(spanned);
 					etContent.setText(text);
 					
-					
 					etContent.setSelection(index+spanEmojiStr.length());
 //					etContent.append(spanEmojiStr);
 				}
+				
 			}
 
 			@Override

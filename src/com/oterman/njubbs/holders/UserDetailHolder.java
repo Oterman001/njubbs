@@ -213,7 +213,7 @@ public class UserDetailHolder implements OnClickListener {
 										.fromHtml("<font color='grey'>是否在线：</font>"
 												+ "<font color='red'>否</font>"));
 							}
-							MyToast.toast("加载成功。");
+							//MyToast.toast("加载成功。");
 						}else{
 							MyToast.toast("加载失败，该用户不存在！");
 						}

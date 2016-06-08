@@ -17,7 +17,7 @@
         android:gravity="left"
         android:textSize="18sp"
         android:layout_gravity="center"
-        android:text="查询说明：\n1.当帖子标题包含多个关键字时 ，记得使用空格隔开哦。\n2.可以按照作者id进行查找哦。\n3.按键盘回车键开始查找哦"
+        android:text="快捷搜贴说明：\n1.当帖子标题包含多个关键字时 ，记得使用空格隔开哦。\n2.可以直接输入作者id进行查找哦。\n3.按标题查找时，默认搜索的是30天内不包含回复的帖子；\n4.按作者查找时，默认搜索的是999天内不包含回复的帖子。可以到 ‘我’->‘设置’中进行设置\n5.按键盘回车键开始查找哦"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 

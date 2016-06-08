@@ -132,9 +132,6 @@ public  class MyTopicActivity extends BaseActivity {
 						intent.putExtra("topicInfo", topicInfo);
 						startActivity(intent);
 					}
-					
-					
-					
 				}
 			});
 		}

@@ -27,7 +27,7 @@ public class ThreadManager {
 	// cpuµÄºËÊý*2+1
 	public synchronized ThreadPoolProxy createLongPool() {
 		if (longPool == null) {
-			longPool = new ThreadPoolProxy(5, 5, 5000L);
+			longPool = new ThreadPoolProxy(5, 5, 9000L);
 		}
 		return longPool;
 	}

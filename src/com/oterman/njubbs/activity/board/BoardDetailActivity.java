@@ -607,7 +607,6 @@ public class BoardDetailActivity extends BaseActivity {
 						runOnUiThread(new  Runnable() {
 							public void run() {
 								MyToast.toast("删除成功");
-								
 								dataList.remove(topicInfo);
 								adapter.notifyDataSetChanged();
 								waitDialog.dismiss();
@@ -635,23 +634,27 @@ public class BoardDetailActivity extends BaseActivity {
 		
 		if(requestCode==100){//修改回帖成功后跳转  刷新
 			ThreadManager.getInstance().createLongPool().execute(new Runnable() {
-				
 				@Override
 				public void run() {
 					if(protocol==null){
 						protocol = new BoardTopicProtocol();
 					}
-					dataList = protocol.loadFromServer(Constants
+					
+					List<TopicInfo> tempList = protocol.loadFromServer(Constants
 							.getBoardUrl(boardUrl),false);
 					
-					runOnUiThread(new Runnable() {
-						@Override
-						public void run() {
-							adapter.notifyDataSetChanged();
-						}
-					});
+					if(tempList!=null&&tempList.size()>0){
+						dataList.clear();
+						dataList.addAll(tempList);
+						runOnUiThread(new Runnable() {
+							@Override
+							public void run() {
+								adapter.notifyDataSetChanged();
+							}
+						});
+					}
 					
-					
+
 				}
 				});
 			}

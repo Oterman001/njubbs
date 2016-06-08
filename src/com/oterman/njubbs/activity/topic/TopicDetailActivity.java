@@ -181,7 +181,7 @@ public class TopicDetailActivity extends BaseActivity implements
 		String url = Constants.getContentUrl(originTopicInfo.contentUrl);
 		protocol = new TopicDetailProtocol();
 		list = protocol.loadFromServer(url, false);
-		return list == null ? LoadingState.LOAD_FAILED
+		return list == null||list.size()==0 ? LoadingState.LOAD_FAILED
 				: LoadingState.LOAD_SUCCESS;
 	}
 
@@ -250,7 +250,9 @@ public class TopicDetailActivity extends BaseActivity implements
 			@Override
 			public boolean onItemLongClick(AdapterView<?> parent, View view,
 					int position, long id) {
-				handleItemLongClick(position);
+				if(position>1){
+					handleItemLongClick(position);
+				}
 				return true;
 			}
 		});
@@ -647,9 +649,10 @@ public class TopicDetailActivity extends BaseActivity implements
 				params.addBodyParameter("signature", 1 + "");
 				params.addBodyParameter("autocr", "on");
 				params.addBodyParameter("reusr", reusr);
+				//处理手动换行
 				
 //				String content2=content+"\n-\n"+"sent from 小百合\n";
-				String content2=content+SPutils.getTail();
+				String content2=UiUtils.addNewLineMark(content)+SPutils.getTail();
 				
 				params.addBodyParameter("text", content2);
 
@@ -682,6 +685,16 @@ public class TopicDetailActivity extends BaseActivity implements
 			}
 		});
 
+	}
+	
+	public static String addNewLineMark(String  str){
+		StringBuffer sb=new StringBuffer(str);
+		
+		for (int i =40; i <sb.length(); i+=41) {
+			sb.insert(i, "\n");
+		}
+		
+		return sb.toString();
 	}
 
 	/**
@@ -734,7 +747,9 @@ public class TopicDetailActivity extends BaseActivity implements
 		 // titleUrl是标题的网络链接，仅在人人网和QQ空间使用
 		 oks.setTitleUrl(url);
 		 // text是分享文本，所有平台都需要这个字段
-		 oks.setText("标题：["+title+"]\n   "+content+" \n详情请查看:"+url+"\n--分享自小百合客户端");
+		 String conntent="我在南大小百合"+originTopicInfo.board+"版看到一篇帖子：["+title+"]\n详情请查看："+url+"\n--分享自南大小百合安卓客户端";
+//		 oks.setText("标题：["+title+"]\n   "+content+" \n详情请查看:"+url+"\n--分享自小百合客户端");
+		 oks.setText(conntent);
 		 // imagePath是图片的本地路径，Linked-In以外的平台都支持此参数
 		 //oks.setImagePath("/sdcard/test.jpg");//确保SDcard下面存在此张图片
 		 // url仅在微信（包括好友和朋友圈）中使用
@@ -888,7 +903,20 @@ public class TopicDetailActivity extends BaseActivity implements
 		@Override
 		public void onFaceSelected(SpannableString spanEmojiStr) {
 			if (null != spanEmojiStr) {
-				etContent.append(spanEmojiStr);
+				//在光标处插入表情
+				String oriText=etContent.getText().toString();//原始文字
+				int index=Math.max(etContent.getSelectionStart(),0);//获取光标处位置，没有光标，返回-1
+				
+				StringBuffer sb=new StringBuffer(oriText);
+				sb.insert(index, spanEmojiStr);
+				String string = sb.toString().replaceAll("\n", "<br>");
+				
+				Spanned spanned = Html.fromHtml(string);
+				CharSequence text = SmileyParser.getInstance(getApplicationContext()).strToSmiley(spanned);
+				etContent.setText(text);
+				
+				etContent.setSelection(index+spanEmojiStr.length());
+//				etContent.append(spanEmojiStr);
 			}
 		}
 

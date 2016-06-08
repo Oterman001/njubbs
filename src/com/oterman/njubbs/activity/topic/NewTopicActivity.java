@@ -21,7 +21,9 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.SystemClock;
 import android.provider.MediaStore;
+import android.text.Html;
 import android.text.SpannableString;
+import android.text.Spanned;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Display;
@@ -53,7 +55,9 @@ import com.oterman.njubbs.utils.LogUtil;
 import com.oterman.njubbs.utils.MyToast;
 import com.oterman.njubbs.utils.NetUtils;
 import com.oterman.njubbs.utils.SPutils;
+import com.oterman.njubbs.utils.SmileyParser;
 import com.oterman.njubbs.utils.ThreadManager;
+import com.oterman.njubbs.utils.UiUtils;
 
 public class NewTopicActivity extends MyActionBarActivity implements
 		OnClickListener {
@@ -177,9 +181,23 @@ public class NewTopicActivity extends MyActionBarActivity implements
 		OnFaceOprateListener mOnFaceOprateListener2 = new OnFaceOprateListener() {
 			@Override
 			public void onFaceSelected(SpannableString spanEmojiStr) {
+				
 				if (null != spanEmojiStr) {
-					etContent.append(spanEmojiStr);
+					//在光标处插入表情
+					String oriText=etContent.getText().toString();//原始文字
+					int index=Math.max(etContent.getSelectionStart(),0);//获取光标处位置，没有光标，返回-1
+					
+					StringBuffer sb=new StringBuffer(oriText);
+					sb.insert(index, spanEmojiStr);
+					String string = sb.toString().replaceAll("\n", "<br>");
+					
+					Spanned spanned = Html.fromHtml(string);
+					CharSequence text = SmileyParser.getInstance(getApplicationContext()).strToSmiley(spanned);
+					etContent.setText(text);
+					
+					etContent.setSelection(index+spanEmojiStr.length());
 				}
+				
 			}
 
 			@Override
@@ -511,7 +529,9 @@ public class NewTopicActivity extends MyActionBarActivity implements
 					params.addBodyParameter("autocr", "on");
 					
 					
-					String content2=content+SPutils.getTail();
+//					String content2=content+SPutils.getTail();
+					//需要处理手动换行问题。
+					String content2=UiUtils.addNewLineMark(content)+SPutils.getTail();
 					params.addBodyParameter("text", content2);
 				
 					

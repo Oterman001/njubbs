@@ -108,14 +108,21 @@ public class AddFriendDialog {
 						UiUtils.runOnUiThread(new Runnable() {
 							@Override
 							public void run() {
-								MyToast.toast("添加成功");
+								MyToast.toast("添加成功,请到我->好友 里查看好友");
 							}
 						});
-					} else {// 失败
+					} else if(result.contains("在你的好友名单")) {// 失败
 						UiUtils.runOnUiThread(new Runnable() {
 							@Override
 							public void run() {
-								MyToast.toast("添加失败");
+								MyToast.toast("已在你的好友名单里了！");
+							}
+						});
+					}else{
+						UiUtils.runOnUiThread(new Runnable() {
+							@Override
+							public void run() {
+								MyToast.toast("添加失败！");
 							}
 						});
 					}

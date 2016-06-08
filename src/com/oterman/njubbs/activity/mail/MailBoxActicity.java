@@ -144,14 +144,14 @@ public class MailBoxActicity extends BaseActivity implements OnClickListener {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {
-
-				mailInfo = dataList.get(position - 2);
-				Intent intent = new Intent(getApplicationContext(),MailContentActicity.class);
-				intent.putExtra("contentUrl", mailInfo.contentUrl);
-				startActivityForResult(intent, 100);
-				mailInfo.hasRead=true;
-				adapter.notifyDataSetChanged();
-
+				if(position>1){
+					mailInfo = dataList.get(position - 2);
+					Intent intent = new Intent(getApplicationContext(),MailContentActicity.class);
+					intent.putExtra("contentUrl", mailInfo.contentUrl);
+					startActivityForResult(intent, 100);
+					mailInfo.hasRead=true;
+					adapter.notifyDataSetChanged();
+				}
 			}
 		});
 

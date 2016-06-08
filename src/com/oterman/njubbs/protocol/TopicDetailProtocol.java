@@ -49,16 +49,22 @@ public class TopicDetailProtocol  extends BaseProtocol<TopicDetailInfo>{
 			String str=tdEles.get(2).text();
 			
 			//指定.可以匹配所有字符 包括行结束符
-			Pattern p1=Pattern.compile("发信人:(.+),.*小百合站 \\((.+\\d{4})\\)(.+)--.*",Pattern.DOTALL);
+			Pattern p1=Pattern.compile("发信人:(.+?),.*小百合站 \\s*\\((.+?\\d{4})\\)*(.+)--.*",Pattern.DOTALL);
 			Matcher matcher = p1.matcher(str);
 			if(matcher.find()){
 				handleData(list, dateFormat, floorth, matcher,replyUrl);
 			}else{//帖子有修改 格式变化
-				p1=Pattern.compile("发信人:(.+),.*小百合站 \\((.+\\d{4})\\)(.+)",Pattern.DOTALL);
+				p1=Pattern.compile("发信人:(.+?),.*小百合站\\s*\\((.+?\\d{4})\\)*(.+)",Pattern.DOTALL);
 				matcher = p1.matcher(str);
 				
 				if(matcher.find()){
 					handleData(list, dateFormat, floorth, matcher,replyUrl);
+				}else{//自动发信
+					p1=Pattern.compile("发信人:(.+?),.*自动发信系统\\s*\\((.+?\\d{4})\\)(.+)",Pattern.DOTALL);
+					matcher = p1.matcher(str);
+					if(matcher.find()){
+						handleData(list, dateFormat, floorth, matcher,replyUrl);
+					}
 				}
 			}
 		}
@@ -72,6 +78,7 @@ public class TopicDetailProtocol  extends BaseProtocol<TopicDetailInfo>{
 			int floorth, Matcher matcher,String replyUrl) {
 		String author=matcher.group(1).trim();
 		String pubTime=matcher.group(2).trim();
+		pubTime=pubTime.replaceAll("\\)", "").trim();
 		pubTime=dateFormat.format(new Date(pubTime));
 		
 		String content=matcher.group(3).replaceAll("\\[/*uid\\]", "").trim();

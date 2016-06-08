@@ -16,7 +16,9 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Html;
 import android.text.SpannableString;
+import android.text.Spanned;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -79,6 +81,8 @@ public class ModifyReplyActivity extends MyActionBarActivity implements
 		ibSmiley = (ImageButton) this.findViewById(R.id.iv_pic);
 		
 		ibSmiley.setOnClickListener(faceClick);
+		
+		this.findViewById(R.id.tv_tail).setVisibility(View.GONE);
 		
 		addFaceToolView=this.findViewById(R.id.add_tool);
 
@@ -151,7 +155,20 @@ public class ModifyReplyActivity extends MyActionBarActivity implements
 			@Override
 			public void onFaceSelected(SpannableString spanEmojiStr) {
 				if (null != spanEmojiStr) {
-					etContent.append(spanEmojiStr);
+					//在光标处插入表情
+					String oriText=etContent.getText().toString();//原始文字
+					int index=Math.max(etContent.getSelectionStart(),0);//获取光标处位置，没有光标，返回-1
+					
+					StringBuffer sb=new StringBuffer(oriText);
+					sb.insert(index, spanEmojiStr);
+					String string = sb.toString().replaceAll("\n", "<br>");
+					
+					Spanned spanned = Html.fromHtml(string);
+					CharSequence text = SmileyParser.getInstance(getApplicationContext()).strToSmiley(spanned);
+					etContent.setText(text);
+					
+					etContent.setSelection(index+spanEmojiStr.length());
+//					etContent.append(spanEmojiStr);
 				}
 			}
 

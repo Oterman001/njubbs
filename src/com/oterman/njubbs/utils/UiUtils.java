@@ -62,4 +62,19 @@ public class UiUtils {
 		return getResource().getDrawable(id);
 	}
 	
+	//手工换行 满满四十个字符换行
+	public static String addNewLineMark(String  str){
+		StringBuffer sb=new StringBuffer(str);
+		for (int i = 0; i <sb.length()-40; ) {
+			String sub= sb.substring(i, i+40);
+			if(sub.contains("\n")){
+				int index= sub.lastIndexOf("\n");
+				i=i+index+1;
+				continue;
+			}
+			sb.insert(i+40, "\n");
+			i+=41;
+		}
+		return sb.toString();
+	}
 }
