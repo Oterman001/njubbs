@@ -64,11 +64,17 @@ public class TopicDetailProtocol  extends BaseProtocol<TopicDetailInfo>{
 					matcher = p1.matcher(str);
 					if(matcher.find()){
 						handleData(list, dateFormat, floorth, matcher,replyUrl);
+					}else{
+						p1=Pattern.compile("∑¢–≈»À:(.+?),.*BBS\\s*\\((.+?\\d{4})\\)(.+)",Pattern.DOTALL);
+						matcher = p1.matcher(str);
+						if(matcher.find()){
+							handleData(list, dateFormat, floorth, matcher,replyUrl);
+						}
+						
 					}
 				}
 			}
 		}
-		
 		return list;
 	}
 

@@ -790,6 +790,7 @@ public class TopicDetailActivity extends BaseActivity implements
 			ViewHolder holder = null;
 			if (convertView == null) {
 				holder = new ViewHolder();
+				
 				convertView = View.inflate(TopicDetailActivity.this,
 						R.layout.list_item_topic_detial, null);
 
@@ -811,8 +812,11 @@ public class TopicDetailActivity extends BaseActivity implements
 			TopicDetailInfo info = list.get(position);
 			// mmlover(mmlover)
 			String author = info.author;
+//			author=author.replaceAll("\\)", "");
+//			author=author.replaceFirst("\\(", "\n");
 			// author=author.replaceFirst("\\(","\n(" );
-
+			
+			
 			// 做标记
 //			if (author != null && originTopicInfo.author != null
 //					&& author.contains(originTopicInfo.author)) {
@@ -936,6 +940,7 @@ public class TopicDetailActivity extends BaseActivity implements
 			}
 		}
 	};
+	
 	private ImageButton ibShare;
 	private String louzhu;
 
@@ -943,10 +948,8 @@ public class TopicDetailActivity extends BaseActivity implements
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
 		if (requestCode == 100) {// 修改回帖成功后跳转 刷新
-
 			ThreadManager.getInstance().createLongPool()
 					.execute(new Runnable() {
-
 						@Override
 						public void run() {
 							String url = Constants
@@ -977,7 +980,6 @@ public class TopicDetailActivity extends BaseActivity implements
 					.hideSoftInputFromWindow(((Activity) ct).getCurrentFocus()
 							.getWindowToken(),
 							InputMethodManager.HIDE_NOT_ALWAYS);
-
 		} catch (Exception e) {
 			Log.e("", "hideInputManager Catch error,skip it!", e);
 		}

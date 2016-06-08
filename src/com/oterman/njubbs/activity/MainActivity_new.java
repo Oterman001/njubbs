@@ -26,8 +26,10 @@ import android.widget.TextView;
 import com.oterman.njubbs.R;
 import com.oterman.njubbs.activity.expore.FindBoardActivity;
 import com.oterman.njubbs.activity.expore.FindTopicActivity;
+import com.oterman.njubbs.fragment.BoardsFragment;
 import com.oterman.njubbs.fragment.factory.FragmentFactory;
 import com.oterman.njubbs.protocol.CheckNewMailProtocol;
+import com.oterman.njubbs.protocol.HotBoardProtocol;
 import com.oterman.njubbs.utils.Constants;
 import com.oterman.njubbs.utils.LogUtil;
 import com.oterman.njubbs.utils.ThreadManager;
@@ -46,6 +48,8 @@ public class MainActivity_new extends FragmentActivity implements OnClickListene
 	
 	private int currentPos=0;
 	private TextView tvNewMailCount;
+	
+	boolean isBoardUpdated=false;//版面page是否更新
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -138,6 +142,15 @@ public class MainActivity_new extends FragmentActivity implements OnClickListene
 				currentPos=position;
 				Fragment fragment = FragmentFactory.creatFragment(position);
 				
+				if(fragment instanceof BoardsFragment){
+					if(!isBoardUpdated){
+						//版面没有更新
+						((BoardsFragment)fragment).firstRefresh();
+						isBoardUpdated=true;
+					}
+					
+				}
+				
 //				if(fragment instanceof BaseFragment){
 //					//((BaseFragment)fragment).showViewFromServer();
 //				}
@@ -155,6 +168,9 @@ public class MainActivity_new extends FragmentActivity implements OnClickListene
 				case 1:
 					//ibSearch.setVisibility(View.VISIBLE);
 					rgGroup.check(R.id.rb_boards);
+					
+					
+					
 					break;
 				case 2:
 					//ibSearch.setVisibility(View.INVISIBLE);

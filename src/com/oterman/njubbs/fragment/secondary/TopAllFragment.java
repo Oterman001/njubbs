@@ -38,7 +38,6 @@ public class TopAllFragment extends BaseFragment implements OnRefreshListener {
 	private TopAllProtocol protocol;
 	private Map<String, List<TopicInfo>> dataMap;
 	private Map<Integer, String> keyMap;
-
 	
 	
 	@Override
@@ -47,7 +46,11 @@ public class TopAllFragment extends BaseFragment implements OnRefreshListener {
 		// 初始化第一页
 		showViewFromServer();
 	}
-
+	
+	public SwipeRefreshLayout getSRL(){
+		return srl;
+	}
+	
 	@Override
 	public View createSuccessView() {
 
@@ -122,9 +125,7 @@ public class TopAllFragment extends BaseFragment implements OnRefreshListener {
 
 	@Override
 	public void onRefresh() {
-		
 		refresh(true);
-		
 	}
 
 	public void refresh(final boolean showToast) {
@@ -149,6 +150,12 @@ public class TopAllFragment extends BaseFragment implements OnRefreshListener {
 							}
 						}
 						
+						srl.post(new Runnable() {
+							@Override
+							public void run() {
+								srl.setRefreshing(false);
+							}
+						});
 						srl.setRefreshing(false);
 					}
 				});

@@ -24,6 +24,63 @@ import com.oterman.njubbs.utils.UiUtils;
 
 public class QueryTopicProtocol {
 	
+	public List<TopicInfo> loadFromServer(Map<String, String> paramMap){
+		List<TopicInfo> list=new ArrayList<>();
+		String url=Constants.QUERY_TOPIC_URL;
+		try {
+			Connection conn = Jsoup.connect(url).timeout(10000);
+			
+			Document doc = conn.data(paramMap).postDataCharset("gbk").post();
+			Elements trEles = doc.select("tr");
+			if(trEles.size()<8){
+				LogUtil.d("查询结果："+doc.html());
+			}
+			if(doc.html().contains("使用搜索的间隔请勿")){
+				UiUtils.runOnUiThread(new Runnable() {
+					@Override
+					public void run() {
+						MyToast.toast("搜索间隔应大于10秒");
+					}
+				});
+				
+				return null;
+			}
+			
+			for (int i = 0; i < trEles.size(); i++) {
+				 Elements tdEles = trEles.get(i).select("td");
+				 if(tdEles.size()==4){
+					 String author=tdEles.get(1).text();
+					 
+					 String date = tdEles.get(2).text();
+					 
+					 Element tdEle = tdEles.get(3);
+	
+					 String title=tdEle.text();
+					 //http://bbs.nju.edu.cn/bbstcon?board=Pictures&file=M.1464589051.A
+					 //bbscon?board=test&amp;file=M.1453422453.A&amp;num=973
+					 
+					 String contentUrl=tdEle.select("a").get(0).attr("href");
+					 
+					 if(!title.contains("Re")){//不是回帖
+						 contentUrl=contentUrl.replaceFirst("bbscon", "bbstcon");
+						 contentUrl=contentUrl.substring(0, contentUrl.lastIndexOf('&'));
+					 }
+					 
+					 String board=contentUrl.substring(contentUrl.indexOf('=')+1,contentUrl.indexOf('&')).trim();
+					 String boardUrl="bbstdoc?board="+board;
+					 
+					 TopicInfo info=new TopicInfo(board, author, title, contentUrl, date,boardUrl);
+					 list.add(info);
+				 }
+			}
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return list.size()==0?null:list;
+		
+	}
+
 	public List<TopicInfo> loadFromServer(String keys){
 		Map<String, String> paramMap = handleParams(keys);
 		return loadFromServer(paramMap);
@@ -152,62 +209,5 @@ public class QueryTopicProtocol {
 
 			return map;
 		}
-
-	public List<TopicInfo> loadFromServer(Map<String, String> paramMap){
-		List<TopicInfo> list=new ArrayList<>();
-		String url=Constants.QUERY_TOPIC_URL;
-		try {
-			Connection conn = Jsoup.connect(url).timeout(10000);
-			
-			Document doc = conn.data(paramMap).postDataCharset("gbk").post();
-			Elements trEles = doc.select("tr");
-			if(trEles.size()<8){
-				LogUtil.d("查询结果："+doc.html());
-			}
-			if(doc.html().contains("使用搜索的间隔请勿")){
-				UiUtils.runOnUiThread(new Runnable() {
-					@Override
-					public void run() {
-						MyToast.toast("搜索间隔应大于10秒");
-					}
-				});
-				
-				return null;
-			}
-			
-			for (int i = 0; i < trEles.size(); i++) {
-				 Elements tdEles = trEles.get(i).select("td");
-				 if(tdEles.size()==4){
-					 String author=tdEles.get(1).text();
-					 
-					 String date = tdEles.get(2).text();
-					 
-					 Element tdEle = tdEles.get(3);
-	
-					 String title=tdEle.text();
-					 //http://bbs.nju.edu.cn/bbstcon?board=Pictures&file=M.1464589051.A
-					 //bbscon?board=test&amp;file=M.1453422453.A&amp;num=973
-					 
-					 String contentUrl=tdEle.select("a").get(0).attr("href");
-					 
-					 if(!title.contains("Re")){//不是回帖
-						 contentUrl=contentUrl.replaceFirst("bbscon", "bbstcon");
-						 contentUrl=contentUrl.substring(0, contentUrl.lastIndexOf('&'));
-					 }
-					 
-					 String board=contentUrl.substring(contentUrl.indexOf('=')+1,contentUrl.indexOf('&')).trim();
-					 String boardUrl="bbstdoc?board="+board;
-					 
-					 TopicInfo info=new TopicInfo(board, author, title, contentUrl, date,boardUrl);
-					 list.add(info);
-				 }
-			}
-			
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return list.size()==0?null:list;
-		
-	}
 	
 }

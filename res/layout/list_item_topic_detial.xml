@@ -40,8 +40,8 @@
         android:layout_marginLeft="8dp"
           android:textSize="14sp"
         android:text="2016-02-02 18:50" />
+    
     <!-- 作者 -->
-
     <TextView
         android:id="@+id/tv_topic_detail_item_author"
         android:layout_width="wrap_content"
@@ -51,7 +51,7 @@
         android:layout_marginLeft="8dp"
         android:layout_marginTop="5dp"
         android:drawableLeft="@drawable/ic_gender_female"
-        android:ellipsize="middle"
+        android:ellipsize="end"
         android:maxEms="15"
         android:singleLine="true"
         android:text="Oterman"

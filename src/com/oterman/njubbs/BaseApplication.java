@@ -52,6 +52,8 @@ public class BaseApplication extends Application {
 	private static UserInfo userInfo = null;
 	private static UserProtocol userProtocol;
 	private static int newMailCount = -1;
+	public static boolean myTopicUpdated=false;//标记我的帖子更新过
+	public static boolean myReplyUpdate=false;//标记我的回帖更新过
 
 	@Override
 	public void onCreate() {

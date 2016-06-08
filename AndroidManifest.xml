@@ -87,6 +87,9 @@
             android:windowSoftInputMode="adjustResize|stateVisible" />
         
         <activity android:name="com.oterman.njubbs.activity.topic.TopicReplyActivity"/>
+        <activity android:name="com.oterman.njubbs.activity.MyTopicHisActivity"
+            	 android:theme="@style/myindicatorStyle"
+            />
 
         <!-- 分享 -->
         <activity

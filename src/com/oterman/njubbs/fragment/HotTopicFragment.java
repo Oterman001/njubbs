@@ -9,6 +9,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,11 +41,10 @@ public class HotTopicFragment extends Fragment implements OnPageChangeListener {
 	public void onActivityCreated(@Nullable Bundle savedInstanceState) {
 
 		super.onActivityCreated(savedInstanceState);
-		
 		LogUtil.d("onActivityCreated");
 		
-		
 	}
+	
 
 	@Override
 	@Nullable
@@ -119,8 +119,22 @@ public class HotTopicFragment extends Fragment implements OnPageChangeListener {
 				
 				if(!updated){
 					LogUtil.d("第二页自动刷新了。。");
-					topAllFragment.refresh(false);
+					topAllFragment.refresh(true);
+					
+					//自动刷新的图标
+					final SwipeRefreshLayout srl = topAllFragment.getSRL();
+					if(srl!=null){
+						srl.post(new Runnable() {
+							@Override
+							public void run() {
+								srl.setRefreshing(true);
+							}
+						});
+					}
+					
 					updated=true;
+					
+					
 				}
 			}
 			

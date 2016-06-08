@@ -22,6 +22,7 @@ import android.widget.TextView;
 import com.oterman.njubbs.BaseApplication;
 import com.oterman.njubbs.R;
 import com.oterman.njubbs.activity.LoginActivity;
+import com.oterman.njubbs.activity.MyTopicHisActivity;
 import com.oterman.njubbs.activity.SettingActivity;
 import com.oterman.njubbs.activity.expore.FriendsActivity;
 import com.oterman.njubbs.activity.expore.MyTopicActivity;
@@ -285,7 +286,8 @@ public class AboutMeFragment  extends Fragment implements OnClickListener {
 			startActivity(settingIntent);
 			break;
 		case R.id.ll_my_topic://ÎÒµÄÌû×Ó
-			Intent myIntent=new Intent(getContext(),MyTopicActivity.class);
+//			Intent myIntent=new Intent(getContext(),MyTopicActivity.class);
+			Intent myIntent=new Intent(getContext(),MyTopicHisActivity.class);
 			startActivity(myIntent);
 			break;
 		default:

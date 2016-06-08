@@ -166,7 +166,15 @@ public class TopTenFragment extends BaseFragment implements OnRefreshListener {
 		//下拉刷新 当下拉时 会出发该方法
 		srl.setOnRefreshListener(this);
 		
+		//一进来就自动刷新
 		onRefresh();
+		srl.post(new Runnable() {
+			
+			@Override
+			public void run() {
+				srl.setRefreshing(true);
+			}
+		});
 		
 		return srl;
 	}
@@ -223,6 +231,12 @@ public class TopTenFragment extends BaseFragment implements OnRefreshListener {
 						}else{
 							MyToast.toast("刷新失败，请检查网络!");
 						}
+						srl.post(new Runnable() {
+							@Override
+							public void run() {
+								srl.setRefreshing(false);
+							}
+						});
 						
 						srl.setRefreshing(false);
 					}

@@ -100,9 +100,23 @@ public class BoardsFragment extends BaseFragment implements OnRefreshListener {
 				android.R.color.holo_blue_light);
 		// 下拉刷新 当下拉时 会出发该方法
 		srl.setOnRefreshListener(this);
-
+		
 		return srl;
 	}
+	
+	//第一次进入刷新  pagechange时调用
+	public void firstRefresh(){
+		//更新
+		onRefresh();
+		
+		srl.post(new Runnable() {
+			@Override
+			public void run() {
+				srl.setRefreshing(true);
+			}
+		});
+	}
+	
 
 	@Override
 	public LoadingState loadDataFromServer() {
@@ -139,6 +153,13 @@ public class BoardsFragment extends BaseFragment implements OnRefreshListener {
 						} else {
 							MyToast.toast("刷新失败，请检查网络!");
 						}
+						
+						srl.post(new Runnable() {
+							@Override
+							public void run() {
+							srl.setRefreshing(false);	
+							}
+						});
 						srl.setRefreshing(false);
 					}
 				});
