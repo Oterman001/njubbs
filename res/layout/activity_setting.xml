@@ -6,8 +6,8 @@
 
     <LinearLayout
         android:id="@+id/ll_post_tail"
-        android:layout_marginTop="@dimen/space_30"
-        style="@style/option_item_rl" >
+        style="@style/option_item_rl"
+        android:layout_marginTop="@dimen/space_30" >
 
         <TextView
             style="@style/option_item_text"
@@ -17,15 +17,13 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="1px"
-        android:visibility="invisible"
         android:background="@color/list_divider_color"
-        />
+        android:visibility="invisible" />
 
     <LinearLayout
-        android:layout_marginTop="@dimen/space_30"
         android:id="@+id/ll_title_search"
         style="@style/option_item_rl"
-        >
+        android:layout_marginTop="@dimen/space_30" >
 
         <TextView
             style="@style/option_item_text"
@@ -46,16 +44,25 @@
             android:text="按作者搜贴天数" />
     </LinearLayout>
 
+    <LinearLayout
+        android:id="@+id/ll_author_tips"
+        android:layout_marginTop="@dimen/space_30"
+        style="@style/option_item_rl" >
+        <TextView
+            style="@style/option_item_text"
+            android:text="小技巧" />
+    </LinearLayout>
+    
     <View
         android:layout_width="match_parent"
         android:layout_height="1px"
-        android:visibility="invisible"
         android:background="@color/list_divider_color" />
-    <!--我的帖子  -->
+    <!-- 我的帖子 -->
+
     <LinearLayout
         android:id="@+id/ll_about_me"
         style="@style/option_item_rl"
-        android:layout_marginTop="@dimen/space_30" >
+         >
         <TextView
             style="@style/option_item_text"
             android:text="关于我" />

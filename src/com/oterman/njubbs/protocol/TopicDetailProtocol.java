@@ -88,6 +88,10 @@ public class TopicDetailProtocol  extends BaseProtocol<TopicDetailInfo>{
 		pubTime=dateFormat.format(new Date(pubTime));
 		
 		String content=matcher.group(3).replaceAll("\\[/*uid\\]", "").trim();
+		
+		//[1;35mSent From ÄÏ´óÐ¡°ÙºÏ  by MI NOTE LTE[m
+		content=content.replaceAll("\\[1;35m", "<font color='purple'>").replaceAll("\\[m", "</font>");
+		
 		content=content.replaceAll("\\[.*?m", "");
 		
 		content=content.replaceAll("http.*?(jpg|jpeg|png|JPG|JPEG|PNG|gif|GIF)", "<br><img src=\""+"$0"+"\"/><br>");

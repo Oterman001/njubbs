@@ -29,20 +29,12 @@ public class SPutils {
 	//"\n-\n"+"sent from Ð¡°ÙºÏ\n";
 	public static String getTail(){
 		String tail=getFromSP("tail");
-		
-//		if(!TextUtils.isEmpty(tail)){
-//			return "\n-\n"+"Sent From  "+tail+"\n";
-//		}else{
-//			String model = android.os.Build.MODEL;
-//			LogUtil.d(model);
-//			return "Sent From "+model;
-//		}
+		//[1;32m·¢ËÍ×Ô ÎÒµÄÐ¡°ÙºÏAndroid¿Í»§¶Ë by PE-TL20©Y[m
 		if(!TextUtils.isEmpty(tail)){
-			return "\n-\n"+"Sent From "+tail+"\n";
+			return "\n-\n"+"[1;35mSent From "+tail+"[m\n";
 		}else{
-			
 			String model = android.os.Build.MODEL;
-			return "\n-\nSent From ÄÏ´óÐ¡°ÙºÏ  by "+model+"\n";
+			return "\n-\n[1;35mSent From ÄÏ´óÐ¡°ÙºÏ by "+model+"[m\n";
 		}
 //		if(!TextUtils.isEmpty(tail)){
 //			return "\n-\n"+"<font color='purple'>Sent From  "+tail+"</font>\n";

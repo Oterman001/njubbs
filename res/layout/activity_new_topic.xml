@@ -28,7 +28,7 @@
         android:id="@+id/tv_tail"
         android:text="Sent From 南大小百合"
         android:textSize="16sp"
-        android:textColor="#8000"
+		android:textColor="#80800080"        
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
