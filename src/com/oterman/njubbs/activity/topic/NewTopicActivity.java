@@ -338,14 +338,17 @@ public class NewTopicActivity extends MyActionBarActivity implements
 		//njubbskdsadjkfa.jpg
 		Date date=new Date(System.currentTimeMillis());
 		SimpleDateFormat sdf=new SimpleDateFormat("yyMMddHHmmss");
+		
 		String date2 = sdf.format(date);
 		
-		String filename="nju_bbs"+date2+".jpg";
+//		String filename="nju_bbs"+date2+".jpg";
+		String filename="bbs"+date2+".jpg";
+		
 		saveBitmapToLocal(bitmap,filename);
 		
 		File file=new File(dirFile, filename);
 		
-		NetUtils.uploadFile2(this, waitDialog,file);
+		NetUtils.uploadFile3(this, waitDialog,file,etContent);
 		
 	}
 	
@@ -391,7 +394,6 @@ public class NewTopicActivity extends MyActionBarActivity implements
 					String url=Constants.getUploadUrl();
 					
 //					httpUtils.send(HttpMethod.POST, url, rp, new RequestCallBack<String>() {
-//
 //						@Override
 //						public void onSuccess(ResponseInfo<String> responseInfo) {
 //							String result=responseInfo.result;
@@ -440,7 +442,9 @@ public class NewTopicActivity extends MyActionBarActivity implements
 		File dirFile=new File(dirPath);
 		if(!dirFile.exists())
 			dirFile.mkdirs();
+		
 		FileOutputStream fos=null;
+		
 		try {
 			fos=new FileOutputStream(dirPath+filename);
 			bitmap.compress(CompressFormat.JPEG, 90, fos);
@@ -509,7 +513,6 @@ public class NewTopicActivity extends MyActionBarActivity implements
 			
 			@Override
 			public void run() {
-
 				try {
 					
 					if(httpUtils==null){
@@ -530,10 +533,11 @@ public class NewTopicActivity extends MyActionBarActivity implements
 					
 					
 //					String content2=content+SPutils.getTail();
+					
 					//需要处理手动换行问题。
 					String content2=UiUtils.addNewLineMark(content)+SPutils.getTail();
+					
 					params.addBodyParameter("text", content2);
-				
 					
 					//添加cookie
 					String cookie = BaseApplication.getCookie();

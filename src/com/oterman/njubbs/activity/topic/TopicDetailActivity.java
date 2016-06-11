@@ -193,7 +193,7 @@ public class TopicDetailActivity extends BaseActivity implements
 		pLv = (PullToRefreshListView) view.findViewById(R.id.pLv);
 		
 		louzhu = list.get(0).author;
-		
+		  
 		// 初始化底部回帖view
 		initReplyViews();
 
@@ -339,7 +339,8 @@ public class TopicDetailActivity extends BaseActivity implements
 		// mmlover(xxx) 处理id
 		final String author = detailInfo.author.substring(0,
 				detailInfo.author.indexOf('(')).trim();
-
+		final String floorth=detailInfo.floorth;
+		
 		OptionsDialogHolder holder = new OptionsDialogHolder(
 				getApplicationContext(), author,true);
 
@@ -395,7 +396,7 @@ public class TopicDetailActivity extends BaseActivity implements
 			public void onReplyFloor() {
 				optionsDialog.dismiss();
 				//处理回复具体某一楼
-				etContent.setText("@"+author+":");
+				etContent.setText("@"+floorth+"楼-"+author+":");
 			}
 
 			@Override
@@ -511,7 +512,6 @@ public class TopicDetailActivity extends BaseActivity implements
 
 			@Override
 			public void run() {
-
 				try {
 
 					if (httpUtils == null) {

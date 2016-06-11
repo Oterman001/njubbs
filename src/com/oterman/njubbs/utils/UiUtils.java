@@ -1,13 +1,20 @@
 package com.oterman.njubbs.utils;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import android.content.Context;
-import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 
 import com.oterman.njubbs.BaseApplication;
-import com.oterman.njubbs.activity.BaseActivity;
 
 
 public class UiUtils {
@@ -62,19 +69,62 @@ public class UiUtils {
 		return getResource().getDrawable(id);
 	}
 	
+	public static String deleteNewLineMark(String originStr){
+		BufferedReader br=new BufferedReader(new StringReader(originStr));
+		String line=null;
+		StringBuffer sb=new StringBuffer();
+		try {
+			while((line=br.readLine())!=null){
+				sb.append(line);
+				if(line.getBytes("gbk").length==78||line.getBytes("gbk").length==79){
+					continue;
+				}else{
+					sb.append("\n");
+				}			
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return sb.toString();
+	}
+	
 	//手工换行 满满四十个字符换行
 	public static String addNewLineMark(String  str){
+		List<String> urlList=new ArrayList<String>();
+		
+		String reg="\nhttp://.*?jpg";
+		
+		Pattern p=Pattern.compile(reg);
+		
+		Matcher matcher = p.matcher(str);
+		
+		while(matcher.find()){
+			urlList.add(matcher.group());
+		}
+		
+		str=str.replaceAll(reg, "\n#@\n");
+		
 		StringBuffer sb=new StringBuffer(str);
-		for (int i = 0; i <sb.length()-40; ) {
-			String sub= sb.substring(i, i+40);
+		for (int i = 0; i <sb.length()-39; ) {
+			String sub= sb.substring(i, i+39);
 			if(sub.contains("\n")){
 				int index= sub.lastIndexOf("\n");
 				i=i+index+1;
 				continue;
 			}
-			sb.insert(i+40, "\n");
-			i+=41;
+			sb.insert(i+39, "\n");
+			i+=40;
 		}
-		return sb.toString();
+		
+		p=Pattern.compile("#@");
+		matcher=p.matcher(sb.toString());
+		String result=sb.toString();
+		int i=0;
+		while(matcher.find()){
+			result=result.replaceFirst("#@",urlList.get(i++));
+		}
+		
+//		return sb.toString();
+		return result;
 	}
 }

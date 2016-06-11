@@ -28,9 +28,9 @@ public class MySwipeRefreshLayout extends SwipeRefreshLayout {
 		this.view = view;
 	}
 
+	//修复有listview时下滑冲突和
 	@Override
 	public boolean canChildScrollUp() {
-
 		if (view != null && view instanceof AbsListView) {
 			final AbsListView absListView = (AbsListView) view;
 			return absListView.getChildCount() > 0

@@ -10,7 +10,6 @@
         android:layout_height="0dp"
         android:layout_weight="4"
         android:background="@drawable/user_center_bg2" >
-
         <TextView
             android:textStyle="bold"
             android:id="@+id/tv_unlogin"
@@ -22,7 +21,6 @@
             android:textColor="#fff"
             android:textSize="22sp"
             android:visibility="visible" />
-
         <include layout="@layout/hodler_user_info"  android:id="@+id/user_container" android:visibility="invisible"/>
     </RelativeLayout>
 
@@ -31,7 +29,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="4" >
+        android:layout_weight="3" >
         <Button
             android:id="@+id/btn_login"
             android:layout_width="fill_parent"

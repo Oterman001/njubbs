@@ -150,13 +150,15 @@ public class TopAllFragment extends BaseFragment implements OnRefreshListener {
 							}
 						}
 						
-						srl.post(new Runnable() {
-							@Override
-							public void run() {
-								srl.setRefreshing(false);
-							}
-						});
-						srl.setRefreshing(false);
+						if(srl!=null){
+							srl.post(new Runnable() {
+								@Override
+								public void run() {
+									srl.setRefreshing(false);
+								}
+							});
+							srl.setRefreshing(false);
+						}
 					}
 				});
 				

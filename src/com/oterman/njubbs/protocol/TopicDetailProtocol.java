@@ -13,6 +13,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import com.oterman.njubbs.bean.TopicDetailInfo;
+import com.oterman.njubbs.utils.UiUtils;
 
 
 public class TopicDetailProtocol  extends BaseProtocol<TopicDetailInfo>{
@@ -70,7 +71,6 @@ public class TopicDetailProtocol  extends BaseProtocol<TopicDetailInfo>{
 						if(matcher.find()){
 							handleData(list, dateFormat, floorth, matcher,replyUrl);
 						}
-						
 					}
 				}
 			}
@@ -87,8 +87,11 @@ public class TopicDetailProtocol  extends BaseProtocol<TopicDetailInfo>{
 		pubTime=pubTime.replaceAll("\\)", "").trim();
 		pubTime=dateFormat.format(new Date(pubTime));
 		
-		String content=matcher.group(3).replaceAll("\\[/*uid\\]", "").trim();
+		String content=matcher.group(3).trim();
 		
+		content=UiUtils.deleteNewLineMark(content);
+		
+		content=content.replaceAll("\\[/*uid\\]", "").trim();
 		//[1;35mSent From ÄÏ´óÐ¡°ÙºÏ  by MI NOTE LTE[m
 		content=content.replaceAll("\\[1;35m", "<font color='purple'>").replaceAll("\\[m", "</font>");
 		
@@ -96,7 +99,10 @@ public class TopicDetailProtocol  extends BaseProtocol<TopicDetailInfo>{
 		
 		content=content.replaceAll("http.*?(jpg|jpeg|png|JPG|JPEG|PNG|gif|GIF)", "<br><img src=\""+"$0"+"\"/><br>");
 		
+		
 		content=content.replaceAll("\\n", "<br>");
+		
+		
 //		content=content.replaceAll("\\s+<br>","");
 		
 		//System.out.println("content:================\n"+content);

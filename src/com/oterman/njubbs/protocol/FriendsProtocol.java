@@ -40,6 +40,9 @@ public class FriendsProtocol {
 			}
 
 			//	"_U_NUM=xx;_U_UID=xx;_U_KEY=xx
+			if(cookie==null){
+				return null;
+			}
 			String[] strs = cookie.split(";");
 			if(strs.length==3){
 				Map<String, String> cookies=new HashMap<>();

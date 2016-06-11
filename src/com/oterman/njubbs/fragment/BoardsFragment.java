@@ -107,14 +107,15 @@ public class BoardsFragment extends BaseFragment implements OnRefreshListener {
 	//第一次进入刷新  pagechange时调用
 	public void firstRefresh(){
 		//更新
-		onRefresh();
-		
-		srl.post(new Runnable() {
-			@Override
-			public void run() {
-				srl.setRefreshing(true);
-			}
-		});
+		if(srl!=null){
+			onRefresh();
+			srl.post(new Runnable() {
+				@Override
+				public void run() {
+					srl.setRefreshing(true);
+				}
+			});
+		}
 	}
 	
 

@@ -38,6 +38,7 @@ import com.oterman.njubbs.utils.LogUtil;
 import com.oterman.njubbs.utils.MyToast;
 import com.oterman.njubbs.utils.ThreadManager;
 import com.oterman.njubbs.view.LoadingView.LoadingState;
+import com.oterman.njubbs.view.MySwipeRefreshLayout;
 
 public class FriendsActivity extends BaseActivity implements OnClickListener, OnRefreshListener{
 
@@ -45,7 +46,7 @@ public class FriendsActivity extends BaseActivity implements OnClickListener, On
 	private ListView lvFriends;
 	private TextView tvStatus;
 	private FriendAdapter adapter;
-	private SwipeRefreshLayout srl;
+	private MySwipeRefreshLayout srl;
 	private FriendsProtocol protocol;
 	
 	@Override
@@ -74,11 +75,15 @@ public class FriendsActivity extends BaseActivity implements OnClickListener, On
 	
 	@Override
 	public View createSuccessView() {
-		srl = new SwipeRefreshLayout(getBaseContext());
+		srl = new MySwipeRefreshLayout(getBaseContext());
 		View rootView=View.inflate(this, R.layout.acitivity_friends, null);
 		srl.addView(rootView);
 		
 		lvFriends = (ListView) rootView.findViewById(R.id.lv_friends);
+		
+		//解决下拉冲突
+		srl.setViewGroup(lvFriends);
+		
 		tvStatus = (TextView) rootView.findViewById(R.id.tv_status);
 		if(list.size()!=0){//有好友
 			initLv();
