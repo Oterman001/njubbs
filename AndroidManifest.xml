@@ -48,13 +48,13 @@
             android:name="com.oterman.njubbs.activity.topic.TopicDetailActivity"
             android:windowSoftInputMode="adjustResize|stateHidden" >
             <intent-filter>
+                <!--http://bbs.nju.edu.cn/bbstcon 开头的链接可以使用本activity打开  -->
                 <data
+                    android:pathPrefix="/bbstcon"
                     android:host="bbs.nju.edu.cn"
                     android:scheme="http" />
-
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-
                 <action android:name="android.intent.action.VIEW" />
             </intent-filter>
         </activity>

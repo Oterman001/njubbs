@@ -1,11 +1,5 @@
 package com.oterman.njubbs.activity.mail;
 
-import java.sql.Date;
-import java.text.SimpleDateFormat;
-import java.util.Locale;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -14,7 +8,6 @@ import android.text.Html;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.TextUtils;
-import android.text.style.StyleSpan;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -40,6 +33,7 @@ import com.oterman.njubbs.utils.LogUtil;
 import com.oterman.njubbs.utils.MyToast;
 import com.oterman.njubbs.utils.SmileyParser;
 import com.oterman.njubbs.utils.ThreadManager;
+import com.oterman.njubbs.utils.TopicUtils;
 import com.oterman.njubbs.view.MyTagHandler;
 import com.oterman.njubbs.view.URLImageParser;
 
@@ -78,6 +72,9 @@ public class MailReplyActivity extends MyActionBarActivity implements
 		
 		ibSmiley = (ImageButton) this.findViewById(R.id.iv_pic);
 		ibSmiley.setOnClickListener(faceClick);
+		
+		ibChosePic = (ImageButton) this.findViewById(R.id.iv_chose_pic);
+		ibChosePic.setOnClickListener(this);
 		
 		addFaceToolView=this.findViewById(R.id.add_tool);
 
@@ -119,6 +116,12 @@ public class MailReplyActivity extends MyActionBarActivity implements
 		
 		sb.append("【 在").append(author).append("的来信中提到: 】<br>").append(":");
 		String content=mailInfo.content;
+		//content=content.substring(0, content.lastIndexOf('-'));//去掉小尾巴
+		
+		content=content.replace("<br><br>", "<br>");
+		content=content.replaceAll("<img src=\"", "");
+		content=content.replaceAll("\"/>", "");
+		
 		sb.append(content);
 		sb.append("</font>");
 		
@@ -126,9 +129,8 @@ public class MailReplyActivity extends MyActionBarActivity implements
 		Spanned spanned = Html.fromHtml(sb.toString(), 
 				new URLImageParser(etContent),
 				new MyTagHandler(getApplicationContext()));
+		
 		etContent.setText(sp.strToSmiley(spanned));
-		
-		
 		
 		
 	}
@@ -204,6 +206,7 @@ public class MailReplyActivity extends MyActionBarActivity implements
 				}
 			}
 		};
+		private ImageButton ibChosePic;
 		
 		
 	
@@ -212,6 +215,17 @@ public class MailReplyActivity extends MyActionBarActivity implements
 		return "回复站内";
 	}
 
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+		
+		if(requestCode==100&&data!=null){//从图库中选图
+			//从intent中得到选中图片的路径
+	        String picturePath = TopicUtils.getPicPathFromUri(this,data);
+	        //展示选中的图片,上传逻辑包含在其中
+	        TopicUtils.showChosedPic(this,picturePath,etContent);
+		}
+	}
 	@Override
 	public void onClick(View v) {
 		switch (v.getId()) {
@@ -238,6 +252,11 @@ public class MailReplyActivity extends MyActionBarActivity implements
 			handleReplyMail(content,title,receiver);
 			// MyToast.toast("发帖："+board);
 
+			break;
+
+		case R.id.iv_chose_pic://从图库选图
+			Intent intent = new Intent(Intent.ACTION_PICK,android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+			this.startActivityForResult(intent, 100);
 			break;
 			
 		default:

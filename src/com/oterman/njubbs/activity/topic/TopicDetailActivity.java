@@ -92,7 +92,7 @@ import com.oterman.njubbs.smiley.SelectFaceHelper.OnFaceOprateListener;
 import com.oterman.njubbs.utils.Constants;
 import com.oterman.njubbs.utils.LogUtil;
 import com.oterman.njubbs.utils.MyToast;
-import com.oterman.njubbs.utils.NetUtils;
+import com.oterman.njubbs.utils.TopicUtils;
 import com.oterman.njubbs.utils.SPutils;
 import com.oterman.njubbs.utils.SmileyParser;
 import com.oterman.njubbs.utils.ThreadManager;
@@ -119,29 +119,30 @@ public class TopicDetailActivity extends BaseActivity implements
 	private View addFaceToolView;
 	private WaitDialog waitDialog;
 	SelectFaceHelper mFaceHelper;
-	
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
+
 	}
 
 	@Override
 	public void initViews() {
-		//判断是否为点击其他链接进入
+		// 判断是否为点击其他链接进入
 		Intent intent = getIntent();
-		Uri contentUri= intent.getData();
-		
-		if(contentUri!=null){//为点击其他链接进入
-			//http://bbs.nju.edu.cn/bbstcon?board=Pictures&file=M.1465637109.A
+		Uri contentUri = intent.getData();
+
+		if (contentUri != null) {// 为点击其他链接进入
+			// http://bbs.nju.edu.cn/bbstcon?board=Pictures&file=M.1465637109.A
 			String uri = contentUri.toString();
-			//自己拼装
-			originTopicInfo=createInfoFromUrl(uri);
-			
-		}else{
-			originTopicInfo = (TopicInfo) getIntent().getSerializableExtra("topicInfo");
-		}//正常进入
-		
+			// 自己拼装
+			originTopicInfo = createInfoFromUrl(uri);
+
+		} else {
+			originTopicInfo = (TopicInfo) getIntent().getSerializableExtra(
+					"topicInfo");
+		}// 正常进入
+
 		tvBarTitle.setText(originTopicInfo.board + "(点击进入)");
 		ibShare = (ImageButton) actionBarView.findViewById(R.id.btn_share);
 		ibShare.setVisibility(View.VISIBLE);
@@ -163,15 +164,15 @@ public class TopicDetailActivity extends BaseActivity implements
 	}
 
 	private TopicInfo createInfoFromUrl(String url) {
-		//http://bbs.nju.edu.cn/bbstcon?board=Pictures&file=M.1465637109.A
-		String board=url.substring(url.indexOf('=')+1,url.indexOf('&'));
-		String contentUrl=url.substring(url.indexOf("/bbstcon")+1);
-		
-		//board?board=Pictures
-		String boardUrl="board?board="+board;
-		
-		TopicInfo info=new TopicInfo(board, "", boardUrl, contentUrl);
-		
+		// http://bbs.nju.edu.cn/bbstcon?board=Pictures&file=M.1465637109.A
+		String board = url.substring(url.indexOf('=') + 1, url.indexOf('&'));
+		String contentUrl = url.substring(url.indexOf("/bbstcon") + 1);
+
+		// board?board=Pictures
+		String boardUrl = "board?board=" + board;
+
+		TopicInfo info = new TopicInfo(board, "", boardUrl, contentUrl);
+
 		return info;
 	}
 
@@ -182,27 +183,28 @@ public class TopicDetailActivity extends BaseActivity implements
 		String url = Constants.getContentUrl(originTopicInfo.contentUrl);
 		protocol = new TopicDetailProtocol();
 		list = protocol.loadFromServer(url, false);
-		return list == null||list.size()==0 ? LoadingState.LOAD_FAILED
+		return list == null || list.size() == 0 ? LoadingState.LOAD_FAILED
 				: LoadingState.LOAD_SUCCESS;
 	}
 
 	// 联网成功后创建视图
 	public View createSuccessView() {
-		
+
 		view = View.inflate(getApplicationContext(),
 				R.layout.activity_topic_detail, null);
 		pLv = (PullToRefreshListView) view.findViewById(R.id.pLv);
-		if(list.size()!=0){
-			
+		if (list.size() != 0) {
+
 			louzhu = list.get(0).author;
-			originTopicInfo.title=list.get(0).title;
-			originTopicInfo.author=louzhu.substring(0,louzhu.indexOf("(")).trim();
-			
+			originTopicInfo.title = list.get(0).title;
+			originTopicInfo.author = louzhu.substring(0, louzhu.indexOf("("))
+					.trim();
+
 		}
-		
+
 		// 初始化底部回帖view
 		initReplyViews();
-		
+
 		pLv.setMode(Mode.PULL_FROM_END);// 上拉加载更多
 
 		// 添加头布局
@@ -210,7 +212,7 @@ public class TopicDetailActivity extends BaseActivity implements
 				AbsListView.LayoutParams.MATCH_PARENT,
 				AbsListView.LayoutParams.WRAP_CONTENT);
 		View headerView = initHeaderView();
-		
+
 		headerView.setLayoutParams(layoutParams);
 
 		ListView lv = pLv.getRefreshableView();
@@ -221,7 +223,7 @@ public class TopicDetailActivity extends BaseActivity implements
 		lv.setDividerHeight(UiUtils.dip2px(1));
 
 		lv.setDividerHeight(1);
-		
+
 		// 滑动的时候不加载图片
 		lv.setOnScrollListener(new PauseOnScrollListener(ImageLoader
 				.getInstance(), true, true));
@@ -257,7 +259,7 @@ public class TopicDetailActivity extends BaseActivity implements
 			@Override
 			public boolean onItemLongClick(AdapterView<?> parent, View view,
 					int position, long id) {
-				if(position>1){
+				if (position > 1) {
 					handleItemLongClick(position);
 				}
 				return true;
@@ -273,11 +275,11 @@ public class TopicDetailActivity extends BaseActivity implements
 	private void initReplyViews() {
 		etContent = (EditText) view.findViewById(R.id.et_reply_content);// 内容
 		cbSmiley = (CheckBox) view.findViewById(R.id.cb_reply_smiley);// 笑脸
-		cbChosePic = (CheckBox) view.findViewById(R.id.cb_chose_pic);//图片
+		cbChosePic = (CheckBox) view.findViewById(R.id.cb_chose_pic);// 图片
 		ibSend = (ImageButton) view.findViewById(R.id.ib_reply_send);// 发送
 
 		addFaceToolView = view.findViewById(R.id.add_tool);// 表情集合
-		
+
 		cbChosePic.setOnClickListener(this);
 		ibSend.setOnClickListener(this);
 		// 触摸输入框 隐藏表情键盘
@@ -320,7 +322,7 @@ public class TopicDetailActivity extends BaseActivity implements
 		TextView tvTitle = (TextView) view.findViewById(R.id.tv_topic_titile);
 		TextView tvReplyeCount = (TextView) view
 				.findViewById(R.id.tv_topic_replycount);
-		
+
 		tvTitle.setText(originTopicInfo.title);
 
 		if (originTopicInfo.replyCount == null) {
@@ -349,10 +351,10 @@ public class TopicDetailActivity extends BaseActivity implements
 		// mmlover(xxx) 处理id
 		final String author = detailInfo.author.substring(0,
 				detailInfo.author.indexOf('(')).trim();
-		final String floorth=detailInfo.floorth;
-		
+		final String floorth = detailInfo.floorth;
+
 		OptionsDialogHolder holder = new OptionsDialogHolder(
-				getApplicationContext(), author,true);
+				getApplicationContext(), author, true);
 
 		builder.setTitle("请选择操作");
 		builder.setView(holder.getRootView());
@@ -405,18 +407,19 @@ public class TopicDetailActivity extends BaseActivity implements
 			@Override
 			public void onReplyFloor() {
 				optionsDialog.dismiss();
-				//处理回复具体某一楼
-				etContent.setText("@"+floorth+"楼-"+author+":");
+				// 处理回复具体某一楼
+				etContent.setText("@" + floorth + "楼-" + author + ":");
 			}
 
 			@Override
 			public void onQueryTopicHis() {
 				optionsDialog.dismiss();
-//				String author = topicInfo.author;
-				Intent intent=new Intent(getApplicationContext(),MyTopicActivity.class);
+				// String author = topicInfo.author;
+				Intent intent = new Intent(getApplicationContext(),
+						MyTopicActivity.class);
 				intent.putExtra("author", author);
 				startActivity(intent);
-				
+
 			}
 		});
 
@@ -425,18 +428,20 @@ public class TopicDetailActivity extends BaseActivity implements
 
 	/**
 	 * 处理查看用户信息
+	 * 
 	 * @param userId
 	 * @param replyDialog
 	 */
-	protected void handleShowUserDetail(String userId,final AlertDialog replyDialog) {
+	protected void handleShowUserDetail(String userId,
+			final AlertDialog replyDialog) {
 		replyDialog.dismiss();
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		AlertDialog dialog=null;
+		AlertDialog dialog = null;
 		UserDetailHolder holder = new UserDetailHolder(this);
 		// 更新用户详情
 		holder.updateStatus(userId);
 		builder.setView(holder.getRootView());
-		dialog=builder.show();
+		dialog = builder.show();
 		holder.setOwnerDialog(dialog);
 	}
 
@@ -462,7 +467,8 @@ public class TopicDetailActivity extends BaseActivity implements
 					// 先自动登陆
 					String cookie = BaseApplication.getCookie();
 					if (cookie == null) {
-						cookie = BaseApplication.autoLogin(TopicDetailActivity.this,true);
+						cookie = BaseApplication.autoLogin(
+								TopicDetailActivity.this, true);
 					}
 
 					rp.addHeader("Cookie", cookie);
@@ -509,6 +515,7 @@ public class TopicDetailActivity extends BaseActivity implements
 
 	/**
 	 * 回帖
+	 * 
 	 * @param content
 	 */
 	private void handleReplyTopic(final String content) {
@@ -519,6 +526,7 @@ public class TopicDetailActivity extends BaseActivity implements
 
 		ThreadManager.getInstance().createLongPool().execute(new Runnable() {
 			HttpUtils httpUtils = null;
+
 			@Override
 			public void run() {
 				try {
@@ -534,7 +542,8 @@ public class TopicDetailActivity extends BaseActivity implements
 					handlePostParams(content, params);
 					// post提交
 					ResponseStream stream = httpUtils.sendSync(HttpMethod.POST,
-							Constants.getNewTopicUrl(originTopicInfo.board), params);
+							Constants.getNewTopicUrl(originTopicInfo.board),
+							params);
 
 					String result = BaseApplication.StreamToStr(stream);
 
@@ -552,10 +561,10 @@ public class TopicDetailActivity extends BaseActivity implements
 								MyToast.toast("自动登陆失败，请登录！");
 								cbSmiley.setChecked(false);
 								// 跳转到登陆页面
-//								Intent intent = new Intent(
-//										TopicDetailActivity.this,
-//										LoginActivity.class);
-//								startActivity(intent);
+								// Intent intent = new Intent(
+								// TopicDetailActivity.this,
+								// LoginActivity.class);
+								// startActivity(intent);
 							}
 						});
 
@@ -575,30 +584,32 @@ public class TopicDetailActivity extends BaseActivity implements
 						});
 					} else {
 						// 回帖成功
-						String url = Constants.getContentUrl(originTopicInfo.contentUrl);
-						List<TopicDetailInfo> tempList = protocol.loadFromServer(url, false);
-						
-						String mailto_louzhu=SPutils.getFromSP("mailto_louzhu");
-						String mailto_at=SPutils.getFromSP("mailto_at");
-						
-						//检查是否有@，如果有，发送站内
-						if(!"no".equals(mailto_at)){
+						String url = Constants
+								.getContentUrl(originTopicInfo.contentUrl);
+						List<TopicDetailInfo> tempList = protocol
+								.loadFromServer(url, false);
+
+						String mailto_louzhu = SPutils
+								.getFromSP("mailto_louzhu");
+						String mailto_at = SPutils.getFromSP("mailto_at");
+
+						// 检查是否有@，如果有，发送站内
+						if (!"no".equals(mailto_at)) {
 							handleSendMailToAt(content);
 						}
-						
-						//回帖提醒，给楼主发站内信
-						if(!"no".equals(mailto_louzhu)){
-							//检查是否为楼主自己回帖，自己回帖时， 不提醒
+
+						// 回帖提醒，给楼主发站内信
+						if (!"no".equals(mailto_louzhu)) {
+							// 检查是否为楼主自己回帖，自己回帖时， 不提醒
 							handleSendMailToLouzhu(content);
 						}
-						
-						// 重新请求数据  刷新界面
+
+						// 重新请求数据 刷新界面
 						if (protocol == null) {
 							protocol = new TopicDetailProtocol();
 						}
-						
-						
-						if(tempList!=null||tempList.size()>0){
+
+						if (tempList != null || tempList.size() > 0) {
 							list.clear();
 							list.addAll(tempList);
 							// 更新界面
@@ -617,7 +628,6 @@ public class TopicDetailActivity extends BaseActivity implements
 									cbSmiley.setChecked(false);
 								}
 							});
-							
 						}
 
 					}
@@ -664,7 +674,8 @@ public class TopicDetailActivity extends BaseActivity implements
 				// 添加cookie 自动登陆；
 				String cookie = BaseApplication.getCookie();
 				if (cookie == null) {
-					cookie = BaseApplication.autoLogin(TopicDetailActivity.this,true);
+					cookie = BaseApplication.autoLogin(
+							TopicDetailActivity.this, true);
 				}
 
 				// 获取pid
@@ -679,11 +690,12 @@ public class TopicDetailActivity extends BaseActivity implements
 				params.addBodyParameter("signature", 1 + "");
 				params.addBodyParameter("autocr", "on");
 				params.addBodyParameter("reusr", reusr);
-				//处理手动换行
-				
-//				String content2=content+"\n-\n"+"sent from 小百合\n";
-				String content2=UiUtils.addNewLineMark(content)+SPutils.getTail();
-				
+				// 处理手动换行
+
+				// String content2=content+"\n-\n"+"sent from 小百合\n";
+				String content2 = UiUtils.addNewLineMark(content)
+						+ SPutils.getTail();
+
 				params.addBodyParameter("text", content2);
 
 				params.addHeader("Cookie", cookie);
@@ -715,21 +727,25 @@ public class TopicDetailActivity extends BaseActivity implements
 		});
 
 	}
+
 	/**
 	 * 给楼主发信息
 	 */
 	protected void handleSendMailToLouzhu(String content) {
-		final String receiver=originTopicInfo.author;
-		final String title=SPutils.getFromSP("id")+"回复了帖子【"+originTopicInfo.title+"】";
-		String contentUrl=Constants.getContentUrl(originTopicInfo.contentUrl);
-		
-		final String mailContent="回帖内容:\n=============\n"+content+"\n=============\n帖子链接："+contentUrl+"\n-\n该站内信自动发送自南大小百合安卓客户端";
-		
-		//检查回帖人是否为楼主自己，如果是，不提醒
-		if(receiver.equals(SPutils.getFromSP("id"))){
-			//回复者和楼主同人，不发送站内提醒；
-		}else{
-			sendMail(receiver, title, mailContent,"站内楼主提醒成功！");
+		final String receiver = originTopicInfo.author;
+		final String title = SPutils.getFromSP("id") + "回复了帖子【"
+				+ originTopicInfo.title + "】";
+		String contentUrl = Constants.getContentUrl(originTopicInfo.contentUrl);
+
+		final String mailContent = "回帖内容:\n=============\n" + content
+				+ "\n=============\n帖子链接：" + contentUrl
+				+ "\n-\n该站内信自动发送自南大小百合安卓客户端";
+
+		// 检查回帖人是否为楼主自己，如果是，不提醒
+		if (receiver.equals(SPutils.getFromSP("id"))) {
+			// 回复者和楼主同人，不发送站内提醒；
+		} else {
+			sendMail(receiver, title, mailContent, "站内楼主提醒成功！");
 		}
 	}
 
@@ -737,15 +753,20 @@ public class TopicDetailActivity extends BaseActivity implements
 	 * 处理给有@的发站内提醒
 	 */
 	protected void handleSendMailToAt(final String content) {
-		Pattern p=Pattern.compile("@\\d{1,3}楼-([a-zA-Z0-9]*?):.*");
+		Pattern p = Pattern.compile("@\\d{1,3}楼-([a-zA-Z0-9]*?):.*");
 		Matcher matcher = p.matcher(content);
-		if(matcher.find()){//确实有at情况
+		if (matcher.find()) {// 确实有at情况
 			final String receiver = matcher.group(1).trim();
-			final  String title=SPutils.getFromSP("id")+"在帖子【"+originTopicInfo.title+"】提到了你";
-			String contentUrl=Constants.getContentUrl(originTopicInfo.contentUrl);
-			final String  mailContent="我在帖子【"+originTopicInfo.title+"】提到了你:\n=============\n"+content+"\n=============\n帖子链接为："+contentUrl+"\n-\n该站内信自动发送自南大小百合安卓客户端";
-			//发送邮件
-			sendMail(receiver, title, mailContent,"站内@后作者提醒成功！");
+			final String title = SPutils.getFromSP("id") + "在帖子【"
+					+ originTopicInfo.title + "】提到了你";
+			String contentUrl = Constants
+					.getContentUrl(originTopicInfo.contentUrl);
+			final String mailContent = "我在帖子【" + originTopicInfo.title
+					+ "】提到了你:\n=============\n" + content
+					+ "\n=============\n帖子链接为：" + contentUrl
+					+ "\n-\n该站内信自动发送自南大小百合安卓客户端";
+			// 发送邮件
+			sendMail(receiver, title, mailContent, "站内@后作者提醒成功！");
 		}
 	}
 
@@ -753,65 +774,68 @@ public class TopicDetailActivity extends BaseActivity implements
 	 * 处理发邮件
 	 */
 	private void sendMail(final String receiver, final String title,
-			final String mailContent,final String message) {
-		//给他发站内
+			final String mailContent, final String message) {
+		// 给他发站内
 		ThreadManager.getInstance().createLongPool().execute(new Runnable() {
 			HttpUtils httpUtils = null;
+
 			@Override
 			public void run() {
-				//回帖逻辑
+				// 回帖逻辑
 				try {
-					if(httpUtils==null){
-						httpUtils=new HttpUtils();
+					if (httpUtils == null) {
+						httpUtils = new HttpUtils();
 					}
-					RequestParams rp=new RequestParams("gbk");
-					
+					RequestParams rp = new RequestParams("gbk");
+
 					rp.addQueryStringParameter("pid", "0");
-					rp.addQueryStringParameter("userid","");
-					
+					rp.addQueryStringParameter("userid", "");
+
 					rp.addBodyParameter("signature", "1");
 					rp.addBodyParameter("userid", receiver);
 					rp.addBodyParameter("title", title);
-					
+
 					rp.addBodyParameter("text", mailContent);
-					
-					//添加cookie
+
+					// 添加cookie
 					String cookie = BaseApplication.getCookie();
-					if(cookie==null){//自动登陆
-						cookie=BaseApplication.autoLogin(TopicDetailActivity.this,true);
+					if (cookie == null) {// 自动登陆
+						cookie = BaseApplication.autoLogin(
+								TopicDetailActivity.this, true);
 					}
-					
-					rp.addHeader("Cookie",cookie);
-					
-					ResponseStream stream = httpUtils.sendSync(HttpMethod.POST, Constants.REPLY_MAIL_URL, rp);
-					
+
+					rp.addHeader("Cookie", cookie);
+
+					ResponseStream stream = httpUtils.sendSync(HttpMethod.POST,
+							Constants.REPLY_MAIL_URL, rp);
+
 					String result = BaseApplication.StreamToStr(stream);
-					LogUtil.d("发站内结果："+result);
-					
-					if(result.contains("信件已寄给")){//成功
+					LogUtil.d("发站内结果：" + result);
+
+					if (result.contains("信件已寄给")) {// 成功
 						runOnUiThread(new Runnable() {
 							@Override
 							public void run() {
 								MyToast.toast(message);
 							}
 						});
-					}else {//回信失败
+					} else {// 回信失败
 						LogUtil.d("回信失败");
 						runOnUiThread(new Runnable() {
 							@Override
 							public void run() {
-								//MyToast.toast("自动登陆失败，请手动登录");
-								
+								// MyToast.toast("自动登陆失败，请手动登录");
+
 							}
 						});
 					}
-					
+
 				} catch (final Exception e) {
 					e.printStackTrace();
 					runOnUiThread(new Runnable() {
 						@Override
 						public void run() {
-							//MyToast.toast("发信失败！"+e.getMessage());
+							// MyToast.toast("发信失败！"+e.getMessage());
 						}
 					});
 				}
@@ -819,13 +843,13 @@ public class TopicDetailActivity extends BaseActivity implements
 		});
 	}
 
-	public static String addNewLineMark(String  str){
-		StringBuffer sb=new StringBuffer(str);
-		
-		for (int i =40; i <sb.length(); i+=41) {
+	public static String addNewLineMark(String str) {
+		StringBuffer sb = new StringBuffer(str);
+
+		for (int i = 40; i < sb.length(); i += 41) {
 			sb.insert(i, "\n");
 		}
-		
+
 		return sb.toString();
 	}
 
@@ -835,94 +859,98 @@ public class TopicDetailActivity extends BaseActivity implements
 	@Override
 	public void onClick(View v) {
 		switch (v.getId()) {
-		case R.id.ib_reply_send://处理发帖
+		case R.id.ib_reply_send:// 处理发帖
 			// 校验数据
 			String content = etContent.getText().toString();
-
 			if (TextUtils.isEmpty(content)) {
 				MyToast.toast("内容不能为空哦!");
 				return;
 			}
-
 			handleReplyTopic(content);
-
 			break;
-			
+
 		case R.id.btn_share:
-			//MyToast.toast("分享成功");
+			// MyToast.toast("分享成功");
 			showShare();
 			break;
-		case R.id.cb_chose_pic:
-		//	MyToast.toast("发送图片");
-			ChosePicDialog picDialog = new ChosePicDialog(200,this);
-			picDialog.show();
+
+		case R.id.cb_chose_pic:// 打开图库 选择图片
+			// ChosePicDialog picDialog = new ChosePicDialog(200,this);
+			// picDialog.show();
+			Intent intent = new Intent(
+					Intent.ACTION_PICK,
+					android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+			this.startActivityForResult(intent, 200);
+
 			break;
+
 		default:
 			break;
 		}
 	}
-	
+
 	private void showShare() {
-		 ShareSDK.initSDK(this);
-		 OnekeyShare oks = new OnekeyShare();
-		 //关闭sso授权
-		 oks.disableSSOWhenAuthorize(); 
-		 String url="http://bbs.nju.edu.cn/"+originTopicInfo.contentUrl;
-		 
-		 String content=list.get(0).content;
-		 content=content.replaceAll("<br>", "\n");
-		 content=content.replaceAll("\\s+<img.*?/>\\s+", "");
-		 
-		 String title=originTopicInfo.title;
-		 
-		// 分享时Notification的图标和文字  2.5.9以后的版本不调用此方法
-//		 oks.setNotification(R.drawable.ic_launcher, getString(R.string.app_name));
-		 // title标题，印象笔记、邮箱、信息、微信、人人网和QQ空间使用
-		 oks.setTitle(title);
-		 // titleUrl是标题的网络链接，仅在人人网和QQ空间使用
-		 oks.setTitleUrl(url);
-		 // text是分享文本，所有平台都需要这个字段
-		 String conntent="我在南大小百合"+originTopicInfo.board+"版看到一篇帖子：["+title+"]\n详情请查看："+url+"\n--分享自南大小百合安卓客户端";
-//		 oks.setText("标题：["+title+"]\n   "+content+" \n详情请查看:"+url+"\n--分享自小百合客户端");
-		 oks.setText(conntent);
-		 // imagePath是图片的本地路径，Linked-In以外的平台都支持此参数
-		 //oks.setImagePath("/sdcard/test.jpg");//确保SDcard下面存在此张图片
-		 // url仅在微信（包括好友和朋友圈）中使用
-		 oks.setUrl(url);
-		 // comment是我对这条分享的评论，仅在人人网和QQ空间使用
-//		 oks.setComment("我是测试评论文本");
-		 // site是分享此内容的网站名称，仅在QQ空间使用
-//		 oks.setSite(getString(R.string.app_name));
-		 // siteUrl是分享此内容的网站地址，仅在QQ空间使用
-		 oks.setSiteUrl(url);
+		ShareSDK.initSDK(this);
+		OnekeyShare oks = new OnekeyShare();
+		// 关闭sso授权
+		oks.disableSSOWhenAuthorize();
+		String url = "http://bbs.nju.edu.cn/" + originTopicInfo.contentUrl;
+
+		String content = list.get(0).content;
+		content = content.replaceAll("<br>", "\n");
+		content = content.replaceAll("\\s+<img.*?/>\\s+", "");
+
+		String title = originTopicInfo.title;
+
+		// 分享时Notification的图标和文字 2.5.9以后的版本不调用此方法
+		// oks.setNotification(R.drawable.ic_launcher,
+		// getString(R.string.app_name));
+		// title标题，印象笔记、邮箱、信息、微信、人人网和QQ空间使用
+		oks.setTitle(title);
+		// titleUrl是标题的网络链接，仅在人人网和QQ空间使用
+		oks.setTitleUrl(url);
+		// text是分享文本，所有平台都需要这个字段
+		String conntent = "我在南大小百合" + originTopicInfo.board + "版看到一篇帖子：["
+				+ title + "]\n详情请查看：" + url + "\n--分享自南大小百合安卓客户端";
+		// oks.setText("标题：["+title+"]\n   "+content+" \n详情请查看:"+url+"\n--分享自小百合客户端");
+		oks.setText(conntent);
+		// imagePath是图片的本地路径，Linked-In以外的平台都支持此参数
+		// oks.setImagePath("/sdcard/test.jpg");//确保SDcard下面存在此张图片
+		// url仅在微信（包括好友和朋友圈）中使用
+		oks.setUrl(url);
+		// comment是我对这条分享的评论，仅在人人网和QQ空间使用
+		// oks.setComment("我是测试评论文本");
+		// site是分享此内容的网站名称，仅在QQ空间使用
+		// oks.setSite(getString(R.string.app_name));
+		// siteUrl是分享此内容的网站地址，仅在QQ空间使用
+		oks.setSiteUrl(url);
 
 		// 启动分享GUI
-		 oks.show(this);
-		 }
-	
+		oks.show(this);
+	}
 
 	/**
 	 * 加载下一页数据
 	 */
 	public void onLoadingMore() {
-	
+
 		ThreadManager.getInstance().createLongPool().execute(new Runnable() {
 			private List<TopicDetailInfo> moreList;
-	
+
 			@Override
 			public void run() {
 				if (protocol == null) {
 					protocol = new TopicDetailProtocol();
 				}
-	
+
 				String loadMoreUrl = list.get(list.size() - 1).loadMoreUrl;
 				if (loadMoreUrl != null) {
 					moreList = protocol.loadFromServer(
 							Constants.getContentUrl(loadMoreUrl), false);
 				}
-	
+
 				UiUtils.runOnUiThread(new Runnable() {
-	
+
 					@Override
 					public void run() {
 						if (moreList != null && moreList.size() != 0) {
@@ -937,32 +965,32 @@ public class TopicDetailActivity extends BaseActivity implements
 						pLv.onRefreshComplete();
 					}
 				});
-	
+
 			}
 		});
-	
-	}
 
+	}
 
 	// 表情点击的监听事件
 	OnFaceOprateListener mOnFaceOprateListener = new OnFaceOprateListener() {
 		@Override
 		public void onFaceSelected(SpannableString spanEmojiStr) {
 			if (null != spanEmojiStr) {
-				//在光标处插入表情
-				String oriText=etContent.getText().toString();//原始文字
-				int index=Math.max(etContent.getSelectionStart(),0);//获取光标处位置，没有光标，返回-1
-				
-				StringBuffer sb=new StringBuffer(oriText);
+				// 在光标处插入表情
+				String oriText = etContent.getText().toString();// 原始文字
+				int index = Math.max(etContent.getSelectionStart(), 0);// 获取光标处位置，没有光标，返回-1
+
+				StringBuffer sb = new StringBuffer(oriText);
 				sb.insert(index, spanEmojiStr);
 				String string = sb.toString().replaceAll("\n", "<br>");
-				
+
 				Spanned spanned = Html.fromHtml(string);
-				CharSequence text = SmileyParser.getInstance(getApplicationContext()).strToSmiley(spanned);
+				CharSequence text = SmileyParser.getInstance(
+						getApplicationContext()).strToSmiley(spanned);
 				etContent.setText(text);
-				
-				etContent.setSelection(index+spanEmojiStr.length());
-//				etContent.append(spanEmojiStr);
+
+				etContent.setSelection(index + spanEmojiStr.length());
+				// etContent.append(spanEmojiStr);
 			}
 		}
 
@@ -982,7 +1010,7 @@ public class TopicDetailActivity extends BaseActivity implements
 			}
 		}
 	};
-	
+
 	private ImageButton ibShare;
 	private String louzhu;
 	private CheckBox cbChosePic;
@@ -991,105 +1019,74 @@ public class TopicDetailActivity extends BaseActivity implements
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
 		if (requestCode == 100) {// 修改回帖成功后跳转 刷新
-			ThreadManager.getInstance().createLongPool()
-					.execute(new Runnable() {
+			updateModifiedViews();
+		} else if (requestCode == 200&&data!=null) {//从图库选中图片返回
+			// 从intent中得到选中图片的路径
+			String picturePath = TopicUtils.getPicPathFromUri(TopicDetailActivity.this, data);
+			// 展示选中的图片,上传逻辑包含在其中
+			TopicUtils.showChosedPic(TopicDetailActivity.this, picturePath,etContent);
+		}
+		
+	}
+
+	/**
+	 * 修改帖子成功后，返回时更新页面
+	 */
+	private void updateModifiedViews() {
+		ThreadManager.getInstance().createLongPool().execute(new Runnable() {
+			@Override
+			public void run() {
+				String url = Constants
+						.getContentUrl(originTopicInfo.contentUrl);
+				if (protocol == null) {
+					protocol = new TopicDetailProtocol();
+				}
+
+				List<TopicDetailInfo> tempList = protocol.loadFromServer(url,
+						false);
+				if (tempList != null && tempList.size() > 0) {
+					list.clear();
+					list.addAll(tempList);
+
+					runOnUiThread(new Runnable() {
 						@Override
 						public void run() {
-							String url = Constants
-									.getContentUrl(originTopicInfo.contentUrl);
-							if (protocol == null) {
-								protocol = new TopicDetailProtocol();
-							}
-							list = protocol.loadFromServer(url, false);
-
-							runOnUiThread(new Runnable() {
-
-								@Override
-								public void run() {
-									adapter.notifyDataSetChanged();
-								}
-							});
-
+							adapter.notifyDataSetChanged();
 						}
 					});
-		}else if(requestCode==200){//从图库选中图片返回
-	        Uri selectedImage = data.getData();
-	        String[] filePathColumn = { MediaStore.Images.Media.DATA };
-	 
-	        Cursor cursor = getContentResolver().query(selectedImage,filePathColumn, null, null, null);
-	        String picturePath=null;
-	        if(cursor!=null){
-	        	cursor.moveToFirst();
-		        int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-				
-		         picturePath = cursor.getString(columnIndex);
-				
-	        }else{
-	        	 picturePath = selectedImage.getPath();
-	        	//根据path处理文件
-	        }
-	        
-	    	//展示选中的图片
-			try {
-				AlertDialog.Builder builder=new AlertDialog.Builder(this);
-				ImageView iv=new ImageView(this);
-				
-				final Bitmap bitmap=UiUtils.parseUriToBm(this,picturePath);
-				
-				iv.setImageBitmap(bitmap);
-				iv.setPadding(6, 6, 6, 6);
-				builder.setTitle("选择图片");
-				builder.setView(iv);
-				builder.setNegativeButton("重新选择",new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						Intent intent = new Intent(Intent.ACTION_PICK,
-								android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-						startActivityForResult(intent, 200);
-					}
-				});
-				builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-//						MyToast.toast("正在上传。。");
-						handleUploadPic(bitmap);
-						}
-					});
-//				builder.setCancelable(false);
-				AlertDialog diglog2 = builder.show();
-				
-			} catch (Exception e) {
-				e.printStackTrace();
+
+				}
 			}
-	        
-			
-		}
+		});
 	}
+
 	/*
 	 * 处理上传图片的逻辑
 	 */
 	protected void handleUploadPic(final Bitmap bitmap) {
-		final WaitDialog waitDialog=new WaitDialog(this);
+		final WaitDialog waitDialog = new WaitDialog(this);
 		waitDialog.setMessage("正在努力上传。。");
 		waitDialog.show();
-		
-		//将bitmap缓存到本地
-		String dirPath=Environment.getExternalStorageDirectory().getAbsolutePath()+"/njubbs/photo/";
-		File dirFile=new File(dirPath);
-		if(!dirFile.exists())dirFile.mkdirs();
-		//njubbskdsadjkfa.jpg
-		Date date=new Date(System.currentTimeMillis());
-		SimpleDateFormat sdf=new SimpleDateFormat("yyMMddHHmmss");
-		
+
+		// 将bitmap缓存到本地
+		String dirPath = Environment.getExternalStorageDirectory()
+				.getAbsolutePath() + "/njubbs/photo/";
+		File dirFile = new File(dirPath);
+		if (!dirFile.exists())
+			dirFile.mkdirs();
+		// njubbskdsadjkfa.jpg
+		Date date = new Date(System.currentTimeMillis());
+		SimpleDateFormat sdf = new SimpleDateFormat("yyMMddHHmmss");
+
 		String date2 = sdf.format(date);
-		
-//		String filename="nju_bbs"+date2+".jpg";
-		String filename="bbs"+date2+".jpg";
-		
-		UiUtils.saveBitmapToLocal(bitmap,filename);
-		
-		File file=new File(dirFile, filename);
-		NetUtils.uploadFile3(this, waitDialog,file,etContent);
+
+		// String filename="nju_bbs"+date2+".jpg";
+		String filename = "bbs" + date2 + ".jpg";
+
+		UiUtils.saveBitmapToLocal(bitmap, filename);
+
+		File file = new File(dirFile, filename);
+		TopicUtils.uploadFile(this, waitDialog, file, etContent);
 	}
 
 	// 隐藏软键盘
@@ -1104,140 +1101,141 @@ public class TopicDetailActivity extends BaseActivity implements
 		}
 	}
 
-
 	class TopicDetailAdapter extends BaseAdapter {
-			SmileyParser sp = SmileyParser.getInstance(getApplicationContext());
-			Random r = new Random();
-	
-			@Override
-			public int getCount() {
-				return list.size();
+		SmileyParser sp = SmileyParser.getInstance(getApplicationContext());
+		Random r = new Random();
+
+		@Override
+		public int getCount() {
+			return list.size();
+		}
+
+		@Override
+		public Object getItem(int position) {
+			return list.get(position);
+		}
+
+		@Override
+		public long getItemId(int position) {
+			return position;
+		}
+
+		@Override
+		public View getView(int position, View convertView, ViewGroup parent) {
+			ViewHolder holder = null;
+			if (convertView == null) {
+				holder = new ViewHolder();
+
+				convertView = View.inflate(TopicDetailActivity.this,
+						R.layout.list_item_topic_detial, null);
+
+				holder.tvAuthor = (TextView) convertView
+						.findViewById(R.id.tv_topic_detail_item_author);
+
+				holder.tvContent = (TextView) convertView
+						.findViewById(R.id.tv_topic_detail_item_content);
+				holder.tvFloorth = (TextView) convertView
+						.findViewById(R.id.tv_topic_detail_item_floorth);
+				holder.tvPubTime = (TextView) convertView
+						.findViewById(R.id.tv_topic_detail_item_pubtime);
+
+				convertView.setTag(holder);
+
+			} else {
+				holder = (ViewHolder) convertView.getTag();
 			}
-	
-			@Override
-			public Object getItem(int position) {
-				return list.get(position);
-			}
-	
-			@Override
-			public long getItemId(int position) {
-				return position;
-			}
-	
-			@Override
-			public View getView(int position, View convertView, ViewGroup parent) {
-				ViewHolder holder = null;
-				if (convertView == null) {
-					holder = new ViewHolder();
-					
-					convertView = View.inflate(TopicDetailActivity.this,
-							R.layout.list_item_topic_detial, null);
-	
-					holder.tvAuthor = (TextView) convertView
-							.findViewById(R.id.tv_topic_detail_item_author);
-	
-					holder.tvContent = (TextView) convertView
-							.findViewById(R.id.tv_topic_detail_item_content);
-					holder.tvFloorth = (TextView) convertView
-							.findViewById(R.id.tv_topic_detail_item_floorth);
-					holder.tvPubTime = (TextView) convertView
-							.findViewById(R.id.tv_topic_detail_item_pubtime);
-	
-					convertView.setTag(holder);
-	
-				} else {
-					holder = (ViewHolder) convertView.getTag();
-				}
-				TopicDetailInfo info = list.get(position);
-				// mmlover(mmlover)
-				String author = info.author;
-	//			author=author.replaceAll("\\)", "");
-	//			author=author.replaceFirst("\\(", "\n");
-				// author=author.replaceFirst("\\(","\n(" );
-				
-				
-				// 做标记
-	//			if (author != null && originTopicInfo.author != null
-	//					&& author.contains(originTopicInfo.author)) {
-					if (author != null && louzhu!= null
-							&& author.equals(louzhu)) {
-					author = " 楼主 " + author;
-					SpannableStringBuilder ssb = new SpannableStringBuilder(author);
+			TopicDetailInfo info = list.get(position);
+			// mmlover(mmlover)
+			String author = info.author;
+			// author=author.replaceAll("\\)", "");
+			// author=author.replaceFirst("\\(", "\n");
+			// author=author.replaceFirst("\\(","\n(" );
+
+			// 做标记
+			// if (author != null && originTopicInfo.author != null
+			// && author.contains(originTopicInfo.author)) {
+			if (author != null && louzhu != null && author.equals(louzhu)) {
+				author = " 楼主 " + author;
+				SpannableStringBuilder ssb = new SpannableStringBuilder(author);
+				int start = 0;
+				int end = start + " 楼主 ".length();
+
+				ssb.setSpan(new BackgroundColorSpan(Color.RED), start, end,
+						Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+				ssb.setSpan(new AbsoluteSizeSpan(UiUtils.dip2px(12)), start,
+						end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+				ssb.setSpan(new ForegroundColorSpan(Color.WHITE), start, end,
+						Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+				holder.tvAuthor.setText(ssb);
+			} else {
+				String id = SPutils.getFromSP("id");
+				if (!TextUtils.isEmpty(id) && author.contains(id)) {
+					author = " 我 " + author;
+					SpannableStringBuilder ssb = new SpannableStringBuilder(
+							author);
 					int start = 0;
-					int end = start + " 楼主 ".length();
-					
-					ssb.setSpan(new BackgroundColorSpan(Color.RED), start, end,
-							Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-					ssb.setSpan(new AbsoluteSizeSpan(UiUtils.dip2px(12)), start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-					
-					ssb.setSpan(new ForegroundColorSpan(Color.WHITE), start, end,
-							Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+					int end = start + " 我 ".length();
+
+					ssb.setSpan(new BackgroundColorSpan(0xFF8a2be2), start,
+							end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+					ssb.setSpan(new ForegroundColorSpan(Color.WHITE), start,
+							end, Spannable.SPAN_EXCLUSIVE_INCLUSIVE);
+
 					holder.tvAuthor.setText(ssb);
 				} else {
-					String id = SPutils.getFromSP("id");
-					if (!TextUtils.isEmpty(id) && author.contains(id)) {
-						author = " 我 " + author;
-						SpannableStringBuilder ssb = new SpannableStringBuilder(
-								author);
-						int start = 0;
-						int end = start + " 我 ".length();
-	
-						ssb.setSpan(new BackgroundColorSpan(0xFF8a2be2), start,
-								end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-						ssb.setSpan(new ForegroundColorSpan(Color.WHITE), start,
-								end, Spannable.SPAN_EXCLUSIVE_INCLUSIVE);
-	
-						holder.tvAuthor.setText(ssb);
-					} else {
-						holder.tvAuthor.setText(author);
-					}
+					holder.tvAuthor.setText(author);
 				}
-				//超链接可点击
-				holder.tvContent.setAutoLinkMask(Linkify.WEB_URLS|Linkify.EMAIL_ADDRESSES);
-				holder.tvContent.setMovementMethod(ScrollingMovementMethod.getInstance());// 设置可滚动
-				holder.tvContent.setMovementMethod(LinkMovementMethod.getInstance());// 设置超链接可以打开网页
-	
-				Spanned spanned = Html.fromHtml(info.content, new URLImageParser(
-						holder.tvContent),
-						new MyTagHandler(getApplicationContext()));
-				
-				holder.tvContent.setText(sp.strToSmiley(spanned));
-				holder.tvContent.invalidate();
-	
-				holder.tvFloorth.setText("第" + info.floorth + "楼");
-				holder.tvPubTime.setText(info.pubTime);
-	
-				// if (position % 2 == 0) {
-				// convertView.setBackgroundColor(0xFFEBEBEB);
-				// } else {
-				// convertView.setBackgroundColor(0xAAD0D0E0);
-				// }
-	
-				Drawable drawable;
-	
-				if (r.nextInt(2) % 2 != 0) {
-					drawable = getResources().getDrawable(
-							R.drawable.ic_gender_female);
-				} else {
-					drawable = getResources()
-							.getDrawable(R.drawable.ic_gender_male);
-				}
-	
-				// 随机设置左边的图标
-				drawable.setBounds(0, 0, drawable.getMinimumWidth(),
-						drawable.getMinimumHeight());
-				holder.tvAuthor.setCompoundDrawables(drawable, null, null, null);
-	
-				return convertView;
 			}
-	
-			class ViewHolder {
-				public TextView tvContent;
-				public TextView tvAuthor;
-				public TextView tvPubTime;
-				public TextView tvFloorth;
+			// 超链接可点击
+			holder.tvContent.setAutoLinkMask(Linkify.WEB_URLS
+					| Linkify.EMAIL_ADDRESSES);
+			holder.tvContent.setMovementMethod(ScrollingMovementMethod
+					.getInstance());// 设置可滚动
+			holder.tvContent
+					.setMovementMethod(LinkMovementMethod.getInstance());// 设置超链接可以打开网页
+
+			Spanned spanned = Html.fromHtml(info.content, new URLImageParser(
+					holder.tvContent),
+					new MyTagHandler(getApplicationContext()));
+
+			holder.tvContent.setText(sp.strToSmiley(spanned));
+			holder.tvContent.invalidate();
+
+			holder.tvFloorth.setText("第" + info.floorth + "楼");
+			holder.tvPubTime.setText(info.pubTime);
+
+			// if (position % 2 == 0) {
+			// convertView.setBackgroundColor(0xFFEBEBEB);
+			// } else {
+			// convertView.setBackgroundColor(0xAAD0D0E0);
+			// }
+
+			Drawable drawable;
+
+			if (r.nextInt(2) % 2 != 0) {
+				drawable = getResources().getDrawable(
+						R.drawable.ic_gender_female);
+			} else {
+				drawable = getResources()
+						.getDrawable(R.drawable.ic_gender_male);
 			}
-	
+
+			// 随机设置左边的图标
+			drawable.setBounds(0, 0, drawable.getMinimumWidth(),
+					drawable.getMinimumHeight());
+			holder.tvAuthor.setCompoundDrawables(drawable, null, null, null);
+
+			return convertView;
 		}
+
+		class ViewHolder {
+			public TextView tvContent;
+			public TextView tvAuthor;
+			public TextView tvPubTime;
+			public TextView tvFloorth;
+		}
+
+	}
 
 }

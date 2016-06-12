@@ -43,8 +43,11 @@ import com.oterman.njubbs.smiley.SelectFaceHelper.OnFaceOprateListener;
 import com.oterman.njubbs.utils.Constants;
 import com.oterman.njubbs.utils.LogUtil;
 import com.oterman.njubbs.utils.MyToast;
+import com.oterman.njubbs.utils.SPutils;
 import com.oterman.njubbs.utils.SmileyParser;
 import com.oterman.njubbs.utils.ThreadManager;
+import com.oterman.njubbs.utils.TopicUtils;
+import com.oterman.njubbs.utils.UiUtils;
 
 public class ModifyReplyActivity extends MyActionBarActivity implements
 		OnClickListener {
@@ -79,13 +82,14 @@ public class ModifyReplyActivity extends MyActionBarActivity implements
 		etContent = (EditText) this.findViewById(R.id.et_content);
 		
 		ibSmiley = (ImageButton) this.findViewById(R.id.iv_pic);
-		
 		ibSmiley.setOnClickListener(faceClick);
+		
+		ibChosePic = (ImageButton) this.findViewById(R.id.iv_chose_pic);
+		ibChosePic.setOnClickListener(this);
 		
 		this.findViewById(R.id.tv_tail).setVisibility(View.GONE);
 		
 		addFaceToolView=this.findViewById(R.id.add_tool);
-
 		
 		etContent.setOnTouchListener(new OnTouchListener() {
 			@Override
@@ -105,7 +109,7 @@ public class ModifyReplyActivity extends MyActionBarActivity implements
 			}
 		});	
 		
-		//回去要修改回帖的数据
+		//获取要修改回帖的数据
 		Intent intent = getIntent();
 		topicDetailInfo = (TopicDetailInfo) intent.getSerializableExtra("topicDetailInfo");
 		
@@ -114,7 +118,13 @@ public class ModifyReplyActivity extends MyActionBarActivity implements
 		etTitle.setEnabled(false);
 		
 		SmileyParser sp=SmileyParser.getInstance(getApplicationContext());
+		
 		String content=topicDetailInfo.content.replaceAll("<br>","\n");
+		content=content.substring(0, content.lastIndexOf('-'));
+		content=content.replace("\n\n", "\n");
+		content=content.replaceAll("<img src=\"", "");
+		content=content.replaceAll("\"/>", "");
+		
 		etContent.setText(sp.strToSmiley(content));
 		
 	}
@@ -188,6 +198,7 @@ public class ModifyReplyActivity extends MyActionBarActivity implements
 				}
 			}
 		};
+		private ImageButton ibChosePic;
 		
 		
 	
@@ -214,10 +225,27 @@ public class ModifyReplyActivity extends MyActionBarActivity implements
 
 			break;
 			
+		case R.id.iv_chose_pic://从图库选选择图片
+			Intent intent = new Intent(Intent.ACTION_PICK,android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+			this.startActivityForResult(intent, 100);
+			break;
+			
 		default:
 			break;
 		}
 
+	}
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+		if(resultCode==RESULT_OK&&data!=null){
+			if(requestCode==100){//图库选择
+				//从intent中得到选中图片的路径
+		        String picturePath = TopicUtils.getPicPathFromUri(this,data);
+		        //展示选中的图片,上传逻辑包含在其中
+		        TopicUtils.showChosedPic(this,picturePath,etContent);
+			}
+		}
 	}
 
 	/**
@@ -259,7 +287,6 @@ public class ModifyReplyActivity extends MyActionBarActivity implements
 						board=matcher.group(1);
 					}
 					
-					
 					params.addBodyParameter("type", 1 + "");
 					params.addBodyParameter("file", file);
 					params.addBodyParameter("board", board);
@@ -279,11 +306,12 @@ public class ModifyReplyActivity extends MyActionBarActivity implements
 					
 					header.append("\n").append("发信站: 南京大学小百合站 ("+dateStr+")\n\n ");
 					
-					content.replaceAll("<br>", "\n");
-					header.append(content).append("\n\n--  ");
+					String content2=content.replaceAll("<br>", "\n");
+					content2=UiUtils.addNewLineMark(content2)+SPutils.getTail();
+					
+					header.append(content2).append("\n\n--  ");
 					
 					params.addBodyParameter("text", header.toString());
-				
 					
 					//添加cookie
 					String cookie = BaseApplication.getCookie();
@@ -326,11 +354,6 @@ public class ModifyReplyActivity extends MyActionBarActivity implements
 									dialog.dismiss();
 								}
 								MyToast.toast("修改成功！");
-//								Intent intent=new Intent(getApplicationContext(),BoardDetailActivity.class);
-//								
-//								intent.putExtra("boardUrl", boardUrl);
-//								startActivity(intent);
-								
 								finish();
 							}
 						});

@@ -32,6 +32,7 @@ import com.oterman.njubbs.BaseApplication;
 import com.oterman.njubbs.R;
 import com.oterman.njubbs.activity.LoginActivity;
 import com.oterman.njubbs.activity.MyActionBarActivity;
+import com.oterman.njubbs.activity.topic.NewTopicActivity;
 import com.oterman.njubbs.bean.MailInfo;
 import com.oterman.njubbs.dialog.WaitDialog;
 import com.oterman.njubbs.smiley.SelectFaceHelper;
@@ -41,6 +42,7 @@ import com.oterman.njubbs.utils.LogUtil;
 import com.oterman.njubbs.utils.MyToast;
 import com.oterman.njubbs.utils.SmileyParser;
 import com.oterman.njubbs.utils.ThreadManager;
+import com.oterman.njubbs.utils.TopicUtils;
 import com.oterman.njubbs.utils.UiUtils;
 import com.oterman.njubbs.view.MyTagHandler;
 import com.oterman.njubbs.view.URLImageParser;
@@ -79,9 +81,13 @@ public class MailNewActivity extends MyActionBarActivity implements
 		etReceiver=(EditText) this.findViewById(R.id.et_mailto);//收件人
 		etContent = (EditText) this.findViewById(R.id.et_content);
 		
-		
+		//表情
 		ibSmiley = (ImageButton) this.findViewById(R.id.iv_pic);
 		ibSmiley.setOnClickListener(faceClick);
+		
+		//图片
+		ibChosePic = (ImageButton) this.findViewById(R.id.iv_chose_pic);
+		ibChosePic.setOnClickListener(this);
 		
 		addFaceToolView=this.findViewById(R.id.add_tool);
 		
@@ -151,7 +157,6 @@ public class MailNewActivity extends MyActionBarActivity implements
 					CharSequence text = SmileyParser.getInstance(getApplicationContext()).strToSmiley(spanned);
 					etContent.setText(text);
 					
-					
 					etContent.setSelection(index+spanEmojiStr.length());
 //					etContent.append(spanEmojiStr);
 				}
@@ -182,6 +187,18 @@ public class MailNewActivity extends MyActionBarActivity implements
 	}
 
 	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+		
+		if(requestCode==100&&data!=null){//从图库中选图
+			//从intent中得到选中图片的路径
+	        String picturePath = TopicUtils.getPicPathFromUri(MailNewActivity.this,data);
+	        //展示选中的图片,上传逻辑包含在其中
+	        TopicUtils.showChosedPic(MailNewActivity.this,picturePath,etContent);
+		}
+	}
+	
+	@Override
 	public void onClick(View v) {
 		switch (v.getId()) {
 		case R.id.btn_post_topic:// 处理回信
@@ -202,11 +219,15 @@ public class MailNewActivity extends MyActionBarActivity implements
 				MyToast.toast("请输入标题");
 				return;
 			}
-
 			// 处理发帖逻辑
 			handleNewMail(content,title,receiver);
 			// MyToast.toast("发帖："+board);
-
+			break;
+			
+		case R.id.iv_chose_pic://从图库选图
+			Intent intent = new Intent(Intent.ACTION_PICK,android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+			this.startActivityForResult(intent, 100);
+			
 			break;
 			
 		default:
@@ -388,5 +409,6 @@ public class MailNewActivity extends MyActionBarActivity implements
 			}
 		}
 	};
+	private ImageButton ibChosePic;
 
 }

@@ -40,12 +40,11 @@
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
         android:layout_weight="1"
-        android:padding="5dp"
         android:background="@color/main_background"
         android:gravity="top"
         android:hint="  内容不能为空哦"
+        android:padding="5dp"
         android:textSize="18sp" >
-
     </EditText>
 
     <View
@@ -63,9 +62,20 @@
             android:id="@+id/iv_pic"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
             android:background="@null"
-            android:padding="8dp"
-            android:src="@drawable/btn_emoji" />
+            android:padding="15dp"
+            android:src="@drawable/compose_toolbar_emoji_normal" />
+
+        <ImageButton
+            android:id="@+id/iv_chose_pic"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:background="@null"
+            android:padding="15dp"
+            android:src="@drawable/compose_toolbar_picture_normal"
+            android:visibility="visible" />
     </LinearLayout>
 
     <View

@@ -61,6 +61,7 @@
             android:layout_marginLeft="20dp"
             android:padding="15dp"
             android:src="@drawable/compose_toolbar_picture_normal" />
+        
     </LinearLayout>
 
     <View

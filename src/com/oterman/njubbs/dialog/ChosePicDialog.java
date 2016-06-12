@@ -76,17 +76,16 @@ public class ChosePicDialog extends Dialog {
 	 * ´ò¿ªÍ¼¿â
 	 */
 	private void handleChoseFromGallery(int requestCode) {
-
-		Intent intent = new Intent(Intent.ACTION_PICK,
-				android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-
-
 //		Intent intent = new Intent();
 //		intent.setType("image/*");
 //		intent.setAction(Intent.ACTION_GET_CONTENT);
+		
+		Intent intent = new Intent(Intent.ACTION_PICK,android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+
 		if (context instanceof FragmentActivity) {
 			((FragmentActivity) context).startActivityForResult(intent, requestCode);
 		}
+		
 	}
 
 }

@@ -21,6 +21,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.SystemClock;
 import android.provider.MediaStore;
+import android.support.v4.app.FragmentActivity;
 import android.text.Html;
 import android.text.SpannableString;
 import android.text.Spanned;
@@ -53,7 +54,7 @@ import com.oterman.njubbs.smiley.SelectFaceHelper.OnFaceOprateListener;
 import com.oterman.njubbs.utils.Constants;
 import com.oterman.njubbs.utils.LogUtil;
 import com.oterman.njubbs.utils.MyToast;
-import com.oterman.njubbs.utils.NetUtils;
+import com.oterman.njubbs.utils.TopicUtils;
 import com.oterman.njubbs.utils.SPutils;
 import com.oterman.njubbs.utils.SmileyParser;
 import com.oterman.njubbs.utils.ThreadManager;
@@ -161,22 +162,6 @@ public class NewTopicActivity extends MyActionBarActivity implements
 			}
 		}
 		
-		
-		
-		/*
-		public static void showSoftKeyboard(View view) {
-			((InputMethodManager) BaseApplication.context().getSystemService(
-			Context.INPUT_METHOD_SERVICE)).showSoftInput(view,
-			InputMethodManager.SHOW_FORCED);
-		}
-		
-		public static void toogleSoftKeyboard(View view) {
-			((InputMethodManager) BaseApplication.context().getSystemService(
-			Context.INPUT_METHOD_SERVICE)).toggleSoftInput(0,
-			InputMethodManager.HIDE_NOT_ALWAYS);
-		}
-		 */
-		
 		//表情点击的监听事件
 		OnFaceOprateListener mOnFaceOprateListener2 = new OnFaceOprateListener() {
 			@Override
@@ -219,10 +204,6 @@ public class NewTopicActivity extends MyActionBarActivity implements
 		};
 		private TextView tvTail;
 		private ImageButton ibChosePic;
-		private ChosePicDialog picDialog;
-		private ShowChosedPicDialog showChosedPicDialog;
-		
-		
 	
 	@Override
 	protected String getBarTitle() {
@@ -248,9 +229,11 @@ public class NewTopicActivity extends MyActionBarActivity implements
 			handleNewTopic(title, content);
 
 			break;
-		case R.id.iv_chose_pic:
-			picDialog = new ChosePicDialog(100,this);
-			picDialog.show();
+		case R.id.iv_chose_pic://打开图库 选择
+			
+			Intent intent = new Intent(Intent.ACTION_PICK,android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+			this.startActivityForResult(intent, 100);
+			
 			break;
 		default:
 			break;
@@ -259,185 +242,17 @@ public class NewTopicActivity extends MyActionBarActivity implements
 	
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		
-		if(resultCode==RESULT_OK){
+		super.onActivityResult(requestCode, resultCode, data);
+		if(resultCode==RESULT_OK&&data!=null){
 			if(requestCode==100){//图库选择
-				//content://media/external/images/media/660109
-		        Uri selectedImage = data.getData();
-		        String[] filePathColumn = { MediaStore.Images.Media.DATA };
-		 
-		        Cursor cursor = getContentResolver().query(selectedImage,filePathColumn, null, null, null);
-		        String picturePath=null;
-		        if(cursor!=null){
-		        	cursor.moveToFirst();
-			        int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-					
-			         picturePath = cursor.getString(columnIndex);
-					
-		        }else{
-		        	 picturePath = selectedImage.getPath();
-		        	//根据path处理文件
-		        }
-		        
-
-				//Uri uri = data.getData();
-				//LogUtil.d("选择图片："+uri);
-				if(showChosedPicDialog!=null){
-					showChosedPicDialog.dismiss();
-				}
-				
-				//展示选中的图片
-				try {
-					AlertDialog.Builder builder=new AlertDialog.Builder(this);
-					ImageView iv=new ImageView(this);
-					
-					final Bitmap bitmap=UiUtils.parseUriToBm(this,picturePath);
-					//将bitmap存到本地
-					
-					iv.setImageBitmap(bitmap);
-					iv.setPadding(6, 6, 6, 6);
-					builder.setTitle("选择图片");
-					builder.setView(iv);
-					builder.setNegativeButton("重新选择",new DialogInterface.OnClickListener() {
-						@Override
-						public void onClick(DialogInterface dialog, int which) {
-							Intent intent = new Intent(Intent.ACTION_PICK,
-									android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-//							Intent intent=new Intent();
-//							intent.setType("image/*");
-//							intent.setAction(Intent.ACTION_GET_CONTENT);
-							
-							startActivityForResult(intent, 100);
-						}
-					});
-					builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
-						@Override
-						public void onClick(DialogInterface dialog, int which) {
-//							MyToast.toast("正在上传。。");
-							handleUploadPic2(bitmap);
-							
-							}
-						});
-//					builder.setCancelable(false);
-					AlertDialog diglog2 = builder.show();
-					
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
+				//从intent中得到选中图片的路径
+		        String picturePath = TopicUtils.getPicPathFromUri(NewTopicActivity.this,data);
+		        //展示选中的图片,上传逻辑包含在其中
+		        TopicUtils.showChosedPic(NewTopicActivity.this,picturePath,etContent);
 			}
 		}
-		super.onActivityResult(requestCode, resultCode, data);
+		
 	}
-	protected void handleUploadPic2(final Bitmap bitmap) {
-		final WaitDialog waitDialog=new WaitDialog(NewTopicActivity.this);
-		waitDialog.setMessage("正在努力上传。。");
-		waitDialog.show();
-		
-		//将bitmap缓存到本地
-		String dirPath=Environment.getExternalStorageDirectory().getAbsolutePath()+"/njubbs/photo/";
-		File dirFile=new File(dirPath);
-		if(!dirFile.exists())dirFile.mkdirs();
-		
-		//处理文件名
-		Date date=new Date(System.currentTimeMillis());
-		SimpleDateFormat sdf=new SimpleDateFormat("yyMMddHHmmss");
-		String date2 = sdf.format(date);
-//		String filename="nju_bbs"+date2+".jpg";
-		String filename="nju_bbs"+date2+".jpg";
-		
-		//将图片保存到本地
-		UiUtils.saveBitmapToLocal(bitmap,filename);
-		
-		File file=new File(dirFile, filename);
-		NetUtils.uploadFile3(this, waitDialog,file,etContent);
-	}
-	
-	//处理上传图片
-	protected void handleUploadPic(final Bitmap bitmap) {
-		final WaitDialog waitDialog=new WaitDialog(NewTopicActivity.this);
-		waitDialog.setMessage("正在努力上传。。");
-		waitDialog.show();
-		
-		ThreadManager.getInstance().createLongPool().execute(new Runnable() {
-			@Override
-			public void run() {
-				HttpUtils httpUtils=new HttpUtils();
-				httpUtils.configTimeout(100000);
-//				httpUtils.configResponseTextCharset("gbk");
-				RequestParams rp=new RequestParams();
-				rp.setContentType("multipart/form-data");
-				
-				//将bitmap缓存到本地
-				String dirPath=Environment.getExternalStorageDirectory().getAbsolutePath()+"/njubbs/photo/";
-				File dirFile=new File(dirPath);
-				if(!dirFile.exists())dirFile.mkdirs();
-				
-				String filename="njubbs_upload"+SystemClock.elapsedRealtime()+".jpg";
-				UiUtils.saveBitmapToLocal(bitmap,filename);
-				
-				File file=new File(dirFile, filename);
-				
-				rp.addBodyParameter("up", file);
-				
-				rp.addHeader("Accept-Encoding", "identity");
-				String cookie=BaseApplication.getCookie();
-				if(cookie==null){
-					cookie=BaseApplication.autoLogin(getApplicationContext(), true);
-				}
-				
-				rp.addHeader("Cookie", cookie);
-				rp.addBodyParameter("exp", "xixi");
-				rp.addBodyParameter("ptext", "text");
-				rp.addBodyParameter("board", "Pictures");
-				
-				try {
-					String url=Constants.getUploadUrl();
-					
-//					httpUtils.send(HttpMethod.POST, url, rp, new RequestCallBack<String>() {
-//						@Override
-//						public void onSuccess(ResponseInfo<String> responseInfo) {
-//							String result=responseInfo.result;
-//							LogUtil.d("jiegou:"+result);
-//							
-//						}
-//						@Override
-//						public void onFailure(HttpException error, String msg) {
-//							System.err.println(msg);
-//							error.printStackTrace();
-//						}
-//					});
-					
-					ResponseStream stream = httpUtils.sendSync(HttpMethod.POST, url, rp);
-					String result = BaseApplication.StreamToStr(stream);
-					LogUtil.d("上传结果："+result);
-					
-					runOnUiThread(new Runnable() {
-						@Override
-						public void run() {
-							if(waitDialog!=null){
-								waitDialog.dismiss();
-							}
-						}
-					});
-					
-				} catch (Exception e) {
-					e.printStackTrace();
-					runOnUiThread(new Runnable() {
-						@Override
-						public void run() {
-							if(waitDialog!=null){
-								waitDialog.dismiss();
-								MyToast.toast("上传失败");
-							}
-						}
-					});
-				}
-			}
-		});
-	}
-	
-
-
 	
 	private void handleNewTopic(final String title, final String content) {
 
