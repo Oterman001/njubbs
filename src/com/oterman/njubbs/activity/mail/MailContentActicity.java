@@ -8,6 +8,7 @@ import android.text.Html;
 import android.text.Spanned;
 import android.text.method.LinkMovementMethod;
 import android.text.method.ScrollingMovementMethod;
+import android.text.util.Linkify;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageButton;
@@ -68,13 +69,12 @@ public class MailContentActicity extends BaseActivity implements OnClickListener
 		ibReply.setOnClickListener(this);
 		ibDelete.setOnClickListener(this);
 		
-		
 	}
 	
 	@Override
 	public View createSuccessView() {
 		
-		rootView = View.inflate(getApplicationContext(), R.layout.activity_mail_content, null);
+		rootView = View.inflate(this, R.layout.activity_mail_content, null);
 		
 		tvTitle = (TextView) rootView.findViewById(R.id.tv_mail_title);
 		tvAuthor = (TextView) rootView.findViewById(R.id.tv_mail_author);
@@ -85,6 +85,9 @@ public class MailContentActicity extends BaseActivity implements OnClickListener
 			tvTitle.setText(mailInfo.title);
 			tvAuthor.setText("发信人："+mailInfo.author);
 			tvPostTime.setText("时    间："+mailInfo.postTime);
+			
+			//超链接可点击
+			tvContent.setAutoLinkMask(Linkify.WEB_URLS|Linkify.EMAIL_ADDRESSES);
 			tvContent.setMovementMethod(ScrollingMovementMethod.getInstance());// 设置可滚动
 			tvContent.setMovementMethod(LinkMovementMethod.getInstance());// 设置超链接可以打开网页
 			

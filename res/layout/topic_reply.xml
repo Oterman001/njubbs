@@ -29,11 +29,22 @@
         <!-- android:background="@drawable/comment_edittext_selector" -->
 
         <CheckBox
+            android:id="@+id/cb_chose_pic"
+            android:layout_width="26dp"
+            android:layout_height="26dp"
+            android:layout_marginLeft="4dp"
+            android:layout_marginRight="6dp"
+            android:background="@drawable/pic_chose_img_selector_small"
+            android:button="@null"
+            android:checked="false"
+            android:contentDescription="@null"
+            android:focusable="false" />
+        <CheckBox
             android:id="@+id/cb_reply_smiley"
             android:layout_width="26dp"
             android:layout_height="26dp"
             android:layout_marginLeft="4dp"
-            android:background="@drawable/smiely_img_selector"
+            android:background="@drawable/smiely_img_selector_small"
             android:button="@null"
             android:checked="false"
             android:contentDescription="@null"

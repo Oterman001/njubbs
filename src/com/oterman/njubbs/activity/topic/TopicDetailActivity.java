@@ -1,5 +1,8 @@
 package com.oterman.njubbs.activity.topic;
 
+import java.io.File;
+import java.sql.Date;
+import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Random;
 import java.util.regex.Matcher;
@@ -15,9 +18,15 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
+import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.text.Html;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -47,6 +56,7 @@ import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import cn.sharesdk.framework.ShareSDK;
@@ -68,8 +78,10 @@ import com.oterman.njubbs.activity.BaseActivity;
 import com.oterman.njubbs.activity.board.BoardDetailActivity;
 import com.oterman.njubbs.activity.expore.MyTopicActivity;
 import com.oterman.njubbs.activity.mail.MailNewActivity;
+import com.oterman.njubbs.activity.topic.TopicDetailActivity.TopicDetailAdapter.ViewHolder;
 import com.oterman.njubbs.bean.TopicDetailInfo;
 import com.oterman.njubbs.bean.TopicInfo;
+import com.oterman.njubbs.dialog.ChosePicDialog;
 import com.oterman.njubbs.dialog.WaitDialog;
 import com.oterman.njubbs.holders.OptionsDialogHolder;
 import com.oterman.njubbs.holders.OptionsDialogHolder.MyOnclickListener;
@@ -80,6 +92,7 @@ import com.oterman.njubbs.smiley.SelectFaceHelper.OnFaceOprateListener;
 import com.oterman.njubbs.utils.Constants;
 import com.oterman.njubbs.utils.LogUtil;
 import com.oterman.njubbs.utils.MyToast;
+import com.oterman.njubbs.utils.NetUtils;
 import com.oterman.njubbs.utils.SPutils;
 import com.oterman.njubbs.utils.SmileyParser;
 import com.oterman.njubbs.utils.ThreadManager;
@@ -106,16 +119,33 @@ public class TopicDetailActivity extends BaseActivity implements
 	private View addFaceToolView;
 	private WaitDialog waitDialog;
 	SelectFaceHelper mFaceHelper;
+	
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		
+	}
 
 	@Override
 	public void initViews() {
-
+		//判断是否为点击其他链接进入
+		Intent intent = getIntent();
+		Uri contentUri= intent.getData();
+		
+		if(contentUri!=null){//为点击其他链接进入
+			//http://bbs.nju.edu.cn/bbstcon?board=Pictures&file=M.1465637109.A
+			String uri = contentUri.toString();
+			//自己拼装
+			originTopicInfo=createInfoFromUrl(uri);
+			
+		}else{
+			originTopicInfo = (TopicInfo) getIntent().getSerializableExtra("topicInfo");
+		}//正常进入
+		
+		tvBarTitle.setText(originTopicInfo.board + "(点击进入)");
 		ibShare = (ImageButton) actionBarView.findViewById(R.id.btn_share);
 		ibShare.setVisibility(View.VISIBLE);
 		ibShare.setOnClickListener(this);
-
-		originTopicInfo = (TopicInfo) getIntent().getSerializableExtra("topicInfo");
-		tvBarTitle.setText(originTopicInfo.board + "(点击进入)");
 
 		// 给actionbar添加点击事件 点击后进入到对应的版面
 		tvBarTitle.setClickable(true);
@@ -132,46 +162,17 @@ public class TopicDetailActivity extends BaseActivity implements
 		});
 	}
 
-	/**
-	 * 加载下一页数据
-	 */
-	public void onLoadingMore() {
-
-		ThreadManager.getInstance().createLongPool().execute(new Runnable() {
-			private List<TopicDetailInfo> moreList;
-
-			@Override
-			public void run() {
-				if (protocol == null) {
-					protocol = new TopicDetailProtocol();
-				}
-
-				String loadMoreUrl = list.get(list.size() - 1).loadMoreUrl;
-				if (loadMoreUrl != null) {
-					moreList = protocol.loadFromServer(
-							Constants.getContentUrl(loadMoreUrl), false);
-				}
-
-				UiUtils.runOnUiThread(new Runnable() {
-
-					@Override
-					public void run() {
-						if (moreList != null && moreList.size() != 0) {
-							moreList.remove(0);
-							list.addAll(moreList);
-							adapter.notifyDataSetChanged();
-							MyToast.toast("加载成功！");
-						} else {// 没有更多
-							MyToast.toast("欧哦，没有更多了");
-						}
-						// 加载完成，通知回掉
-						pLv.onRefreshComplete();
-					}
-				});
-
-			}
-		});
-
+	private TopicInfo createInfoFromUrl(String url) {
+		//http://bbs.nju.edu.cn/bbstcon?board=Pictures&file=M.1465637109.A
+		String board=url.substring(url.indexOf('=')+1,url.indexOf('&'));
+		String contentUrl=url.substring(url.indexOf("/bbstcon")+1);
+		
+		//board?board=Pictures
+		String boardUrl="board?board="+board;
+		
+		TopicInfo info=new TopicInfo(board, "", boardUrl, contentUrl);
+		
+		return info;
 	}
 
 	/*
@@ -187,16 +188,21 @@ public class TopicDetailActivity extends BaseActivity implements
 
 	// 联网成功后创建视图
 	public View createSuccessView() {
-
+		
 		view = View.inflate(getApplicationContext(),
 				R.layout.activity_topic_detail, null);
 		pLv = (PullToRefreshListView) view.findViewById(R.id.pLv);
+		if(list.size()!=0){
+			
+			louzhu = list.get(0).author;
+			originTopicInfo.title=list.get(0).title;
+			originTopicInfo.author=louzhu.substring(0,louzhu.indexOf("(")).trim();
+			
+		}
 		
-		louzhu = list.get(0).author;
-		  
 		// 初始化底部回帖view
 		initReplyViews();
-
+		
 		pLv.setMode(Mode.PULL_FROM_END);// 上拉加载更多
 
 		// 添加头布局
@@ -204,6 +210,7 @@ public class TopicDetailActivity extends BaseActivity implements
 				AbsListView.LayoutParams.MATCH_PARENT,
 				AbsListView.LayoutParams.WRAP_CONTENT);
 		View headerView = initHeaderView();
+		
 		headerView.setLayoutParams(layoutParams);
 
 		ListView lv = pLv.getRefreshableView();
@@ -214,7 +221,7 @@ public class TopicDetailActivity extends BaseActivity implements
 		lv.setDividerHeight(UiUtils.dip2px(1));
 
 		lv.setDividerHeight(1);
-
+		
 		// 滑动的时候不加载图片
 		lv.setOnScrollListener(new PauseOnScrollListener(ImageLoader
 				.getInstance(), true, true));
@@ -266,10 +273,12 @@ public class TopicDetailActivity extends BaseActivity implements
 	private void initReplyViews() {
 		etContent = (EditText) view.findViewById(R.id.et_reply_content);// 内容
 		cbSmiley = (CheckBox) view.findViewById(R.id.cb_reply_smiley);// 笑脸
+		cbChosePic = (CheckBox) view.findViewById(R.id.cb_chose_pic);//图片
 		ibSend = (ImageButton) view.findViewById(R.id.ib_reply_send);// 发送
 
 		addFaceToolView = view.findViewById(R.id.add_tool);// 表情集合
-
+		
+		cbChosePic.setOnClickListener(this);
 		ibSend.setOnClickListener(this);
 		// 触摸输入框 隐藏表情键盘
 		etContent.setOnTouchListener(new OnTouchListener() {
@@ -311,6 +320,7 @@ public class TopicDetailActivity extends BaseActivity implements
 		TextView tvTitle = (TextView) view.findViewById(R.id.tv_topic_titile);
 		TextView tvReplyeCount = (TextView) view
 				.findViewById(R.id.tv_topic_replycount);
+		
 		tvTitle.setText(originTopicInfo.title);
 
 		if (originTopicInfo.replyCount == null) {
@@ -509,7 +519,6 @@ public class TopicDetailActivity extends BaseActivity implements
 
 		ThreadManager.getInstance().createLongPool().execute(new Runnable() {
 			HttpUtils httpUtils = null;
-
 			@Override
 			public void run() {
 				try {
@@ -566,30 +575,41 @@ public class TopicDetailActivity extends BaseActivity implements
 						});
 					} else {
 						// 回帖成功
+						//检查是否有@，如果有，发送站内
+						handleSendMailToAt(content);
+						
+						//回帖提醒，给楼主发站内信
+						handleSendMailToLouzhu(content);
+						
+						// 重新请求数据  刷新界面
 						if (protocol == null) {
 							protocol = new TopicDetailProtocol();
 						}
-						// 重新请求数据
-						String url = Constants
-								.getContentUrl(originTopicInfo.contentUrl);
-						list = protocol.loadFromServer(url, false);
-
-						// 更新界面
-						runOnUiThread(new Runnable() {
-							@Override
-							public void run() {
-								if (waitDialog != null) {
+						
+						String url = Constants.getContentUrl(originTopicInfo.contentUrl);
+						List<TopicDetailInfo> tempList = protocol.loadFromServer(url, false);
+						if(tempList!=null||tempList.size()>0){
+							list.clear();
+							list.addAll(tempList);
+							// 更新界面
+							runOnUiThread(new Runnable() {
+								@Override
+								public void run() {
+									if (waitDialog != null) {
+										waitDialog.dismiss();
+									}
 									waitDialog.dismiss();
+									MyToast.toast("回帖成功！");
+									// 刷新界面
+									adapter.notifyDataSetChanged();
+									// pLv.getRefreshableView().setSelection(list.size());
+									etContent.setText("");
+									cbSmiley.setChecked(false);
 								}
-								waitDialog.dismiss();
-								MyToast.toast("回帖成功！");
-								// 刷新界面
-								adapter.notifyDataSetChanged();
-								// pLv.getRefreshableView().setSelection(list.size());
-								etContent.setText("");
-								cbSmiley.setChecked(false);
-							}
-						});
+							});
+							
+						}
+
 					}
 
 				} catch (Exception e) {
@@ -686,7 +706,105 @@ public class TopicDetailActivity extends BaseActivity implements
 		});
 
 	}
-	
+	/**
+	 * 给楼主发信息
+	 */
+	protected void handleSendMailToLouzhu(String content) {
+		final String receiver=originTopicInfo.author;
+		final String title=SPutils.getFromSP("id")+"回复了帖子【"+originTopicInfo.title+"】";
+		String contentUrl=Constants.getContentUrl(originTopicInfo.contentUrl);
+		
+		final String mailContent="回帖内容:\n=============\n"+content+"\n=============\n帖子链接："+contentUrl+"\n-\n该站内信自动发送自南大小百合安卓客户端";
+		sendMail(receiver, title, mailContent,"站内楼主提醒成功！");
+		
+	}
+
+	/**
+	 * 处理给有@的发站内提醒
+	 */
+	protected void handleSendMailToAt(final String content) {
+		Pattern p=Pattern.compile("@\\d{1,3}楼-([a-zA-Z0-9]*?):.*");
+		Matcher matcher = p.matcher(content);
+		if(matcher.find()){//确实有at情况
+			final String receiver = matcher.group(1).trim();
+			final  String title=SPutils.getFromSP("id")+"在帖子【"+originTopicInfo.title+"】提到了你";
+			String contentUrl=Constants.getContentUrl(originTopicInfo.contentUrl);
+			final String  mailContent="我在帖子【"+originTopicInfo.title+"】提到了你:\n=============\n"+content+"\n=============\n帖子链接为："+contentUrl+"\n-\n该站内信自动发送自南大小百合安卓客户端";
+			//发送邮件
+			sendMail(receiver, title, mailContent,"发送站内提醒成功！");
+		}
+	}
+
+	/**
+	 * 处理发邮件
+	 */
+	private void sendMail(final String receiver, final String title,
+			final String mailContent,final String message) {
+		//给他发站内
+		ThreadManager.getInstance().createLongPool().execute(new Runnable() {
+			HttpUtils httpUtils = null;
+			@Override
+			public void run() {
+				//回帖逻辑
+				try {
+					if(httpUtils==null){
+						httpUtils=new HttpUtils();
+					}
+					RequestParams rp=new RequestParams("gbk");
+					
+					rp.addQueryStringParameter("pid", "0");
+					rp.addQueryStringParameter("userid","");
+					
+					rp.addBodyParameter("signature", "1");
+					rp.addBodyParameter("userid", receiver);
+					rp.addBodyParameter("title", title);
+					
+					rp.addBodyParameter("text", mailContent);
+					
+					//添加cookie
+					String cookie = BaseApplication.getCookie();
+					if(cookie==null){//自动登陆
+						cookie=BaseApplication.autoLogin(TopicDetailActivity.this,true);
+					}
+					
+					rp.addHeader("Cookie",cookie);
+					
+					ResponseStream stream = httpUtils.sendSync(HttpMethod.POST, Constants.REPLY_MAIL_URL, rp);
+					
+					String result = BaseApplication.StreamToStr(stream);
+					LogUtil.d("发站内结果："+result);
+					
+					if(result.contains("信件已寄给")){//成功
+						runOnUiThread(new Runnable() {
+							@Override
+							public void run() {
+								MyToast.toast(message);
+							}
+						});
+					}else {//回信失败
+						LogUtil.d("回信失败");
+						runOnUiThread(new Runnable() {
+							@Override
+							public void run() {
+								//MyToast.toast("自动登陆失败，请手动登录");
+								
+							}
+						});
+					}
+					
+				} catch (final Exception e) {
+					e.printStackTrace();
+					runOnUiThread(new Runnable() {
+						@Override
+						public void run() {
+							//MyToast.toast("发信失败！"+e.getMessage());
+						}
+					});
+				}
+			}
+		});
+	}
+
 	public static String addNewLineMark(String  str){
 		StringBuffer sb=new StringBuffer(str);
 		
@@ -703,8 +821,7 @@ public class TopicDetailActivity extends BaseActivity implements
 	@Override
 	public void onClick(View v) {
 		switch (v.getId()) {
-		case R.id.ib_reply_send:
-
+		case R.id.ib_reply_send://处理发帖
 			// 校验数据
 			String content = etContent.getText().toString();
 
@@ -721,7 +838,11 @@ public class TopicDetailActivity extends BaseActivity implements
 			//MyToast.toast("分享成功");
 			showShare();
 			break;
-
+		case R.id.cb_chose_pic:
+		//	MyToast.toast("发送图片");
+			ChosePicDialog picDialog = new ChosePicDialog(200,this);
+			picDialog.show();
+			break;
 		default:
 			break;
 		}
@@ -766,141 +887,48 @@ public class TopicDetailActivity extends BaseActivity implements
 		 }
 	
 
-	class TopicDetailAdapter extends BaseAdapter {
-		SmileyParser sp = SmileyParser.getInstance(getApplicationContext());
-		Random r = new Random();
-
-		@Override
-		public int getCount() {
-			return list.size();
-		}
-
-		@Override
-		public Object getItem(int position) {
-			return list.get(position);
-		}
-
-		@Override
-		public long getItemId(int position) {
-			return position;
-		}
-
-		@Override
-		public View getView(int position, View convertView, ViewGroup parent) {
-			ViewHolder holder = null;
-			if (convertView == null) {
-				holder = new ViewHolder();
-				
-				convertView = View.inflate(TopicDetailActivity.this,
-						R.layout.list_item_topic_detial, null);
-
-				holder.tvAuthor = (TextView) convertView
-						.findViewById(R.id.tv_topic_detail_item_author);
-
-				holder.tvContent = (TextView) convertView
-						.findViewById(R.id.tv_topic_detail_item_content);
-				holder.tvFloorth = (TextView) convertView
-						.findViewById(R.id.tv_topic_detail_item_floorth);
-				holder.tvPubTime = (TextView) convertView
-						.findViewById(R.id.tv_topic_detail_item_pubtime);
-
-				convertView.setTag(holder);
-
-			} else {
-				holder = (ViewHolder) convertView.getTag();
-			}
-			TopicDetailInfo info = list.get(position);
-			// mmlover(mmlover)
-			String author = info.author;
-//			author=author.replaceAll("\\)", "");
-//			author=author.replaceFirst("\\(", "\n");
-			// author=author.replaceFirst("\\(","\n(" );
-			
-			
-			// 做标记
-//			if (author != null && originTopicInfo.author != null
-//					&& author.contains(originTopicInfo.author)) {
-				if (author != null && louzhu!= null
-						&& author.equals(louzhu)) {
-				author = " 楼主 " + author;
-				SpannableStringBuilder ssb = new SpannableStringBuilder(author);
-				int start = 0;
-				int end = start + " 楼主 ".length();
-				
-				ssb.setSpan(new BackgroundColorSpan(Color.RED), start, end,
-						Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-				ssb.setSpan(new AbsoluteSizeSpan(UiUtils.dip2px(12)), start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-				
-				ssb.setSpan(new ForegroundColorSpan(Color.WHITE), start, end,
-						Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-				holder.tvAuthor.setText(ssb);
-			} else {
-				String id = SPutils.getFromSP("id");
-				if (!TextUtils.isEmpty(id) && author.contains(id)) {
-					author = " 我 " + author;
-					SpannableStringBuilder ssb = new SpannableStringBuilder(
-							author);
-					int start = 0;
-					int end = start + " 我 ".length();
-
-					ssb.setSpan(new BackgroundColorSpan(0xFF8a2be2), start,
-							end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-					ssb.setSpan(new ForegroundColorSpan(Color.WHITE), start,
-							end, Spannable.SPAN_EXCLUSIVE_INCLUSIVE);
-
-					holder.tvAuthor.setText(ssb);
-				} else {
-					holder.tvAuthor.setText(author);
+	/**
+	 * 加载下一页数据
+	 */
+	public void onLoadingMore() {
+	
+		ThreadManager.getInstance().createLongPool().execute(new Runnable() {
+			private List<TopicDetailInfo> moreList;
+	
+			@Override
+			public void run() {
+				if (protocol == null) {
+					protocol = new TopicDetailProtocol();
 				}
+	
+				String loadMoreUrl = list.get(list.size() - 1).loadMoreUrl;
+				if (loadMoreUrl != null) {
+					moreList = protocol.loadFromServer(
+							Constants.getContentUrl(loadMoreUrl), false);
+				}
+	
+				UiUtils.runOnUiThread(new Runnable() {
+	
+					@Override
+					public void run() {
+						if (moreList != null && moreList.size() != 0) {
+							moreList.remove(0);
+							list.addAll(moreList);
+							adapter.notifyDataSetChanged();
+							MyToast.toast("加载成功！");
+						} else {// 没有更多
+							MyToast.toast("欧哦，没有更多了");
+						}
+						// 加载完成，通知回掉
+						pLv.onRefreshComplete();
+					}
+				});
+	
 			}
-			//超链接可点击
-			holder.tvContent.setAutoLinkMask(Linkify.WEB_URLS|Linkify.EMAIL_ADDRESSES);
-
-			holder.tvContent.setMovementMethod(ScrollingMovementMethod.getInstance());// 设置可滚动
-			holder.tvContent.setMovementMethod(LinkMovementMethod.getInstance());// 设置超链接可以打开网页
-
-			Spanned spanned = Html.fromHtml(info.content, new URLImageParser(
-					holder.tvContent),
-					new MyTagHandler(getApplicationContext()));
-			
-			holder.tvContent.setText(sp.strToSmiley(spanned));
-			holder.tvContent.invalidate();
-
-			holder.tvFloorth.setText("第" + info.floorth + "楼");
-			holder.tvPubTime.setText(info.pubTime);
-
-			// if (position % 2 == 0) {
-			// convertView.setBackgroundColor(0xFFEBEBEB);
-			// } else {
-			// convertView.setBackgroundColor(0xAAD0D0E0);
-			// }
-
-			Drawable drawable;
-
-			if (r.nextInt(2) % 2 != 0) {
-				drawable = getResources().getDrawable(
-						R.drawable.ic_gender_female);
-			} else {
-				drawable = getResources()
-						.getDrawable(R.drawable.ic_gender_male);
-			}
-
-			// 随机设置左边的图标
-			drawable.setBounds(0, 0, drawable.getMinimumWidth(),
-					drawable.getMinimumHeight());
-			holder.tvAuthor.setCompoundDrawables(drawable, null, null, null);
-
-			return convertView;
-		}
-
-		class ViewHolder {
-			public TextView tvContent;
-			public TextView tvAuthor;
-			public TextView tvPubTime;
-			public TextView tvFloorth;
-		}
-
+		});
+	
 	}
+
 
 	// 表情点击的监听事件
 	OnFaceOprateListener mOnFaceOprateListener = new OnFaceOprateListener() {
@@ -943,6 +971,7 @@ public class TopicDetailActivity extends BaseActivity implements
 	
 	private ImageButton ibShare;
 	private String louzhu;
+	private CheckBox cbChosePic;
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -969,8 +998,84 @@ public class TopicDetailActivity extends BaseActivity implements
 
 						}
 					});
-
+		}else if(requestCode==200){//从图库选中图片返回
+	        Uri selectedImage = data.getData();
+	        String[] filePathColumn = { MediaStore.Images.Media.DATA };
+	 
+	        Cursor cursor = getContentResolver().query(selectedImage,filePathColumn, null, null, null);
+	        String picturePath=null;
+	        if(cursor!=null){
+	        	cursor.moveToFirst();
+		        int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+				
+		         picturePath = cursor.getString(columnIndex);
+				
+	        }else{
+	        	 picturePath = selectedImage.getPath();
+	        	//根据path处理文件
+	        }
+	        
+	    	//展示选中的图片
+			try {
+				AlertDialog.Builder builder=new AlertDialog.Builder(this);
+				ImageView iv=new ImageView(this);
+				
+				final Bitmap bitmap=UiUtils.parseUriToBm(this,picturePath);
+				
+				iv.setImageBitmap(bitmap);
+				iv.setPadding(6, 6, 6, 6);
+				builder.setTitle("选择图片");
+				builder.setView(iv);
+				builder.setNegativeButton("重新选择",new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						Intent intent = new Intent(Intent.ACTION_PICK,
+								android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+						startActivityForResult(intent, 200);
+					}
+				});
+				builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+//						MyToast.toast("正在上传。。");
+						handleUploadPic(bitmap);
+						}
+					});
+//				builder.setCancelable(false);
+				AlertDialog diglog2 = builder.show();
+				
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+	        
+			
 		}
+	}
+	/*
+	 * 处理上传图片的逻辑
+	 */
+	protected void handleUploadPic(final Bitmap bitmap) {
+		final WaitDialog waitDialog=new WaitDialog(this);
+		waitDialog.setMessage("正在努力上传。。");
+		waitDialog.show();
+		
+		//将bitmap缓存到本地
+		String dirPath=Environment.getExternalStorageDirectory().getAbsolutePath()+"/njubbs/photo/";
+		File dirFile=new File(dirPath);
+		if(!dirFile.exists())dirFile.mkdirs();
+		//njubbskdsadjkfa.jpg
+		Date date=new Date(System.currentTimeMillis());
+		SimpleDateFormat sdf=new SimpleDateFormat("yyMMddHHmmss");
+		
+		String date2 = sdf.format(date);
+		
+//		String filename="nju_bbs"+date2+".jpg";
+		String filename="bbs"+date2+".jpg";
+		
+		UiUtils.saveBitmapToLocal(bitmap,filename);
+		
+		File file=new File(dirFile, filename);
+		NetUtils.uploadFile3(this, waitDialog,file,etContent);
 	}
 
 	// 隐藏软键盘
@@ -984,5 +1089,141 @@ public class TopicDetailActivity extends BaseActivity implements
 			Log.e("", "hideInputManager Catch error,skip it!", e);
 		}
 	}
+
+
+	class TopicDetailAdapter extends BaseAdapter {
+			SmileyParser sp = SmileyParser.getInstance(getApplicationContext());
+			Random r = new Random();
+	
+			@Override
+			public int getCount() {
+				return list.size();
+			}
+	
+			@Override
+			public Object getItem(int position) {
+				return list.get(position);
+			}
+	
+			@Override
+			public long getItemId(int position) {
+				return position;
+			}
+	
+			@Override
+			public View getView(int position, View convertView, ViewGroup parent) {
+				ViewHolder holder = null;
+				if (convertView == null) {
+					holder = new ViewHolder();
+					
+					convertView = View.inflate(TopicDetailActivity.this,
+							R.layout.list_item_topic_detial, null);
+	
+					holder.tvAuthor = (TextView) convertView
+							.findViewById(R.id.tv_topic_detail_item_author);
+	
+					holder.tvContent = (TextView) convertView
+							.findViewById(R.id.tv_topic_detail_item_content);
+					holder.tvFloorth = (TextView) convertView
+							.findViewById(R.id.tv_topic_detail_item_floorth);
+					holder.tvPubTime = (TextView) convertView
+							.findViewById(R.id.tv_topic_detail_item_pubtime);
+	
+					convertView.setTag(holder);
+	
+				} else {
+					holder = (ViewHolder) convertView.getTag();
+				}
+				TopicDetailInfo info = list.get(position);
+				// mmlover(mmlover)
+				String author = info.author;
+	//			author=author.replaceAll("\\)", "");
+	//			author=author.replaceFirst("\\(", "\n");
+				// author=author.replaceFirst("\\(","\n(" );
+				
+				
+				// 做标记
+	//			if (author != null && originTopicInfo.author != null
+	//					&& author.contains(originTopicInfo.author)) {
+					if (author != null && louzhu!= null
+							&& author.equals(louzhu)) {
+					author = " 楼主 " + author;
+					SpannableStringBuilder ssb = new SpannableStringBuilder(author);
+					int start = 0;
+					int end = start + " 楼主 ".length();
+					
+					ssb.setSpan(new BackgroundColorSpan(Color.RED), start, end,
+							Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+					ssb.setSpan(new AbsoluteSizeSpan(UiUtils.dip2px(12)), start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+					
+					ssb.setSpan(new ForegroundColorSpan(Color.WHITE), start, end,
+							Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+					holder.tvAuthor.setText(ssb);
+				} else {
+					String id = SPutils.getFromSP("id");
+					if (!TextUtils.isEmpty(id) && author.contains(id)) {
+						author = " 我 " + author;
+						SpannableStringBuilder ssb = new SpannableStringBuilder(
+								author);
+						int start = 0;
+						int end = start + " 我 ".length();
+	
+						ssb.setSpan(new BackgroundColorSpan(0xFF8a2be2), start,
+								end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+						ssb.setSpan(new ForegroundColorSpan(Color.WHITE), start,
+								end, Spannable.SPAN_EXCLUSIVE_INCLUSIVE);
+	
+						holder.tvAuthor.setText(ssb);
+					} else {
+						holder.tvAuthor.setText(author);
+					}
+				}
+				//超链接可点击
+				holder.tvContent.setAutoLinkMask(Linkify.WEB_URLS|Linkify.EMAIL_ADDRESSES);
+				holder.tvContent.setMovementMethod(ScrollingMovementMethod.getInstance());// 设置可滚动
+				holder.tvContent.setMovementMethod(LinkMovementMethod.getInstance());// 设置超链接可以打开网页
+	
+				Spanned spanned = Html.fromHtml(info.content, new URLImageParser(
+						holder.tvContent),
+						new MyTagHandler(getApplicationContext()));
+				
+				holder.tvContent.setText(sp.strToSmiley(spanned));
+				holder.tvContent.invalidate();
+	
+				holder.tvFloorth.setText("第" + info.floorth + "楼");
+				holder.tvPubTime.setText(info.pubTime);
+	
+				// if (position % 2 == 0) {
+				// convertView.setBackgroundColor(0xFFEBEBEB);
+				// } else {
+				// convertView.setBackgroundColor(0xAAD0D0E0);
+				// }
+	
+				Drawable drawable;
+	
+				if (r.nextInt(2) % 2 != 0) {
+					drawable = getResources().getDrawable(
+							R.drawable.ic_gender_female);
+				} else {
+					drawable = getResources()
+							.getDrawable(R.drawable.ic_gender_male);
+				}
+	
+				// 随机设置左边的图标
+				drawable.setBounds(0, 0, drawable.getMinimumWidth(),
+						drawable.getMinimumHeight());
+				holder.tvAuthor.setCompoundDrawables(drawable, null, null, null);
+	
+				return convertView;
+			}
+	
+			class ViewHolder {
+				public TextView tvContent;
+				public TextView tvAuthor;
+				public TextView tvPubTime;
+				public TextView tvFloorth;
+			}
+	
+		}
 
 }

@@ -1,17 +1,25 @@
 package com.oterman.njubbs.utils;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Bitmap.CompressFormat;
+import android.graphics.BitmapFactory.Options;
 import android.graphics.drawable.Drawable;
+import android.os.Environment;
+import android.view.Display;
 import android.view.View;
 
 import com.oterman.njubbs.BaseApplication;
@@ -76,7 +84,7 @@ public class UiUtils {
 		try {
 			while((line=br.readLine())!=null){
 				sb.append(line);
-				if(line.getBytes("gbk").length==78||line.getBytes("gbk").length==79){
+				if(line.getBytes("gbk").length==78||line.getBytes("gbk").length==79||line.getBytes("gbk").length==39){
 					continue;
 				}else{
 					sb.append("\n");
@@ -92,7 +100,7 @@ public class UiUtils {
 	public static String addNewLineMark(String  str){
 		List<String> urlList=new ArrayList<String>();
 		
-		String reg="\nhttp://.*?jpg";
+		String reg="\n*http://.*?jpg\n*";
 		
 		Pattern p=Pattern.compile(reg);
 		
@@ -102,7 +110,7 @@ public class UiUtils {
 			urlList.add(matcher.group());
 		}
 		
-		str=str.replaceAll(reg, "\n#@\n");
+		str=str.replaceAll(reg, "#@");
 		
 		StringBuffer sb=new StringBuffer(str);
 		for (int i = 0; i <sb.length()-39; ) {
@@ -123,8 +131,74 @@ public class UiUtils {
 		while(matcher.find()){
 			result=result.replaceFirst("#@",urlList.get(i++));
 		}
-		
-//		return sb.toString();
 		return result;
 	}
+	
+	/**
+	 * 将url转换为压缩的bitmap;
+	 * @param activity
+	 * @param url
+	 * @return
+	 */
+	public static Bitmap parseUriToBm(Activity activity,String url) {
+		
+		System.out.println("选中图片地址：" + url);
+
+		// 解析图片时需要使用到的参数都封装在这个对象里了
+		Options opt = new Options();
+		// 不为像素申请内存，只获取图片宽高
+		opt.inJustDecodeBounds = true;
+		BitmapFactory.decodeFile(url, opt);
+		// 拿到图片宽高
+		int imageWidth = opt.outWidth;
+		int imageHeight = opt.outHeight;
+
+		Display dp = activity.getWindowManager()
+				.getDefaultDisplay();
+		
+		// 拿到屏幕宽高
+		int screenWidth = dp.getWidth() / 2;
+		int screenHeight = dp.getHeight() / 2;
+
+		// 计算缩放比例
+		int scale = 1;
+		int scaleWidth = imageWidth / screenWidth;
+		int scaleHeight = imageHeight / screenHeight;
+		if (scaleWidth >= scaleHeight && scaleWidth >= 1) {
+			scale = scaleWidth;
+		} else if (scaleWidth < scaleHeight && scaleHeight >= 1) {
+			scale = scaleHeight;
+		}
+
+		// 设置缩放比例
+		opt.inSampleSize = scale;
+		opt.inJustDecodeBounds = false;
+		Bitmap bitmap = BitmapFactory.decodeFile(url, opt);
+		
+		return bitmap;
+	}
+
+	//将bitmap缓存到本地
+	public static  void saveBitmapToLocal(Bitmap bitmap, String filename) {
+		String dirPath=Environment.getExternalStorageDirectory().getAbsolutePath()+"/njubbs/photo/";
+		File dirFile=new File(dirPath);
+		if(!dirFile.exists())
+			dirFile.mkdirs();
+		
+		FileOutputStream fos=null;
+		
+		try {
+			fos=new FileOutputStream(dirPath+filename);
+			bitmap.compress(CompressFormat.JPEG, 90, fos);
+			
+			fos.flush();
+			fos.close();
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	  
+	
+	
 }

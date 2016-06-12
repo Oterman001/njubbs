@@ -18,7 +18,8 @@ public class ChosePicDialog extends Dialog {
 
 	private Context context;
 	private ListView lv;
-
+	private int requestCode;
+	
 	public ChosePicDialog(Context context, boolean cancelable,
 			OnCancelListener cancelListener) {
 		super(context, cancelable, cancelListener);
@@ -30,10 +31,10 @@ public class ChosePicDialog extends Dialog {
 		init(context);
 	}
 
-	public ChosePicDialog(Context context) {
+	public ChosePicDialog(int requestCode,Context context) {
 		super(context);
 		init(context);
-
+		this.requestCode=requestCode;
 	}
 
 	private void init(Context context2) {
@@ -52,7 +53,7 @@ public class ChosePicDialog extends Dialog {
 				if (position == 0) {
 					cancel();
 					MyToast.toast("打开相册");
-					handleChoseFromGallery();
+					handleChoseFromGallery(requestCode);
 				} else {
 					dismiss();
 					MyToast.toast("打开相机");
@@ -74,7 +75,7 @@ public class ChosePicDialog extends Dialog {
 	/*
 	 * 打开图库
 	 */
-	private void handleChoseFromGallery() {
+	private void handleChoseFromGallery(int requestCode) {
 
 		Intent intent = new Intent(Intent.ACTION_PICK,
 				android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
@@ -84,7 +85,7 @@ public class ChosePicDialog extends Dialog {
 //		intent.setType("image/*");
 //		intent.setAction(Intent.ACTION_GET_CONTENT);
 		if (context instanceof FragmentActivity) {
-			((FragmentActivity) context).startActivityForResult(intent, 100);
+			((FragmentActivity) context).startActivityForResult(intent, requestCode);
 		}
 	}
 

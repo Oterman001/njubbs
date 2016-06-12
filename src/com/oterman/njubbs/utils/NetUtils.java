@@ -22,6 +22,7 @@ import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 
 import android.content.Context;
+import android.text.TextUtils;
 import android.widget.EditText;
 
 import com.loopj.android.http.AsyncHttpClient;
@@ -145,7 +146,11 @@ public class NetUtils {
 							public void run() {
 								waitDialog.dismiss();
 								String origin=etContent.getText().toString();
-								origin=origin+"\n"+resultUrl;
+								if(!TextUtils.isEmpty(origin)){
+									origin=origin+"\n"+resultUrl;
+								}else{
+									origin=resultUrl;
+								}
 								
 								etContent.setText(origin);
 							}

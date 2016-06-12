@@ -249,7 +249,7 @@ public class NewTopicActivity extends MyActionBarActivity implements
 
 			break;
 		case R.id.iv_chose_pic:
-			picDialog = new ChosePicDialog(this);
+			picDialog = new ChosePicDialog(100,this);
 			picDialog.show();
 			break;
 		default:
@@ -286,10 +286,12 @@ public class NewTopicActivity extends MyActionBarActivity implements
 					showChosedPicDialog.dismiss();
 				}
 				
+				//展示选中的图片
 				try {
 					AlertDialog.Builder builder=new AlertDialog.Builder(this);
 					ImageView iv=new ImageView(this);
-					final Bitmap bitmap=parseUriToBm(picturePath);
+					
+					final Bitmap bitmap=UiUtils.parseUriToBm(this,picturePath);
 					//将bitmap存到本地
 					
 					iv.setImageBitmap(bitmap);
@@ -335,21 +337,19 @@ public class NewTopicActivity extends MyActionBarActivity implements
 		String dirPath=Environment.getExternalStorageDirectory().getAbsolutePath()+"/njubbs/photo/";
 		File dirFile=new File(dirPath);
 		if(!dirFile.exists())dirFile.mkdirs();
-		//njubbskdsadjkfa.jpg
+		
+		//处理文件名
 		Date date=new Date(System.currentTimeMillis());
 		SimpleDateFormat sdf=new SimpleDateFormat("yyMMddHHmmss");
-		
 		String date2 = sdf.format(date);
-		
 //		String filename="nju_bbs"+date2+".jpg";
-		String filename="bbs"+date2+".jpg";
+		String filename="nju_bbs"+date2+".jpg";
 		
-		saveBitmapToLocal(bitmap,filename);
+		//将图片保存到本地
+		UiUtils.saveBitmapToLocal(bitmap,filename);
 		
 		File file=new File(dirFile, filename);
-		
 		NetUtils.uploadFile3(this, waitDialog,file,etContent);
-		
 	}
 	
 	//处理上传图片
@@ -373,7 +373,7 @@ public class NewTopicActivity extends MyActionBarActivity implements
 				if(!dirFile.exists())dirFile.mkdirs();
 				
 				String filename="njubbs_upload"+SystemClock.elapsedRealtime()+".jpg";
-				saveBitmapToLocal(bitmap,filename);
+				UiUtils.saveBitmapToLocal(bitmap,filename);
 				
 				File file=new File(dirFile, filename);
 				
@@ -436,72 +436,9 @@ public class NewTopicActivity extends MyActionBarActivity implements
 		});
 	}
 	
-	//将bitmap缓存到本地
-	protected void saveBitmapToLocal(Bitmap bitmap, String filename) {
-		String dirPath=Environment.getExternalStorageDirectory().getAbsolutePath()+"/njubbs/photo/";
-		File dirFile=new File(dirPath);
-		if(!dirFile.exists())
-			dirFile.mkdirs();
-		
-		FileOutputStream fos=null;
-		
-		try {
-			fos=new FileOutputStream(dirPath+filename);
-			bitmap.compress(CompressFormat.JPEG, 90, fos);
-			
-			fos.flush();
-			fos.close();
-			
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		
-	}
 
-	private Bitmap parseUriToBm(String url) {
-		// file:///storage/emulated/0/DCIM/Camera/IMG_20160604_065624.jpg
-		//content://media/external/images/media/523090
-		
-//		String url = uri.toString();
-//		LogUtil.d("uri:"+uri);
-//		//url = url.substring(url.indexOf("/") + 2);
-//		url=url.substring(url.indexOf("a")+1);
-		
-		
-		System.out.println("选中图片地址：" + url);
 
-		// 解析图片时需要使用到的参数都封装在这个对象里了
-		Options opt = new Options();
-		// 不为像素申请内存，只获取图片宽高
-		opt.inJustDecodeBounds = true;
-		BitmapFactory.decodeFile(url, opt);
-		// 拿到图片宽高
-		int imageWidth = opt.outWidth;
-		int imageHeight = opt.outHeight;
-
-		Display dp = getWindowManager()
-				.getDefaultDisplay();
-		// 拿到屏幕宽高
-		int screenWidth = dp.getWidth() / 2;
-		int screenHeight = dp.getHeight() / 2;
-
-		// 计算缩放比例
-		int scale = 1;
-		int scaleWidth = imageWidth / screenWidth;
-		int scaleHeight = imageHeight / screenHeight;
-		if (scaleWidth >= scaleHeight && scaleWidth >= 1) {
-			scale = scaleWidth;
-		} else if (scaleWidth < scaleHeight && scaleHeight >= 1) {
-			scale = scaleHeight;
-		}
-
-		// 设置缩放比例
-		opt.inSampleSize = scale;
-		opt.inJustDecodeBounds = false;
-		Bitmap bitmap = BitmapFactory.decodeFile(url, opt);
-		return bitmap;
-	}
-
+	
 	private void handleNewTopic(final String title, final String content) {
 
 		dialog = new WaitDialog(this);

@@ -32,12 +32,17 @@ public class TopicDetailInfo implements Serializable{
 		this.title = title;
 		this.rootUrl = rootUrl;
 	}
-
-
-
-
-
-
+	public TopicDetailInfo(String author, String floorth, String pubTime,
+			String content, String loadMoreUrl, String replyUrl,String title) {
+		super();
+		this.author = author;
+		this.floorth = floorth;
+		this.pubTime = pubTime;
+		this.content = content;
+		this.loadMoreUrl = loadMoreUrl;
+		this.replyUrl = replyUrl;
+		this.title=title;
+	}
 
 
 

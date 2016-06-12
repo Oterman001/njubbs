@@ -46,7 +46,18 @@
         </activity>
         <activity
             android:name="com.oterman.njubbs.activity.topic.TopicDetailActivity"
-            android:windowSoftInputMode="adjustResize|stateHidden" />
+            android:windowSoftInputMode="adjustResize|stateHidden" >
+            <intent-filter>
+                <data
+                    android:host="bbs.nju.edu.cn"
+                    android:scheme="http" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <action android:name="android.intent.action.VIEW" />
+            </intent-filter>
+        </activity>
 
         <!-- android:windowSoftInputMode="adjustPan|stateHidden" -->
         <activity
@@ -85,11 +96,10 @@
         <activity
             android:name="com.oterman.njubbs.activity.mail.MailSpecialActivity"
             android:windowSoftInputMode="adjustResize|stateVisible" />
-        
-        <activity android:name="com.oterman.njubbs.activity.topic.TopicReplyActivity"/>
-        <activity android:name="com.oterman.njubbs.activity.MyTopicHisActivity"
-            	 android:theme="@style/myindicatorStyle"
-            />
+        <activity android:name="com.oterman.njubbs.activity.topic.TopicReplyActivity" />
+        <activity
+            android:name="com.oterman.njubbs.activity.MyTopicHisActivity"
+            android:theme="@style/myindicatorStyle" />
 
         <!-- 分享 -->
         <activity

@@ -5,8 +5,10 @@ import java.util.List;
 import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.ActionBar.LayoutParams;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
@@ -69,6 +71,7 @@ public abstract class BaseActivity extends FragmentActivity {
 		loadingView.showViewFromServer();
 		
 		setContentView(loadingView);
+		
 	}
 
 	private void initActionBar() {

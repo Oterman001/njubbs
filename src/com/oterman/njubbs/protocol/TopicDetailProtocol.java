@@ -39,6 +39,7 @@ public class TopicDetailProtocol  extends BaseProtocol<TopicDetailInfo>{
 		Elements tableEles = doc.select("tbody");
 		SimpleDateFormat dateFormat=new SimpleDateFormat("yyyy-MM-dd HH:mm");
 		for (int i = 0; i < tableEles.size(); i++) {
+			
 			Elements tdEles = tableEles.get(i).select("td");
 			
 			//ªÿ∏¥±æŒƒ¡¥Ω”
@@ -50,16 +51,18 @@ public class TopicDetailProtocol  extends BaseProtocol<TopicDetailInfo>{
 			String str=tdEles.get(2).text();
 			
 			//÷∏∂®.ø…“‘∆•≈‰À˘”–◊÷∑˚ ∞¸¿®––Ω· ¯∑˚
-			Pattern p1=Pattern.compile("∑¢–≈»À:(.+?),.*–°∞Ÿ∫œ’æ \\s*\\((.+?\\d{4})\\)*(.+)--.*",Pattern.DOTALL);
+//			Pattern p1=Pattern.compile("∑¢–≈»À:(.+?),.*–°∞Ÿ∫œ’æ \\s*\\((.+?\\d{4})\\)*(.+)--.*",Pattern.DOTALL);
+			Pattern p1=Pattern.compile("∑¢–≈»À:(.+?),.*±Í\\s*Ã‚:(.*?)∑¢–≈’æ.*–°∞Ÿ∫œ’æ \\s*\\((.+?\\d{4})\\)*(.+)--.*",Pattern.DOTALL);
 			Matcher matcher = p1.matcher(str);
 			if(matcher.find()){
-				handleData(list, dateFormat, floorth, matcher,replyUrl);
+				handleData2(list, dateFormat, floorth, matcher,replyUrl);
 			}else{//Ã˚◊””––ﬁ∏ƒ ∏Ò Ω±‰ªØ
-				p1=Pattern.compile("∑¢–≈»À:(.+?),.*–°∞Ÿ∫œ’æ\\s*\\((.+?\\d{4})\\)*(.+)",Pattern.DOTALL);
+//				p1=Pattern.compile("∑¢–≈»À:(.+?),.*–°∞Ÿ∫œ’æ\\s*\\((.+?\\d{4})\\)*(.+)",Pattern.DOTALL);
+				p1=Pattern.compile("∑¢–≈»À:(.+?),.*±Í\\s*Ã‚:(.*?)∑¢–≈’æ.*–°∞Ÿ∫œ’æ\\s*\\((.+?\\d{4})\\)*(.+)",Pattern.DOTALL);
 				matcher = p1.matcher(str);
 				
 				if(matcher.find()){
-					handleData(list, dateFormat, floorth, matcher,replyUrl);
+					handleData2(list, dateFormat, floorth, matcher,replyUrl);
 				}else{//◊‘∂Ø∑¢–≈
 					p1=Pattern.compile("∑¢–≈»À:(.+?),.*◊‘∂Ø∑¢–≈œµÕ≥\\s*\\((.+?\\d{4})\\)(.+)",Pattern.DOTALL);
 					matcher = p1.matcher(str);
@@ -78,10 +81,40 @@ public class TopicDetailProtocol  extends BaseProtocol<TopicDetailInfo>{
 		return list;
 	}
 
+	private void handleData2(
+			List<TopicDetailInfo> list,
+			SimpleDateFormat dateFormat, 
+			int floorth, Matcher matcher,String replyUrl) {
+		String author=matcher.group(1).trim();
+		String title=matcher.group(2).trim();
+		String pubTime=matcher.group(3).trim();
+		pubTime=pubTime.replaceAll("\\)", "").trim();
+		pubTime=dateFormat.format(new Date(pubTime));
+		
+		String content=matcher.group(4).trim();
+		
+		content=UiUtils.deleteNewLineMark(content);
+		
+		content=content.replaceAll("\\[/*uid\\]", "").trim();
+		//[1;35mSent From ƒœ¥Û–°∞Ÿ∫œ  by MI NOTE LTE[m
+		content=content.replaceAll("\\[1;35m", "<font color='purple'>").replaceAll("\\[m", "</font>");
+		
+		content=content.replaceAll("\\[.*?m", "");
+		
+		content=content.replaceAll("http.*?(jpg|jpeg|png|JPG|JPEG|PNG|gif|GIF)", "<br><img src=\""+"$0"+"\"/><br>");
+		
+		
+		content=content.replaceAll("\\n", "<br>");
+		
+		TopicDetailInfo info=new TopicDetailInfo(author, floorth+"", pubTime, content, loadMoreUrl,replyUrl,title);
+		list.add(info);
+		
+	}
 	private void handleData(
 			List<TopicDetailInfo> list,
 			SimpleDateFormat dateFormat, 
 			int floorth, Matcher matcher,String replyUrl) {
+		
 		String author=matcher.group(1).trim();
 		String pubTime=matcher.group(2).trim();
 		pubTime=pubTime.replaceAll("\\)", "").trim();
@@ -102,12 +135,6 @@ public class TopicDetailProtocol  extends BaseProtocol<TopicDetailInfo>{
 		
 		content=content.replaceAll("\\n", "<br>");
 		
-		
-//		content=content.replaceAll("\\s+<br>","");
-		
-		//System.out.println("content:================\n"+content);
-		
-		//content=ToSBC(content);
 		TopicDetailInfo info=new TopicDetailInfo(author, floorth+"", pubTime, content, loadMoreUrl,replyUrl);
 		list.add(info);
 	}
