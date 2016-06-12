@@ -11,6 +11,7 @@ import android.widget.LinearLayout;
 
 import com.oterman.njubbs.R;
 import com.oterman.njubbs.dialog.EditTailDialog;
+import com.oterman.njubbs.dialog.MailRemindDialog;
 import com.oterman.njubbs.dialog.SettingByAuthorDialog;
 import com.oterman.njubbs.dialog.SettingTitlelDialog;
 import com.oterman.njubbs.utils.MyToast;
@@ -23,6 +24,7 @@ public class SettingActivity  extends MyActionBarActivity implements OnClickList
 	private LinearLayout llAuthorSearch;
 	private LinearLayout llAuthorTips;
 	private LinearLayout llAboutme;
+	private LinearLayout llRemind;
 
 	@Override
 	protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -35,8 +37,10 @@ public class SettingActivity  extends MyActionBarActivity implements OnClickList
 		llAuthorSearch = (LinearLayout) this.findViewById(R.id.ll_author_search);
 		llAuthorTips= (LinearLayout) this.findViewById(R.id.ll_author_tips);
 		llAboutme = (LinearLayout) this.findViewById(R.id.ll_about_me);
+		llRemind = (LinearLayout) this.findViewById(R.id.ll_remind);
 
 		
+		llRemind.setOnClickListener(this);
 		llTail.setOnClickListener(this);
 		llTitleSearch.setOnClickListener(this);
 		llAuthorTips.setOnClickListener(this);
@@ -56,6 +60,10 @@ public class SettingActivity  extends MyActionBarActivity implements OnClickList
 			EditTailDialog dialog=new EditTailDialog(this);
 			dialog.show();
 //			MyToast.toast("Ð¡Î²°Í");
+			break;
+		case R.id.ll_remind:
+			MailRemindDialog remindDialog=new MailRemindDialog(this);
+			remindDialog.show();
 			break;
 		case R.id.ll_author_search:
 			SettingByAuthorDialog authorDialog=new SettingByAuthorDialog(this);

@@ -575,19 +575,29 @@ public class TopicDetailActivity extends BaseActivity implements
 						});
 					} else {
 						// 回帖成功
+						String url = Constants.getContentUrl(originTopicInfo.contentUrl);
+						List<TopicDetailInfo> tempList = protocol.loadFromServer(url, false);
+						
+						String mailto_louzhu=SPutils.getFromSP("mailto_louzhu");
+						String mailto_at=SPutils.getFromSP("mailto_at");
+						
 						//检查是否有@，如果有，发送站内
-						handleSendMailToAt(content);
+						if(!"no".equals(mailto_at)){
+							handleSendMailToAt(content);
+						}
 						
 						//回帖提醒，给楼主发站内信
-						handleSendMailToLouzhu(content);
+						if(!"no".equals(mailto_louzhu)){
+							//检查是否为楼主自己回帖，自己回帖时， 不提醒
+							handleSendMailToLouzhu(content);
+						}
 						
 						// 重新请求数据  刷新界面
 						if (protocol == null) {
 							protocol = new TopicDetailProtocol();
 						}
 						
-						String url = Constants.getContentUrl(originTopicInfo.contentUrl);
-						List<TopicDetailInfo> tempList = protocol.loadFromServer(url, false);
+						
 						if(tempList!=null||tempList.size()>0){
 							list.clear();
 							list.addAll(tempList);
@@ -697,7 +707,6 @@ public class TopicDetailActivity extends BaseActivity implements
 					LogUtil.d("pid:" + pid);
 					return pid;
 				} catch (Exception e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 
@@ -715,8 +724,13 @@ public class TopicDetailActivity extends BaseActivity implements
 		String contentUrl=Constants.getContentUrl(originTopicInfo.contentUrl);
 		
 		final String mailContent="回帖内容:\n=============\n"+content+"\n=============\n帖子链接："+contentUrl+"\n-\n该站内信自动发送自南大小百合安卓客户端";
-		sendMail(receiver, title, mailContent,"站内楼主提醒成功！");
 		
+		//检查回帖人是否为楼主自己，如果是，不提醒
+		if(receiver.equals(SPutils.getFromSP("id"))){
+			//回复者和楼主同人，不发送站内提醒；
+		}else{
+			sendMail(receiver, title, mailContent,"站内楼主提醒成功！");
+		}
 	}
 
 	/**
@@ -731,7 +745,7 @@ public class TopicDetailActivity extends BaseActivity implements
 			String contentUrl=Constants.getContentUrl(originTopicInfo.contentUrl);
 			final String  mailContent="我在帖子【"+originTopicInfo.title+"】提到了你:\n=============\n"+content+"\n=============\n帖子链接为："+contentUrl+"\n-\n该站内信自动发送自南大小百合安卓客户端";
 			//发送邮件
-			sendMail(receiver, title, mailContent,"发送站内提醒成功！");
+			sendMail(receiver, title, mailContent,"站内@后作者提醒成功！");
 		}
 	}
 

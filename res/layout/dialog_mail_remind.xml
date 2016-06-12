@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginLeft="10dp"
+    android:gravity="center"
+    android:orientation="vertical" >
+
+
+    <CheckBox
+        android:visibility="visible"
+        android:layout_gravity="left"
+        android:layout_margin="10dp"
+        android:text="回帖时，是否自动给楼主发送站内信提醒（选中时发送）"
+        android:textColor="#8000"
+        android:id="@+id/cb_mailto_louzhu"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+    
+    <CheckBox
+        android:visibility="visible"
+        android:layout_gravity="left"
+        android:layout_margin="10dp"
+        android:text="回帖时，是否自动给@后的作者发站内信提醒（选中时发送）"
+        android:textColor="#8000"
+        android:id="@+id/cb_mailto_at"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+</LinearLayout>
