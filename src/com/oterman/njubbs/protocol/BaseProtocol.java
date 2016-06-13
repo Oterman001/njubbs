@@ -20,7 +20,7 @@ public abstract class BaseProtocol<E> {
 	public List<E> loadFromServer(String url,boolean saveToLocal) {
 		List<E> list = null;
 		try {
-			Document doc = Jsoup.connect(url).get();
+			Document doc = Jsoup.connect(url).timeout(8000).get();
 			if(doc!=null){
 				list=parseHtml(doc,url);
 				LogUtil.d("从服务器获取数据！");

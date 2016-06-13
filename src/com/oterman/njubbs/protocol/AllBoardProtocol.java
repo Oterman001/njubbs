@@ -25,7 +25,7 @@ public class AllBoardProtocol {
 		
 		Document doc;
 		try {
-			doc = Jsoup.connect(url).get();
+			doc = Jsoup.connect(url).timeout(5000).get();
 			LogUtil.d("获取所有的版面信息");
 			Elements trEles = doc.select("tr");
 			

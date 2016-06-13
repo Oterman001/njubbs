@@ -8,7 +8,6 @@
         android:id="@+id/ll_post_tail"
         style="@style/option_item_rl"
         android:layout_marginTop="@dimen/space_30" >
-
         <TextView
             style="@style/option_item_text"
             android:text="发帖小尾巴" />
@@ -80,7 +79,7 @@
 
         <TextView
             style="@style/option_item_text"
-            android:text="关于我" />
+            android:text="求评分" />
     </LinearLayout>
 
 </LinearLayout>

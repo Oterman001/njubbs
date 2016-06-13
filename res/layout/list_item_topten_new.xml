@@ -42,7 +42,6 @@
         style="@style/item_topten_style"
         android:layout_below="@id/tv_top_item_title"
         android:layout_marginLeft="8dp"
-        android:drawableLeft="@drawable/ic_gender_female"
         android:text="Oterman"
         android:textSize="14sp" />
     <!-- 回复数 -->

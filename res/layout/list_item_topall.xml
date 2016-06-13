@@ -30,7 +30,6 @@
         style="@style/item_topten_style"
         android:layout_below="@id/tv_top_item_title"
         android:layout_toRightOf="@id/tv_top_item_board"
-        android:drawableLeft="@drawable/ic_gender_female"
         android:text="Oterman" />
 
 

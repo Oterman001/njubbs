@@ -115,7 +115,7 @@
 
         <TextView
             style="@style/option_item_text"
-            android:text="嘻嘻" />
+            android:text="打赏" />
     </LinearLayout>
 
 </LinearLayout>

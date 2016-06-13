@@ -101,7 +101,8 @@ public class TopicDetailProtocol  extends BaseProtocol<TopicDetailInfo>{
 		
 		content=content.replaceAll("\\[.*?m", "");
 		
-		content=content.replaceAll("http.*?(jpg|jpeg|png|JPG|JPEG|PNG|gif|GIF)", "<br><img src=\""+"$0"+"\"/><br>");
+//		content=content.replaceAll("http.*?(jpg|jpeg|png|JPG|JPEG|PNG|gif|GIF)", "<br><img src=\""+"$0"+"\"/><br>");
+		content=content.replaceAll("http.*?(jpg|jpeg|png|JPG|JPEG|PNG|gif|GIF)", "<img src=\""+"$0"+"\"/>");
 		
 		
 		content=content.replaceAll("\\n", "<br>");

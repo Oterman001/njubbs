@@ -32,7 +32,6 @@
         android:layout_below="@id/view_div"
         android:layout_marginLeft="8dp"
         android:layout_marginTop="5dp"
-        android:drawableLeft="@drawable/ic_gender_female"
         android:ellipsize="middle"
         android:maxEms="15"
         android:singleLine="true"

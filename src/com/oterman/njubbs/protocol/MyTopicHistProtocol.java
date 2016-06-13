@@ -39,7 +39,6 @@ public class MyTopicHistProtocol  {
 			}
 		}
 		
-		
 		List<TopicInfo> list=null;
 		
 		String url=Constants.QUERY_TOPIC_URL;

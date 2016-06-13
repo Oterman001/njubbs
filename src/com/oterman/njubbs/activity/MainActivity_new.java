@@ -169,8 +169,6 @@ public class MainActivity_new extends FragmentActivity implements OnClickListene
 					//ibSearch.setVisibility(View.VISIBLE);
 					rgGroup.check(R.id.rb_boards);
 					
-					
-					
 					break;
 				case 2:
 					//ibSearch.setVisibility(View.INVISIBLE);

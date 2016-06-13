@@ -170,6 +170,7 @@ public class AboutMeFragment extends Fragment implements OnClickListener {
 			btnLogin.setBackground(getResources().getDrawable(
 					R.drawable.logout_bg_selector));
 			// 更新用户信息视图
+			userInfo=BaseApplication.getLogedUser();
 			updateUserDetail2();
 			
 		} else {// 未登录

@@ -3,6 +3,8 @@ package com.oterman.njubbs.activity;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.View;
@@ -74,7 +76,11 @@ public class SettingActivity  extends MyActionBarActivity implements OnClickList
 			titleDialog.show();
 			break;
 		case R.id.ll_about_me:
-			MyToast.toast("我就是我，不一样的烟火!");
+//			MyToast.toast("我就是我，不一样的烟火!");
+			Uri uri = Uri.parse("market://details?id="+getPackageName());
+			Intent intent = new Intent(Intent.ACTION_VIEW,uri);
+			intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+			startActivity(intent);
 			break;
 		case R.id.ll_author_tips:
 			//使用技巧

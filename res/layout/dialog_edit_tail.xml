@@ -31,7 +31,7 @@
         android:visibility="gone"
         android:layout_gravity="left"
         android:layout_margin="10dp"
-        android:text="标题是否包含Re"
+        android:text="标题包含Re"
         android:textColor="#8000"
         android:id="@+id/cb_check"
         android:layout_width="wrap_content"

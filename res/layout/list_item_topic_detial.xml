@@ -50,7 +50,6 @@
         android:layout_alignParentLeft="true"
         android:layout_marginLeft="8dp"
         android:layout_marginTop="5dp"
-        android:drawableLeft="@drawable/ic_gender_female"
         android:ellipsize="end"
         android:maxEms="15"
         android:singleLine="true"

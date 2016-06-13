@@ -348,8 +348,8 @@ public class TopicDetailActivity extends BaseActivity implements
 		AlertDialog.Builder builder = new AlertDialog.Builder(
 				TopicDetailActivity.this);
 
-		// mmlover(xxx) 处理id
 		final String author = detailInfo.author.substring(0,
+		// mmlover(xxx) 处理id
 				detailInfo.author.indexOf('(')).trim();
 		final String floorth = detailInfo.floorth;
 
@@ -409,6 +409,8 @@ public class TopicDetailActivity extends BaseActivity implements
 				optionsDialog.dismiss();
 				// 处理回复具体某一楼
 				etContent.setText("@" + floorth + "楼-" + author + ":");
+				int length = etContent.getText().toString().length();
+				etContent.setSelection(length);
 			}
 
 			@Override
@@ -419,8 +421,8 @@ public class TopicDetailActivity extends BaseActivity implements
 						MyTopicActivity.class);
 				intent.putExtra("author", author);
 				startActivity(intent);
-
 			}
+
 		});
 
 		optionsDialog.show();
@@ -597,7 +599,7 @@ public class TopicDetailActivity extends BaseActivity implements
 						if (!"no".equals(mailto_at)) {
 							handleSendMailToAt(content);
 						}
-
+						
 						// 回帖提醒，给楼主发站内信
 						if (!"no".equals(mailto_louzhu)) {
 							// 检查是否为楼主自己回帖，自己回帖时， 不提醒
@@ -737,8 +739,8 @@ public class TopicDetailActivity extends BaseActivity implements
 				+ originTopicInfo.title + "】";
 		String contentUrl = Constants.getContentUrl(originTopicInfo.contentUrl);
 
-		final String mailContent = "回帖内容:\n=============\n" + content
-				+ "\n=============\n帖子链接：" + contentUrl
+		final String mailContent = "回帖内容:\n***************\n" + content
+				+ "\n***************\n帖子链接：" + contentUrl
 				+ "\n-\n该站内信自动发送自南大小百合安卓客户端";
 
 		// 检查回帖人是否为楼主自己，如果是，不提醒
@@ -747,6 +749,7 @@ public class TopicDetailActivity extends BaseActivity implements
 		} else {
 			sendMail(receiver, title, mailContent, "站内楼主提醒成功！");
 		}
+		
 	}
 
 	/**
@@ -757,13 +760,19 @@ public class TopicDetailActivity extends BaseActivity implements
 		Matcher matcher = p.matcher(content);
 		if (matcher.find()) {// 确实有at情况
 			final String receiver = matcher.group(1).trim();
+			String louzhu=originTopicInfo.author;
+			//判断是否@楼主并且给楼主发站内开启
+			if(louzhu.equals(receiver)&&"yes".equals(SPutils.getFromSP("mailto_louzhu"))){
+				return ;
+			}
+			
 			final String title = SPutils.getFromSP("id") + "在帖子【"
 					+ originTopicInfo.title + "】提到了你";
 			String contentUrl = Constants
 					.getContentUrl(originTopicInfo.contentUrl);
 			final String mailContent = "我在帖子【" + originTopicInfo.title
-					+ "】提到了你:\n=============\n" + content
-					+ "\n=============\n帖子链接为：" + contentUrl
+					+ "】中提到了你:\n***************\n" + content
+					+ "\n***************\n帖子链接为：" + contentUrl
 					+ "\n-\n该站内信自动发送自南大小百合安卓客户端";
 			// 发送邮件
 			sendMail(receiver, title, mailContent, "站内@后作者提醒成功！");

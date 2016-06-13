@@ -23,7 +23,6 @@
         style="@style/item_topten_style"
         android:layout_marginLeft="8dp"
         android:layout_below="@id/tv_board_topic_item_title"
-        android:drawableLeft="@drawable/ic_gender_female"
         android:text="Oterman" />
 
     <!-- 回帖数 -->

@@ -95,7 +95,7 @@ public class DiscoveryFragment extends Fragment implements OnClickListener {
 			break;
 		case R.id.ll_money://打赏
 			//跳转到求祝福页面
-//			MyToast.toast("不想打赏");
+			MyToast.toast("就不打赏");
 //			Intent intent2=new Intent(getContext(),MailSpecialActivity.class);
 //			startActivity(intent2);
 			break;

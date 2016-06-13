@@ -24,11 +24,12 @@ import android.view.View;
 
 import com.oterman.njubbs.BaseApplication;
 
-
 public class UiUtils {
 	/**
-	 * 获取到字符数组 
-	 * @param tabNames  字符数组的id
+	 * 获取到字符数组
+	 * 
+	 * @param tabNames
+	 *            字符数组的id
 	 */
 	public static String[] getStringArray(int tabNames) {
 		return getResource().getStringArray(tabNames);
@@ -37,12 +38,15 @@ public class UiUtils {
 	public static Resources getResource() {
 		return BaseApplication.getApplication().getResources();
 	}
-	public static String getString(int id){
+
+	public static String getString(int id) {
 		return getResource().getString(id);
 	}
-	public static Context getContext(){
+
+	public static Context getContext() {
 		return BaseApplication.getApplication();
 	}
+
 	/** dip转换px */
 	public static int dip2px(int dip) {
 		final float scale = getResource().getDisplayMetrics().density;
@@ -55,16 +59,18 @@ public class UiUtils {
 		final float scale = getResource().getDisplayMetrics().density;
 		return (int) (px / scale + 0.5f);
 	}
+
 	/**
 	 * 把Runnable 方法提交到主线程运行
+	 * 
 	 * @param runnable
 	 */
 	public static void runOnUiThread(Runnable runnable) {
 		// 在主线程运行
-		if(android.os.Process.myTid()==BaseApplication.getMainTid()){
+		if (android.os.Process.myTid() == BaseApplication.getMainTid()) {
 			runnable.run();
-		}else{
-			//获取handler  
+		} else {
+			// 获取handler
 			BaseApplication.getHandler().post(runnable);
 		}
 	}
@@ -76,72 +82,74 @@ public class UiUtils {
 	public static Drawable getDrawalbe(int id) {
 		return getResource().getDrawable(id);
 	}
-	
-	public static String deleteNewLineMark(String originStr){
-		BufferedReader br=new BufferedReader(new StringReader(originStr));
-		String line=null;
-		StringBuffer sb=new StringBuffer();
+
+	public static String deleteNewLineMark(String originStr) {
+		BufferedReader br = new BufferedReader(new StringReader(originStr));
+		String line = null;
+		StringBuffer sb = new StringBuffer();
 		try {
-			while((line=br.readLine())!=null){
+			while ((line = br.readLine()) != null) {
 				sb.append(line);
-				if(line.getBytes("gbk").length==78||line.getBytes("gbk").length==79||line.getBytes("gbk").length==39){
+				if ((line.getBytes("gbk").length<=80&&line.getBytes("gbk").length>=74)
+						|| line.getBytes("gbk").length == 39||line.length()==39) {
 					continue;
-				}else{
+				} else {
 					sb.append("\n");
-				}			
+				}
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		return sb.toString();
 	}
-	
-	//手工换行 满满四十个字符换行
-	public static String addNewLineMark(String  str){
-		List<String> urlList=new ArrayList<String>();
-		
-		String reg="\n*http://.*?jpg\n*";
-		
-		Pattern p=Pattern.compile(reg);
-		
+
+	// 手工换行 满满四十个字符换行
+	public static String addNewLineMark(String str) {
+		List<String> urlList = new ArrayList<String>();
+
+		String reg = "http://.*?jpg";
+
+		Pattern p = Pattern.compile(reg);
+
 		Matcher matcher = p.matcher(str);
-		
-		while(matcher.find()){
+
+		while (matcher.find()) {
 			urlList.add(matcher.group());
 		}
-		
-		str=str.replaceAll(reg, "#@");
-		
-		StringBuffer sb=new StringBuffer(str);
-		for (int i = 0; i <sb.length()-39; ) {
-			String sub= sb.substring(i, i+39);
-			if(sub.contains("\n")){
-				int index= sub.lastIndexOf("\n");
-				i=i+index+1;
+
+		str = str.replaceAll(reg, "#@");
+
+		StringBuffer sb = new StringBuffer(str);
+		for (int i = 0; i < sb.length() - 39;) {
+			String sub = sb.substring(i, i + 39);
+			if (sub.contains("\n")) {
+				int index = sub.lastIndexOf("\n");
+				i = i + index + 1;
 				continue;
 			}
-			sb.insert(i+39, "\n");
-			i+=40;
+			sb.insert(i + 39, "\n");
+			i += 40;
 		}
-		
-		p=Pattern.compile("#@");
-		matcher=p.matcher(sb.toString());
-		String result=sb.toString();
-		int i=0;
-		while(matcher.find()){
-			result=result.replaceFirst("#@",urlList.get(i++));
+
+		p = Pattern.compile("#@");
+		matcher = p.matcher(sb.toString());
+		String result = sb.toString();
+		int i = 0;
+		while (matcher.find()) {
+			result = result.replaceFirst("#@", urlList.get(i++));
 		}
 		return result;
 	}
-	
+
 	/**
 	 * 将url转换为压缩的bitmap;
+	 * 
 	 * @param activity
 	 * @param url
 	 * @return
 	 */
-	public static Bitmap parseUriToBm(Activity activity,String url) {
-		
+	public static Bitmap parseUriToBm(Activity activity, String url) {
+
 		System.out.println("选中图片地址：" + url);
 
 		// 解析图片时需要使用到的参数都封装在这个对象里了
@@ -153,9 +161,8 @@ public class UiUtils {
 		int imageWidth = opt.outWidth;
 		int imageHeight = opt.outHeight;
 
-		Display dp = activity.getWindowManager()
-				.getDefaultDisplay();
-		
+		Display dp = activity.getWindowManager().getDefaultDisplay();
+
 		// 拿到屏幕宽高
 		int screenWidth = dp.getWidth() / 2;
 		int screenHeight = dp.getHeight() / 2;
@@ -174,31 +181,30 @@ public class UiUtils {
 		opt.inSampleSize = scale;
 		opt.inJustDecodeBounds = false;
 		Bitmap bitmap = BitmapFactory.decodeFile(url, opt);
-		
+
 		return bitmap;
 	}
 
-	//将bitmap缓存到本地
-	public static  void saveBitmapToLocal(Bitmap bitmap, String filename) {
-		String dirPath=Environment.getExternalStorageDirectory().getAbsolutePath()+"/njubbs/photo/";
-		File dirFile=new File(dirPath);
-		if(!dirFile.exists())
+	// 将bitmap缓存到本地
+	public static void saveBitmapToLocal(Bitmap bitmap, String filename) {
+		String dirPath = Environment.getExternalStorageDirectory()
+				.getAbsolutePath() + "/njubbs/photo/";
+		File dirFile = new File(dirPath);
+		if (!dirFile.exists())
 			dirFile.mkdirs();
-		
-		FileOutputStream fos=null;
-		
+
+		FileOutputStream fos = null;
+
 		try {
-			fos=new FileOutputStream(dirPath+filename);
+			fos = new FileOutputStream(dirPath + filename);
 			bitmap.compress(CompressFormat.JPEG, 90, fos);
-			
+
 			fos.flush();
 			fos.close();
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
-	  
-	
-	
+
 }
