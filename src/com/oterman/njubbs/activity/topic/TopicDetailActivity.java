@@ -740,8 +740,8 @@ public class TopicDetailActivity extends BaseActivity implements
 		String contentUrl = Constants.getContentUrl(originTopicInfo.contentUrl);
 
 		final String mailContent = "回帖内容:\n***************\n" + content
-				+ "\n***************\n帖子链接：" + contentUrl
-				+ "\n-\n该站内信自动发送自南大小百合安卓客户端";
+				+ "\n***************\n详情请戳：" + contentUrl
+				+SPutils.getAdTail();
 
 		// 检查回帖人是否为楼主自己，如果是，不提醒
 		if (receiver.equals(SPutils.getFromSP("id"))) {
@@ -772,8 +772,8 @@ public class TopicDetailActivity extends BaseActivity implements
 					.getContentUrl(originTopicInfo.contentUrl);
 			final String mailContent = "我在帖子【" + originTopicInfo.title
 					+ "】中提到了你:\n***************\n" + content
-					+ "\n***************\n帖子链接为：" + contentUrl
-					+ "\n-\n该站内信自动发送自南大小百合安卓客户端";
+					+ "\n***************\n帖子详情请戳：" + contentUrl
+					+SPutils.getAdTail();
 			// 发送邮件
 			sendMail(receiver, title, mailContent, "站内@后作者提醒成功！");
 		}
@@ -897,7 +897,7 @@ public class TopicDetailActivity extends BaseActivity implements
 			break;
 		}
 	}
-
+	
 	private void showShare() {
 		ShareSDK.initSDK(this);
 		OnekeyShare oks = new OnekeyShare();
@@ -910,6 +910,7 @@ public class TopicDetailActivity extends BaseActivity implements
 		content = content.replaceAll("\\s+<img.*?/>\\s+", "");
 
 		String title = originTopicInfo.title;
+		
 
 		// 分享时Notification的图标和文字 2.5.9以后的版本不调用此方法
 		// oks.setNotification(R.drawable.ic_launcher,
@@ -921,16 +922,26 @@ public class TopicDetailActivity extends BaseActivity implements
 		// text是分享文本，所有平台都需要这个字段
 		String conntent = "我在南大小百合" + originTopicInfo.board + "版看到一篇帖子：["
 				+ title + "]\n详情请查看：" + url + "\n--分享自南大小百合安卓客户端";
-		// oks.setText("标题：["+title+"]\n   "+content+" \n详情请查看:"+url+"\n--分享自小百合客户端");
 		oks.setText(conntent);
 		// imagePath是图片的本地路径，Linked-In以外的平台都支持此参数
-		// oks.setImagePath("/sdcard/test.jpg");//确保SDcard下面存在此张图片
+//		 oks.setImagePath("/sdcard/test.jpg");//确保SDcard下面存在此张图片
+		
+//		oks.setImageUrl("http://bbs.nju.edu.cn/file/O/oterman/icon_108_round.png");
+		
+		oks.setImageUrl("http://bbs.nju.edu.cn/file/O/oterman/icon_green_oterman.png");
+		
+//		http://bbs.nju.edu.cn/file/O/oterman/icon_null.png
+//		http://bbs.nju.edu.cn/file/O/oterman/icon_white.png
+
 		// url仅在微信（包括好友和朋友圈）中使用
+//		String path = "file:///android_asset/icon_512.png";
+//		oks.setImagePath(path);
+		
 		oks.setUrl(url);
 		// comment是我对这条分享的评论，仅在人人网和QQ空间使用
 		// oks.setComment("我是测试评论文本");
 		// site是分享此内容的网站名称，仅在QQ空间使用
-		// oks.setSite(getString(R.string.app_name));
+		 oks.setSite(getString(R.string.app_name));
 		// siteUrl是分享此内容的网站地址，仅在QQ空间使用
 		oks.setSiteUrl(url);
 
@@ -1222,18 +1233,18 @@ public class TopicDetailActivity extends BaseActivity implements
 
 			Drawable drawable;
 
-			if (r.nextInt(2) % 2 != 0) {
-				drawable = getResources().getDrawable(
-						R.drawable.ic_gender_female);
-			} else {
-				drawable = getResources()
-						.getDrawable(R.drawable.ic_gender_male);
-			}
-
-			// 随机设置左边的图标
-			drawable.setBounds(0, 0, drawable.getMinimumWidth(),
-					drawable.getMinimumHeight());
-			holder.tvAuthor.setCompoundDrawables(drawable, null, null, null);
+//			if (r.nextInt(2) % 2 != 0) {
+//				drawable = getResources().getDrawable(
+//						R.drawable.ic_gender_female);
+//			} else {
+//				drawable = getResources()
+//						.getDrawable(R.drawable.ic_gender_male);
+//			}
+//
+//			// 随机设置左边的图标
+//			drawable.setBounds(0, 0, drawable.getMinimumWidth(),
+//					drawable.getMinimumHeight());
+//			holder.tvAuthor.setCompoundDrawables(drawable, null, null, null);
 
 			return convertView;
 		}

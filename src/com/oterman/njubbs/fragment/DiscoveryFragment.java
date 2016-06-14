@@ -3,7 +3,9 @@ package com.oterman.njubbs.fragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
+import android.view.TextureView;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -20,6 +22,7 @@ import com.oterman.njubbs.activity.expore.MyTopicActivity;
 import com.oterman.njubbs.activity.mail.MailNewActivity;
 import com.oterman.njubbs.activity.mail.MailSpecialActivity;
 import com.oterman.njubbs.utils.MyToast;
+import com.oterman.njubbs.utils.SPutils;
 
 
 /**
@@ -94,10 +97,19 @@ public class DiscoveryFragment extends Fragment implements OnClickListener {
 			startActivity(intent);
 			break;
 		case R.id.ll_money://打赏
+			//判断登陆用户
+			String id = SPutils.getFromSP("id").trim();
+			if(TextUtils.isEmpty(id)){
+				MyToast.toast("请先登录哦");
+				return ;
+			}
+			if("395440772".equals(id)){
+				MyToast.toast("就不打赏");
+				return ;
+			}
 			//跳转到求祝福页面
-			MyToast.toast("就不打赏");
-//			Intent intent2=new Intent(getContext(),MailSpecialActivity.class);
-//			startActivity(intent2);
+			Intent intent2=new Intent(getContext(),MailSpecialActivity.class);
+			startActivity(intent2);
 			break;
 		case R.id.ll_find_user:
 			Intent findIntent=new Intent(getContext(),AddFriendActivity.class);

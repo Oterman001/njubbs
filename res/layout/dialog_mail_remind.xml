@@ -20,10 +20,23 @@
     <CheckBox
         android:visibility="visible"
         android:layout_gravity="left"
-        android:layout_margin="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginBottom="10dp"
         android:text="回帖时，自动给@后的作者发站内信提醒"
         android:textColor="#8000"
         android:id="@+id/cb_mailto_at"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+    <CheckBox
+        android:visibility="visible"
+        android:layout_gravity="left"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginBottom="10dp"
+        android:text="发送站内信提醒时，自动添加说明小尾巴"
+        android:textColor="#8000"
+        android:id="@+id/cb_mailto_tail"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 

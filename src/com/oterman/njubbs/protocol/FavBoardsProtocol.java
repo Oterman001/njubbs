@@ -58,7 +58,7 @@ public class FavBoardsProtocol {
 				e.printStackTrace();
 				LogUtil.d("获取搜藏版面数据失败");
 			}
-			return null;
+			return new ArrayList<>();
 	}
 
 	//本地缓存解析

@@ -310,17 +310,17 @@ public class TopTenFragment extends BaseFragment implements OnRefreshListener {
 			holder.tvRank.setText(info.rankth);
 			Drawable drawable;
 			
-			
-			if(r.nextInt(3)%3!=0){
-				drawable=getResources().getDrawable(R.drawable.ic_gender_female);
-			}else{
-				drawable=getResources().getDrawable(R.drawable.ic_gender_male);
-			}
-			
-			//随机设置左边的图标
-			drawable.setBounds(0,0,drawable.getMinimumWidth(),drawable.getMinimumHeight());
-			holder.tvAuthor.setCompoundDrawables(drawable, null, null, null);
-			
+//			
+//			if(r.nextInt(3)%3!=0){
+//				drawable=getResources().getDrawable(R.drawable.ic_gender_female);
+//			}else{
+//				drawable=getResources().getDrawable(R.drawable.ic_gender_male);
+//			}
+//			
+//			//随机设置左边的图标
+//			drawable.setBounds(0,0,drawable.getMinimumWidth(),drawable.getMinimumHeight());
+//			holder.tvAuthor.setCompoundDrawables(drawable, null, null, null);
+//			
 			return view;
 		}
 		

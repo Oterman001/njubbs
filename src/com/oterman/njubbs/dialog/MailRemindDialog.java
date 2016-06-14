@@ -27,6 +27,7 @@ public class MailRemindDialog {
 	private Context context;
 	private CheckBox cbMailToAt;
 	private CheckBox cbMailToLouzhu;
+	private CheckBox cbMailTail;
 	
 	public MailRemindDialog(Context context) {
 		this.context=context;
@@ -35,10 +36,12 @@ public class MailRemindDialog {
 		
 		cbMailToAt = (CheckBox) view.findViewById(R.id.cb_mailto_at);
 		cbMailToLouzhu = (CheckBox) view.findViewById(R.id.cb_mailto_louzhu);
+		cbMailTail = (CheckBox) view.findViewById(R.id.cb_mailto_tail);
 		
 		//初始化  默认为发送
 		String mailToAt = SPutils.getFromSP("mailto_at");
 		String mailToLouzhu=SPutils.getFromSP("mailto_louzhu");
+		String mailTail=SPutils.getFromSP("mail_tail");
 		
 		if("no".equals(mailToAt)){//不发送
 			cbMailToAt.setChecked(false);
@@ -50,6 +53,12 @@ public class MailRemindDialog {
 			cbMailToLouzhu.setChecked(false);
 		}else{
 			cbMailToLouzhu.setChecked(true);
+		}
+		
+		if("no".equals(mailTail)){//不发送
+			cbMailTail.setChecked(false);
+		}else{
+			cbMailTail.setChecked(true);
 		}
 		
 		builder.setView(view);
@@ -68,6 +77,12 @@ public class MailRemindDialog {
 					SPutils.saveToSP("mailto_louzhu", "yes");
 				}else{
 					SPutils.saveToSP("mailto_louzhu", "no");
+				}
+				
+				if(cbMailTail.isChecked()){//选中
+					SPutils.saveToSP("mail_tail", "yes");
+				}else{
+					SPutils.saveToSP("mail_tail", "no");
 				}
 
 			}

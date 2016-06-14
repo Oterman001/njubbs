@@ -53,4 +53,13 @@ public class SPutils {
 			return "Sent From 南大小百合  by "+model;
 		}
 	}
+
+	public static String getAdTail() {
+		String tail = getFromSP("mail_tail");
+		if("no".equals(tail)){//不加
+			return "";
+		}else{//加上站内小尾巴
+			return "\n-\n该站内信自动发送自南大小百合安卓客户端\n客户端详情：http://bbs.nju.edu.cn/bbstcon?board=Pictures&file=M.1465807881.A";
+		}
+	}
 }

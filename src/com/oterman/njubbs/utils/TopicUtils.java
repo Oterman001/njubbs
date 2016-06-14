@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.sql.Date;
 import java.text.SimpleDateFormat;
+import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -137,7 +138,8 @@ public class TopicUtils {
 		Date date = new Date(System.currentTimeMillis());
 		SimpleDateFormat sdf = new SimpleDateFormat("yyMMddHHmmss");
 		String date2 = sdf.format(date);
-		String filename = "nju_bbs" + date2 + ".jpg";
+		Random r=new Random();
+		String filename = "nju_bbs" + date2 + r.nextInt(99)+".jpg";
 
 		// 将图片保存到本地
 		UiUtils.saveBitmapToLocal(bitmap, filename);

@@ -41,6 +41,7 @@ import com.oterman.njubbs.utils.LogUtil;
 import com.oterman.njubbs.utils.MyToast;
 import com.oterman.njubbs.utils.SmileyParser;
 import com.oterman.njubbs.utils.ThreadManager;
+import com.oterman.njubbs.utils.TopicUtils;
 import com.oterman.njubbs.utils.UiUtils;
 import com.oterman.njubbs.view.MyTagHandler;
 import com.oterman.njubbs.view.URLImageParser;
@@ -60,14 +61,12 @@ public class MailSpecialActivity extends MyActionBarActivity implements
 	private SelectFaceHelper mFaceHelper;
 	private ImageButton ibPost;
 	boolean isVisbilityFace=false;
-	private MailInfo mailInfo;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
 		setContentView(R.layout.activity_mail_special);
-		
 		//actionbar的发送箭头
 		ibPost = (ImageButton) actionBarView.findViewById(R.id.btn_post_topic);
 		ibPost.setVisibility(View.VISIBLE);
@@ -81,6 +80,9 @@ public class MailSpecialActivity extends MyActionBarActivity implements
 		
 		ibSmiley = (ImageButton) this.findViewById(R.id.iv_pic);
 		ibSmiley.setOnClickListener(faceClick);
+		
+		ibChosePic = (ImageButton) this.findViewById(R.id.iv_chose_pic);
+		ibChosePic.setOnClickListener(this);
 		
 		addFaceToolView=this.findViewById(R.id.add_tool);
 		
@@ -179,6 +181,18 @@ public class MailSpecialActivity extends MyActionBarActivity implements
 	}
 
 	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+		
+		if(requestCode==100&&data!=null){//从图库中选图
+			//从intent中得到选中图片的路径
+	        String picturePath = TopicUtils.getPicPathFromUri(this,data);
+	        //展示选中的图片,上传逻辑包含在其中
+	        TopicUtils.showChosedPic(this,picturePath,etContent);
+		}
+	}
+	
+	@Override
 	public void onClick(View v) {
 		switch (v.getId()) {
 		case R.id.btn_post_topic:// 处理回信
@@ -203,10 +217,15 @@ public class MailSpecialActivity extends MyActionBarActivity implements
 
 			// 处理发帖逻辑
 			handleNewMail(content,title,receiver);
+			
 			// MyToast.toast("发帖："+board); 
 
 			break;
+		case R.id.iv_chose_pic://从图库选图
+			Intent intent = new Intent(Intent.ACTION_PICK,android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+			this.startActivityForResult(intent, 100);
 			
+			break;
 		default:
 			break;
 		}
@@ -385,5 +404,6 @@ public class MailSpecialActivity extends MyActionBarActivity implements
 			}
 		}
 	};
+	private ImageButton ibChosePic;
 
 }

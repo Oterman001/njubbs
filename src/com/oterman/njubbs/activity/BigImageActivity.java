@@ -1,13 +1,13 @@
 package com.oterman.njubbs.activity;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 
 import uk.co.senab.photoview.PhotoViewAttacher;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.Nullable;
@@ -17,6 +17,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 
+import com.lidroid.xutils.util.LogUtils;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 import com.oterman.njubbs.R;
@@ -77,7 +78,6 @@ public class BigImageActivity  extends MyActionBarActivity implements OnClickLis
 			public void onLoadingComplete(String imageUri, View view,
 					Bitmap loadedImage) {
 				super.onLoadingComplete(imageUri, view, loadedImage);
-				
 				
 				//pbBar.setVisibility(View.INVISIBLE);
 				dialog.dismiss();
@@ -143,6 +143,10 @@ public class BigImageActivity  extends MyActionBarActivity implements OnClickLis
 						}
 					});
 					
+					//发送广播，通知图库更新
+					sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE,Uri.parse("file://"+file.getAbsolutePath())));
+					
+					LogUtils.d(file.getAbsolutePath()+"下载成功，通知图库更新啦");
 				} catch (Exception e) {
 					e.printStackTrace();
 					runOnUiThread(new Runnable() {

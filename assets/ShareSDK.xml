@@ -80,16 +80,22 @@
         Id="1"
         SortId="1" />
     -->
-
+	<!--
+		我的：wxcb7501e078185640
+			4cf83ce60b0740829c21c6552672db60
+			
+		默认：wx4868b35061f87885
+			64020361b8ec4c99936c0e3999a9f249
+	 	 -->
     <Wechat
-        AppId="wx4868b35061f87885"
-        AppSecret="64020361b8ec4c99936c0e3999a9f249"
-        BypassApproval="true"
+        AppId="wxcb7501e078185640"
+        AppSecret="4cf83ce60b0740829c21c6552672db60"
+        BypassApproval="false"
         Enable="true"
         Id="1"
         SortId="1" />
+    
     <!-- ShareByAppClient标识是否使用微博客户端分享，默认是false -->
-
     <QQ
         AppId="100371282"
         AppKey="aed9b0303e3ed1e27bae87c33761161d"
@@ -125,17 +131,17 @@
         SortId="22" />
 
     <WechatMoments
-        AppId="wx4868b35061f87885"
-        AppSecret="64020361b8ec4c99936c0e3999a9f249"
-        BypassApproval="true"
-        Enable="false"
+        AppId="wxcb7501e078185640"
+        AppSecret="4cf83ce60b0740829c21c6552672db60"
+        BypassApproval="false"
+        Enable="true"
         Id="5"
         SortId="5" />
 
     <WechatFavorite
         AppId="wxcb7501e078185640"
-        AppSecret="806424f72b31ef65097acd29bd7079d6"
-        Enable="false"
+        AppSecret="4cf83ce60b0740829c21c6552672db60"
+        Enable="true"
         Id="6"
         SortId="6" />
 
@@ -206,7 +212,7 @@
     	“product”。
     	
     	如果目标设备上已经安装了印象笔记客户端，ShareSDK允许应用调用本地API来完成分享，但
-    	是需要将应用信息中的“ShareByAppClient”设置为true，此字段默认值为false。
+    	是需要将应用信息中的“ShareByAppClient”设置为true，此字段默认值为false。
     -->
 
     <Evernote

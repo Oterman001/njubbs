@@ -233,7 +233,6 @@ public class MailNewActivity extends MyActionBarActivity implements
 		default:
 			break;
 		}
-
 	}
 	private void handleNewMail( final String content, final String title, final String receiver) {
 		dialog = new WaitDialog(this);

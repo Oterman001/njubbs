@@ -86,7 +86,7 @@
 
         <ImageView
             style="@style/option_item_img"
-            android:background="@drawable/icon_my_blog"
+            android:background="@drawable/icon_my_setup"
             android:contentDescription="@null" />
 
         <TextView

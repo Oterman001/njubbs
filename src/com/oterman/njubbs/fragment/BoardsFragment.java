@@ -58,7 +58,6 @@ public class BoardsFragment extends BaseFragment implements OnRefreshListener {
 		expLv.setDivider(new ColorDrawable(0x55888888));
 		expLv.setDividerHeight(1);
 		adapter = new BoardsAdapter();
-
 		expLv.setAdapter(adapter);
 
 		expLv.setDivider(new ColorDrawable(0x55888888));
@@ -135,7 +134,7 @@ public class BoardsFragment extends BaseFragment implements OnRefreshListener {
 		String favUrl=Constants.BBSLEFT_URL;
 		favBoardsList=favBoardProtocol.loadFromCache(favUrl,getContext());
 		
-		return hotBoardsList == null ? LoadingState.LOAD_FAILED: LoadingState.LOAD_SUCCESS;
+		return hotBoardsList == null||favBoardsList==null ? LoadingState.LOAD_FAILED: LoadingState.LOAD_SUCCESS;
 	}
 
 	@Override
@@ -145,6 +144,7 @@ public class BoardsFragment extends BaseFragment implements OnRefreshListener {
 			public void run() {
 				// 重新加载数据
 				final boolean result = updateData();
+				
 				UiUtils.runOnUiThread(new Runnable() {
 					@Override
 					public void run() {
@@ -219,7 +219,7 @@ public class BoardsFragment extends BaseFragment implements OnRefreshListener {
 		@Override
 		public BoardInfo getChild(int groupPosition, int childPosition) {
 			if(groupPosition==0){
-				if(favBoardsList.size()==0){
+				if(favBoardsList.size()==0||childPosition>=favBoardsList.size()){
 					return null;
 				}
 				return favBoardsList.get(childPosition);
@@ -248,9 +248,7 @@ public class BoardsFragment extends BaseFragment implements OnRefreshListener {
 				View convertView, ViewGroup parent) {
 			
 			View view = View.inflate(getContext(),R.layout.list_item_group_boards, null);
-			
 			TextView tvTitle = (TextView) view.findViewById(R.id.tv_group_title);
-
 			tvTitle.setText(getGroup(groupPosition));
 
 			return view;
