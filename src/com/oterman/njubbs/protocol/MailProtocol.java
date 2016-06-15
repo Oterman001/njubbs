@@ -31,7 +31,6 @@ public class MailProtocol {
 	private HttpUtils httpUtils;
 
 	/**
-	 * 从服务器加载十大数据，解析并返回
 	 */
 	public List<MailInfo> loadFromServer(String url,boolean saveToLocal,Context context) {
 		List<MailInfo> list = null;

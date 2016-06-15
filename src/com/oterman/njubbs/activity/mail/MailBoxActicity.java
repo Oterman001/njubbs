@@ -3,15 +3,12 @@ package com.oterman.njubbs.activity.mail;
 import java.util.List;
 import java.util.Random;
 
-import android.app.ActionBar;
-import android.app.ActionBar.LayoutParams;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.os.SystemClock;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.text.Html;
 import android.text.Spannable;
@@ -34,18 +31,19 @@ import com.handmark.pulltorefresh.library.PullToRefreshBase.Mode;
 import com.handmark.pulltorefresh.library.PullToRefreshBase.OnRefreshListener;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import com.lidroid.xutils.HttpUtils;
-import com.lidroid.xutils.exception.HttpException;
 import com.lidroid.xutils.http.RequestParams;
 import com.lidroid.xutils.http.ResponseStream;
 import com.lidroid.xutils.http.client.HttpRequest.HttpMethod;
 import com.oterman.njubbs.BaseApplication;
 import com.oterman.njubbs.R;
 import com.oterman.njubbs.activity.BaseActivity;
+import com.oterman.njubbs.activity.expore.MyTopicActivity;
 import com.oterman.njubbs.bean.MailInfo;
 import com.oterman.njubbs.dialog.WaitDialog;
+import com.oterman.njubbs.holders.OptionsDialogHolder;
+import com.oterman.njubbs.holders.UserDetailHolder;
+import com.oterman.njubbs.holders.OptionsDialogHolder.MyOnclickListener;
 import com.oterman.njubbs.protocol.MailProtocol;
-import com.oterman.njubbs.protocol.MailProtocol;
-import com.oterman.njubbs.protocol.TopicDetailProtocol;
 import com.oterman.njubbs.utils.Constants;
 import com.oterman.njubbs.utils.LogUtil;
 import com.oterman.njubbs.utils.MyToast;
@@ -82,8 +80,8 @@ public class MailBoxActicity extends BaseActivity implements OnClickListener {
 		super.onActivityResult(requestCode, resultCode, data);
 
 		if (resultCode == 111) {
-//			dataList.remove(mailInfo);
-//			adapter.notifyDataSetChanged();
+			// dataList.remove(mailInfo);
+			// adapter.notifyDataSetChanged();
 			updateData();
 
 		}
@@ -93,10 +91,12 @@ public class MailBoxActicity extends BaseActivity implements OnClickListener {
 		if (protocol == null) {
 			protocol = new MailProtocol();
 		}
-	
-		dataList = protocol.loadFromServer(Constants.BBS_MAIL_URL, false,MailBoxActicity.this);
-	
-		return dataList == null ? LoadingState.LOAD_FAILED:LoadingState.LOAD_SUCCESS;
+
+		dataList = protocol.loadFromServer(Constants.BBS_MAIL_URL, false,
+				MailBoxActicity.this);
+
+		return dataList == null ? LoadingState.LOAD_FAILED
+				: LoadingState.LOAD_SUCCESS;
 	}
 
 	@Override
@@ -114,16 +114,17 @@ public class MailBoxActicity extends BaseActivity implements OnClickListener {
 		rootView = View.inflate(getApplicationContext(),
 				R.layout.activity_message_main, null);
 		plv = (PullToRefreshListView) rootView.findViewById(R.id.pLv_message);
-		
+
 		lv = plv.getRefreshableView();
-		
-		View headerView=View.inflate(getApplicationContext(), R.layout.mailbox_header, null);
+
+		View headerView = View.inflate(getApplicationContext(),
+				R.layout.mailbox_header, null);
 		tvState = (TextView) headerView.findViewById(R.id.tv_mailbox_state);
-		
+
 		String state = getMailStatStr();
-				
+
 		tvState.setText(Html.fromHtml(state));
-		
+
 		lv.addHeaderView(headerView);
 
 		sr.setViewGroup(plv.getRefreshableView());
@@ -139,20 +140,100 @@ public class MailBoxActicity extends BaseActivity implements OnClickListener {
 		lv.setDividerHeight(1);
 
 		// 点击站内
-		plv.setOnItemClickListener(new OnItemClickListener() {
+		lv.setOnItemClickListener(new OnItemClickListener() {
 
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {
-				if(position>1){
+				if (position > 1) {
 					mailInfo = dataList.get(position - 2);
-					Intent intent = new Intent(getApplicationContext(),MailContentActicity.class);
+					Intent intent = new Intent(getApplicationContext(),
+							MailContentActicity.class);
 					intent.putExtra("contentUrl", mailInfo.contentUrl);
 					startActivityForResult(intent, 100);
-					mailInfo.hasRead=true;
+					mailInfo.hasRead = true;
 					adapter.notifyDataSetChanged();
 				}
 			}
+		});
+
+		lv.setOnItemLongClickListener(new OnItemLongClickListener() {
+
+			@Override
+			public boolean onItemLongClick(AdapterView<?> parent, View view,
+					int position, long id) {
+				if (position > 1) {
+					mailInfo = dataList.get(position - 2);
+					// 弹出对话框
+					AlertDialog.Builder builder = new AlertDialog.Builder(
+							MailBoxActicity.this);
+					OptionsDialogHolder holder = new OptionsDialogHolder(
+							MailBoxActicity.this, mailInfo.author, false, true);
+					builder.setTitle("请选择操作");
+					builder.setView(holder.getRootView());
+					builder.setNegativeButton("取消",
+							new AlertDialog.OnClickListener() {
+								@Override
+								public void onClick(DialogInterface dialog,
+										int which) {
+								}
+							});
+					
+					final AlertDialog dialog = builder.create();
+					holder.setListener(new MyOnclickListener() {
+						@Override
+						public void onReplyFloor() {
+						}
+
+						@Override
+						public void onQueryTopicHis() {
+//							MyToast.toast("查询" + mailInfo.author + "的发帖记录");
+							dialog.dismiss();
+							String author = mailInfo.author;
+							Intent intent=new Intent(MailBoxActicity.this,MyTopicActivity.class);
+							intent.putExtra("author", author);
+							startActivity(intent);
+						}
+
+						@Override
+						public void onDelete() {
+							MyToast.toast("删除站内");
+							handleDeleteMail(mailInfo);
+						}
+
+						@Override
+						public void OnQueryAuthurDetail() {
+//							MyToast.toast("查询" + mailInfo.author + "详细信息");
+							dialog.dismiss();
+							AlertDialog.Builder builder=new AlertDialog.Builder(MailBoxActicity.this);
+							AlertDialog dialog2=null;
+							UserDetailHolder holder=new UserDetailHolder(MailBoxActicity.this);
+							//更新用户详情
+							holder.updateStatus(mailInfo.author);
+							
+							builder.setView(holder.getRootView());
+							dialog2=builder.show();
+							holder.setOwnerDialog(dialog2);
+						}
+
+						@Override
+						public void OnModify() {
+
+						}
+
+						@Override
+						public void OnMailTo() {
+
+						}
+					});
+					
+					dialog.show();
+
+				}
+
+				return true;
+			}
+
 		});
 
 		// 设置上拉加载更多刷新
@@ -178,7 +259,7 @@ public class MailBoxActicity extends BaseActivity implements OnClickListener {
 								moreUrl = Constants.getMailMoreUrl(moreUrl);
 								if (moreUrl != null) {
 									moreList = protocol.loadFromServer(moreUrl,
-											false,MailBoxActicity.this);
+											false, MailBoxActicity.this);
 								}
 								// 加载完后 更新主页面
 								UiUtils.runOnUiThread(new Runnable() {
@@ -216,39 +297,120 @@ public class MailBoxActicity extends BaseActivity implements OnClickListener {
 
 		return sr;
 	}
-	
-	private void updateData() {
-		ThreadManager.getInstance().createLongPool()
-				.execute(new Runnable() {
+
+	private void handleDeleteMail(MailInfo info) {
+		
+		AlertDialog.Builder builder=new AlertDialog.Builder(this);
+		
+		builder.setTitle("亲！");
+		builder.setMessage("确定要删除吗？");
+		builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+			
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				
+				//MyToast.toast("删除："+mailInfo.delUrl);
+				final WaitDialog waitDialog=new WaitDialog(MailBoxActicity.this);
+				
+				waitDialog.setMessage("正在删除...");
+				waitDialog.show();
+				
+				ThreadManager.getInstance().createLongPool().execute(new Runnable() {
+					HttpUtils httpUtils=null;
 					@Override
 					public void run() {
-						if (protocol == null) {
-							protocol = new MailProtocol();
+						try {
+							if(httpUtils==null){
+								httpUtils=new HttpUtils();
+							}
+							RequestParams rp=new RequestParams();
+							String cookie=BaseApplication.getCookie();
+							
+							if(cookie==null){
+								cookie=BaseApplication.autoLogin(MailBoxActicity.this,true);
+							}
+							rp.addHeader("Cookie", cookie);
+							String url=Constants.getMailDelUrl(mailInfo.delUrl);
+							
+							ResponseStream stream = httpUtils.sendSync(HttpMethod.GET, url,rp);
+							
+							String result = BaseApplication.StreamToStr(stream);
+							LogUtil.d("删除站内结果："+result);
+							
+							runOnUiThread(new Runnable() {
+								
+								@Override
+								public void run() {
+									MyToast.toast("删除成功！");
+									waitDialog.dismiss();
+									
+									setResult(111);
+									finish();
+								}
+							});
+							
+						} catch (final Exception e) {
+							e.printStackTrace();
+							runOnUiThread(new Runnable() {
+								@Override
+								public void run() {
+									MyToast.toast("删除失败！"+e.getMessage());
+									waitDialog.dismiss();
+								}
+							});
 						}
-						 List<MailInfo> list = protocol.loadFromServer(
-								Constants.BBS_MAIL_URL, false,MailBoxActicity.this);
-						 
-						 if(list!=null){
-							 dataList=list;
-								runOnUiThread(new Runnable() {
-									public void run() {
-										sr.setRefreshing(false);
-										//MyToast.toast("刷新成功!");
-										tvState.setText(Html.fromHtml(getMailStatStr()));
-										
-										adapter.notifyDataSetChanged();
-									}
-								});
-						 }
+						
 					}
 				});
+			}
+		});
+		
+		builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+			
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				dialog.dismiss();
+			}
+		});
+		
+		AlertDialog dialog = builder.create();
+		dialog.show();
+		
+	}
+	
+	private void updateData() {
+		ThreadManager.getInstance().createLongPool().execute(new Runnable() {
+			@Override
+			public void run() {
+				if (protocol == null) {
+					protocol = new MailProtocol();
+				}
+				List<MailInfo> list = protocol.loadFromServer(
+						Constants.BBS_MAIL_URL, false, MailBoxActicity.this);
+
+				if (list != null) {
+					dataList = list;
+					runOnUiThread(new Runnable() {
+						public void run() {
+							sr.setRefreshing(false);
+							// MyToast.toast("刷新成功!");
+							tvState.setText(Html.fromHtml(getMailStatStr()));
+
+							adapter.notifyDataSetChanged();
+						}
+					});
+				}
+			}
+		});
 	}
 
 	private String getMailStatStr() {
-		String state="信箱总数：<font color='purple'>"+MailInfo.totalCount+
-					  "</font>  封,  信箱容量：<font color='purple'>"+MailInfo.totalSpace+"</font>  K<br>"+
-					  "已使用量：<font color='purple'>"+MailInfo.usedSpace+
-					  "</font>  K,  剩余容量：<font color='purple'>"+MailInfo.getAvaiSpace()+"</font>  K";
+		String state = "信箱总数：<font color='purple'>" + MailInfo.totalCount
+				+ "</font>  封,  信箱容量：<font color='purple'>"
+				+ MailInfo.totalSpace + "</font>  K<br>"
+				+ "已使用量：<font color='purple'>" + MailInfo.usedSpace
+				+ "</font>  K,  剩余容量：<font color='purple'>"
+				+ MailInfo.getAvaiSpace() + "</font>  K";
 		return state;
 	}
 
@@ -293,38 +455,40 @@ public class MailBoxActicity extends BaseActivity implements OnClickListener {
 
 			MailInfo info = dataList.get(position);
 
-			//标记是否读
-			String title=info.title;
-			if(!info.hasRead){//未读
-				title="  新  "+title;
-				SpannableStringBuilder ssb=new SpannableStringBuilder(title);
-				int start=0;
-				int end=start+"  新  ".length();
-				ssb.setSpan(new BackgroundColorSpan(Color.RED), start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-				ssb.setSpan(new ForegroundColorSpan(Color.WHITE), start, end,Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+			// 标记是否读
+			String title = info.title;
+			if (!info.hasRead) {// 未读
+				title = "  新  " + title;
+				SpannableStringBuilder ssb = new SpannableStringBuilder(title);
+				int start = 0;
+				int end = start + "  新  ".length();
+				ssb.setSpan(new BackgroundColorSpan(Color.RED), start, end,
+						Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+				ssb.setSpan(new ForegroundColorSpan(Color.WHITE), start, end,
+						Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 				holder.tvTitle.setText(ssb);
-				
-			}else{//已读
+
+			} else {// 已读
 				holder.tvTitle.setText(info.title);
 			}
-			
+
 			holder.tvAuthor.setText(info.author);
 			holder.tvPubTime.setText(info.postTime);
 			Drawable drawable;
 
-//			if (r.nextInt(2) % 2 != 0) {
-//				drawable = getResources().getDrawable(
-//						R.drawable.ic_gender_female);
-//			} else {
-//				drawable = getResources()
-//						.getDrawable(R.drawable.ic_gender_male);
-//			}
-//
-//			// 随机设置左边的图标
-//			drawable.setBounds(0, 0, drawable.getMinimumWidth(),
-//					drawable.getMinimumHeight());
-//
-//			holder.tvAuthor.setCompoundDrawables(drawable, null, null, null);
+			// if (r.nextInt(2) % 2 != 0) {
+			// drawable = getResources().getDrawable(
+			// R.drawable.ic_gender_female);
+			// } else {
+			// drawable = getResources()
+			// .getDrawable(R.drawable.ic_gender_male);
+			// }
+			//
+			// // 随机设置左边的图标
+			// drawable.setBounds(0, 0, drawable.getMinimumWidth(),
+			// drawable.getMinimumHeight());
+			//
+			// holder.tvAuthor.setCompoundDrawables(drawable, null, null, null);
 
 			return view;
 		}

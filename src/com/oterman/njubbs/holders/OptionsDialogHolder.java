@@ -25,7 +25,8 @@ public class OptionsDialogHolder implements OnClickListener {
 	MyOnclickListener listener;
 	private Button btnReply;
 	
-	private boolean isInsideTopic;
+	private boolean isInsideTopic;//是否在帖子详情长按
+	private boolean isFromMail=false;//是否从站内长按
 	private Button btnTopicHis;
 	
 	public void setListener(MyOnclickListener listener) {
@@ -39,6 +40,16 @@ public class OptionsDialogHolder implements OnClickListener {
 		this.isInsideTopic=isInsideTopic;
 		initViews();
 	}
+	public OptionsDialogHolder(Context context,String ownerId,boolean isInsideTopic,boolean isFromMail) {
+		rootView = View.inflate(UiUtils.getContext(), R.layout.item_long_click, null);
+		this.context=context;
+		this.ownerId=ownerId;
+		this.isInsideTopic=isInsideTopic;
+		this.isFromMail=isFromMail;
+		initViews();
+	}
+	
+	
 
 	private void initViews() {
 		
@@ -59,7 +70,24 @@ public class OptionsDialogHolder implements OnClickListener {
 		
 		btnTopicHis.setOnClickListener(this);
 		
-		updateVisibility();
+		if(!isFromMail){//不是从站内信处长按
+			updateVisibility();
+		}else{
+			updateMailViews();//从站内信处长按
+		}
+		
+	}
+
+	private void updateMailViews() {
+		//保留看作者信息，看作者发帖，以及删除，其他都
+		btnAuthorDetail.setText("发件人信息");
+		btnTopicHis.setText("发件人发帖记录");
+		btnDelete.setText("删除站内信");
+		
+		btnMail.setVisibility(View.GONE);
+		btnModify.setVisibility(View.GONE);
+		btnReply.setVisibility(View.GONE);
+		btnDelete.setVisibility(View.GONE);
 		
 	}
 

@@ -66,6 +66,8 @@ public class SettingActivity  extends MyActionBarActivity implements OnClickList
 		case R.id.ll_remind:
 			MailRemindDialog remindDialog=new MailRemindDialog(this);
 			remindDialog.show();
+			
+			
 			break;
 		case R.id.ll_author_search:
 			SettingByAuthorDialog authorDialog=new SettingByAuthorDialog(this);
