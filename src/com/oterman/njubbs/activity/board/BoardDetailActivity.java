@@ -61,6 +61,7 @@ import com.oterman.njubbs.utils.ThreadManager;
 import com.oterman.njubbs.utils.UiUtils;
 import com.oterman.njubbs.view.LoadingView.LoadingState;
 import com.oterman.njubbs.view.MySwipeRefreshLayout;
+import com.umeng.analytics.MobclickAgent;
 
 /**
  * 版面详情
@@ -85,6 +86,20 @@ public class BoardDetailActivity extends BaseActivity {
 	private AlertDialog.Builder builder;
 
 
+	@Override
+	protected void onResume() {
+		super.onResume();
+		
+		MobclickAgent.onResume(this);
+	}
+	
+	@Override
+	protected void onPause() {
+		super.onPause();
+		
+		MobclickAgent.onPause(this);
+	}
+	
 	@Override
 	public void initViews() {
 		//自定义actionbar
@@ -762,7 +777,20 @@ public class BoardDetailActivity extends BaseActivity {
 //					drawable.getMinimumHeight());
 //			holder.tvAuthor.setCompoundDrawables(drawable, null, null, null);
 
+			
+			if(info.shouldTop){//置顶
+				//置顶帖显示eye图标
+				drawable=getResources().getDrawable(R.drawable.ic_eye);
+				drawable.setBounds(0,0,drawable.getMinimumWidth(),drawable.getMinimumHeight());
+				holder.tvReplyCount.setCompoundDrawables(drawable, null, null, null);
+			}else{
+				drawable=getResources().getDrawable(R.drawable.ic_item_comment2);
+				drawable.setBounds(0,0,drawable.getMinimumWidth(),drawable.getMinimumHeight());
+				holder.tvReplyCount.setCompoundDrawables(drawable, null, null, null);
+			}
+			
 			return view;
+			
 		}
 
 		class ViewHolder {

@@ -16,7 +16,7 @@ import com.oterman.njubbs.dialog.EditTailDialog;
 import com.oterman.njubbs.dialog.MailRemindDialog;
 import com.oterman.njubbs.dialog.SettingByAuthorDialog;
 import com.oterman.njubbs.dialog.SettingTitlelDialog;
-import com.oterman.njubbs.utils.MyToast;
+import com.umeng.analytics.MobclickAgent;
 @SuppressLint("NewApi")
 public class SettingActivity  extends MyActionBarActivity implements OnClickListener {
 
@@ -27,7 +27,23 @@ public class SettingActivity  extends MyActionBarActivity implements OnClickList
 	private LinearLayout llAuthorTips;
 	private LinearLayout llAboutme;
 	private LinearLayout llRemind;
+	private LinearLayout llAccounts;
 
+	
+	@Override
+	protected void onPause() {
+		// TODO Auto-generated method stub
+		super.onPause();
+		MobclickAgent.onPause(this);
+	}
+	
+	@Override
+	protected void onResume() {
+		// TODO Auto-generated method stub
+		super.onResume();
+		MobclickAgent.onResume(this);
+	}
+	
 	@Override
 	protected void onCreate(@Nullable Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -40,14 +56,18 @@ public class SettingActivity  extends MyActionBarActivity implements OnClickList
 		llAuthorTips= (LinearLayout) this.findViewById(R.id.ll_author_tips);
 		llAboutme = (LinearLayout) this.findViewById(R.id.ll_about_me);
 		llRemind = (LinearLayout) this.findViewById(R.id.ll_remind);
+		llAccounts = (LinearLayout) this.findViewById(R.id.ll_accounts);
 
 		
+		llAccounts.setOnClickListener(this);
 		llRemind.setOnClickListener(this);
 		llTail.setOnClickListener(this);
 		llTitleSearch.setOnClickListener(this);
 		llAuthorTips.setOnClickListener(this);
 		llAboutme.setOnClickListener(this);
 		llAuthorSearch.setOnClickListener(this);
+		
+		
 	}
 	
 	@Override
@@ -95,7 +115,14 @@ public class SettingActivity  extends MyActionBarActivity implements OnClickList
 			builder.show();
 			
 			break;
-
+		case R.id.ll_accounts:
+			//跳转到账号管理页面
+//			MyToast.toast("账户管理");
+			Intent accountIntent=new Intent(this,ManageAccountsActivity.class);
+			
+			startActivity(accountIntent);
+			
+			break;
 		default:
 			break;
 		}

@@ -33,6 +33,7 @@ import com.oterman.njubbs.protocol.HotBoardProtocol;
 import com.oterman.njubbs.utils.Constants;
 import com.oterman.njubbs.utils.LogUtil;
 import com.oterman.njubbs.utils.ThreadManager;
+import com.umeng.analytics.MobclickAgent;
 
 @SuppressLint("NewApi")
 public class MainActivity_new extends FragmentActivity implements OnClickListener {
@@ -56,9 +57,12 @@ public class MainActivity_new extends FragmentActivity implements OnClickListene
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main_new);
 		
+		MobclickAgent.setDebugMode(true);
+		
+		
 		//更改状态栏的颜色
 		if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.LOLLIPOP){
-			Window window = this.getWindow();
+			Window window = this.getWindow();	
 			window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
 			window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
 			window.setStatusBarColor(this.getResources().getColor(R.color.green));
@@ -71,6 +75,8 @@ public class MainActivity_new extends FragmentActivity implements OnClickListene
 		initViews();
 		
 	}
+	
+	
 	
 	//初始化actionBar
 	private void initActionBar() {
@@ -94,6 +100,16 @@ public class MainActivity_new extends FragmentActivity implements OnClickListene
 		//检查新邮件
 		checkHasNewMail();
 		LogUtil.d("onResume  检查新邮件");
+		
+		//统计
+		MobclickAgent.onResume(this);
+	}
+	
+	@Override
+	protected void onPause() {
+		// TODO Auto-generated method stub
+		super.onPause();
+		MobclickAgent.onPause(this);
 	}
 	
 	public void initViews() {

@@ -49,10 +49,10 @@ public class MailRemindDialog {
 			cbMailToAt.setChecked(true);
 		}
 		
-		if("no".equals(mailToLouzhu)){//不发送
-			cbMailToLouzhu.setChecked(false);
-		}else{
+		if("yes".equals(mailToLouzhu)){//不发送
 			cbMailToLouzhu.setChecked(true);
+		}else{
+			cbMailToLouzhu.setChecked(false);
 		}
 		
 		if("no".equals(mailTail)){//不发送

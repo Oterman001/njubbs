@@ -29,6 +29,7 @@ import com.oterman.njubbs.dialog.WaitDialog;
 import com.oterman.njubbs.protocol.QueryTopicProtocol;
 import com.oterman.njubbs.utils.MyToast;
 import com.oterman.njubbs.utils.ThreadManager;
+import com.umeng.analytics.MobclickAgent;
 
 public class FindTopicTotalActivity extends MyActionBarActivity implements
 		OnClickListener {
@@ -48,7 +49,19 @@ public class FindTopicTotalActivity extends MyActionBarActivity implements
 	private List<TopicInfo> topicList;
 	private LinearLayout llContainer;
 	private TopicAdapter adapter;
-
+	@Override
+	protected void onResume() {
+		// TODO Auto-generated method stub
+		super.onResume();
+		MobclickAgent.onResume(this);
+	}
+	
+	@Override
+	protected void onPause() {
+		// TODO Auto-generated method stub
+		super.onPause();
+		MobclickAgent.onPause(this);
+	}
 	@Override
 	public void onBackPressed() {
 		if (llContainer.getVisibility() == View.VISIBLE) {

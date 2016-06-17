@@ -32,6 +32,7 @@ import com.oterman.njubbs.activity.board.BoardDetailActivity;
 import com.oterman.njubbs.bean.BoardInfo;
 import com.oterman.njubbs.db.BoardDao;
 import com.oterman.njubbs.utils.MyToast;
+import com.umeng.analytics.MobclickAgent;
 
 @SuppressLint("NewApi")
 public  class FindBoardActivity extends FragmentActivity {
@@ -44,7 +45,19 @@ public  class FindBoardActivity extends FragmentActivity {
 	private BoardAdaopter adapter;
 	private EditText etBoard;
 	private ImageButton ibSearch;
-
+	@Override
+	protected void onResume() {
+		// TODO Auto-generated method stub
+		super.onResume();
+		MobclickAgent.onResume(this);
+	}
+	
+	@Override
+	protected void onPause() {
+		// TODO Auto-generated method stub
+		super.onPause();
+		MobclickAgent.onPause(this);
+	}
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		// 更改状态栏的颜色

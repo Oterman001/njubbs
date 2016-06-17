@@ -1,35 +1,27 @@
 package com.oterman.njubbs.activity.expore;
 
-import android.content.Intent;
-import android.net.Uri;
+import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.View.OnKeyListener;
 import android.webkit.WebSettings;
 import android.webkit.WebSettings.LayoutAlgorithm;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.ImageView;
 import android.widget.ProgressBar;
 
 import com.oterman.njubbs.R;
 import com.oterman.njubbs.activity.MyActionBarActivity;
-import com.oterman.njubbs.utils.MyToast;
 import com.umeng.analytics.MobclickAgent;
 
-public class ColleageContentActivity extends MyActionBarActivity implements OnKeyListener, OnClickListener{
+public class ColleageContentActivityOld extends MyActionBarActivity implements OnKeyListener{
 
 	
-	private WebView webview;
+	private WebView wvContent;
 //	private ProgressDialog dialog; 
-	private ProgressBar pb;
-	private ImageView ivBack;
-	private ImageView ivForward;
-	private ImageView ivRefresh;
-	private ImageView ivBrowser;
-	private String url; 
+	private ProgressBar pb; 
 
 	@Override
 	protected String getBarTitle() {
@@ -42,7 +34,6 @@ public class ColleageContentActivity extends MyActionBarActivity implements OnKe
 		// TODO Auto-generated method stub
 		super.onResume();
 		MobclickAgent.onResume(this);
-		webview.onResume();
 	}
 	
 	@Override
@@ -50,14 +41,6 @@ public class ColleageContentActivity extends MyActionBarActivity implements OnKe
 		// TODO Auto-generated method stub
 		super.onPause();
 		MobclickAgent.onPause(this);
-		webview.onPause();
-	}
-	
-	@Override
-	protected void onDestroy() {
-		// TODO Auto-generated method stub
-		super.onDestroy();
-		webview.destroy();
 	}
 	
 	@Override
@@ -67,40 +50,29 @@ public class ColleageContentActivity extends MyActionBarActivity implements OnKe
 		
 		super.onCreate(savedInstanceState);
 		
-		setContentView(R.layout.activity_webview2);
+		setContentView(R.layout.activity_webview);
 		
-		url = getIntent().getStringExtra("url");
+		String url=getIntent().getStringExtra("url");
 		
-		webview = (WebView) this.findViewById(R.id.webview);
-		pb = (ProgressBar) this.findViewById(R.id.progress);
+		wvContent = (WebView) this.findViewById(R.id.wv_content);
 		
-		ivBack = (ImageView) this.findViewById(R.id.browser_back);
-		ivForward = (ImageView) this.findViewById(R.id.browser_forward);
-		ivRefresh = (ImageView) this.findViewById(R.id.browser_refresh);
-		ivBrowser = (ImageView) this.findViewById(R.id.browser_system_browser);
-		
-		ivBack.setOnClickListener(this);
-		ivForward.setOnClickListener(this);
-		ivRefresh.setOnClickListener(this);
-		ivBrowser.setOnClickListener(this);
-		
+		pb = (ProgressBar) this.findViewById(R.id.pb_progress);
 		pb.setVisibility(View.VISIBLE);
-		WebSettings settings = webview.getSettings();
+		WebSettings settings = wvContent.getSettings();
 		
 		settings.setJavaScriptEnabled(true);
 		settings.setSupportZoom(true);
 		settings.setBuiltInZoomControls(true);
 		settings.setUseWideViewPort(true);
 		
-		settings.setDisplayZoomControls(false);
 		settings.setLayoutAlgorithm(LayoutAlgorithm.SINGLE_COLUMN);
 		settings.setLoadWithOverviewMode(true);
 		
-		webview.loadUrl(url);
+		wvContent.loadUrl(url);
 		
-		webview.setOnKeyListener(this);
+		wvContent.setOnKeyListener(this);
 		
-		webview.setWebViewClient(new MyWebViewClient());
+		wvContent.setWebViewClient(new MyWebViewClient());
 		
 	}
 
@@ -108,13 +80,25 @@ public class ColleageContentActivity extends MyActionBarActivity implements OnKe
 	public boolean onKey(View v, int keyCode, KeyEvent event) {
 		
 		if(event.getAction()==KeyEvent.ACTION_DOWN){
-			if(keyCode==KeyEvent.KEYCODE_BACK&&webview.canGoBack()){
-				webview.goBack();
+			if(keyCode==KeyEvent.KEYCODE_BACK&&wvContent.canGoBack()){
+				wvContent.goBack();
 				return true;
 			}
 		}
 		return false;
 	}
+	
+//    @Override  
+//    protected Dialog onCreateDialog(int id) {  
+//        //实例化进度条对话框  
+//        dialog=new ProgressDialog(this);  
+//        /*//可以不显示标题 
+//        dialog.setTitle("正在加载，请稍候！");*/  
+//        dialog.setIndeterminate(true);  
+//        dialog.setMessage("正在加载，请稍候！");  
+//        dialog.setCancelable(true);  
+//        return dialog;  
+//    }  
     
 	class MyWebViewClient extends WebViewClient{
         @Override  
@@ -135,32 +119,4 @@ public class ColleageContentActivity extends MyActionBarActivity implements OnKe
             pb.setVisibility(View.INVISIBLE);
         } 
 	}
-
-@Override
-public void onClick(View v) {
-	switch (v.getId()) {
-	case R.id.browser_forward:
-		webview.goForward();
-		break;
-	case R.id.browser_back:
-		webview.goBack();
-		break;
-	case R.id.browser_refresh:
-		webview.loadUrl(webview.getUrl());
-		break;
-	case R.id.browser_system_browser:
-        try {
-            // 启用外部浏览器
-            Uri uri = Uri.parse(url);
-            Intent it = new Intent(Intent.ACTION_VIEW, uri);
-            this.startActivity(it);
-        } catch (Exception e) {
-           MyToast.toast("出错了");
-        }
-		break;
-
-	default:
-		break;
-	}
-}
 }

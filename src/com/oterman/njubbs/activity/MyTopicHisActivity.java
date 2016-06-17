@@ -13,6 +13,7 @@ import com.oterman.njubbs.R.id;
 import com.oterman.njubbs.R.layout;
 import com.oterman.njubbs.fragment.secondary.MyPostTopicFragment;
 import com.oterman.njubbs.fragment.secondary.MyReplyTopicFragment;
+import com.umeng.analytics.MobclickAgent;
 import com.viewpagerindicator.TabPageIndicator;
 
 /**
@@ -27,7 +28,19 @@ public class MyTopicHisActivity extends MyActionBarActivity implements OnPageCha
 	private MyReplyTopicFragment replyFragment;
 	
 	boolean isUpdated=false;
+	@Override
+	protected void onPause() {
+		// TODO Auto-generated method stub
+		super.onPause();
+		MobclickAgent.onPause(this);
+	}
 	
+	@Override
+	protected void onResume() {
+		// TODO Auto-generated method stub
+		super.onResume();
+		MobclickAgent.onResume(this);
+	}
 	@Override
 	protected String getBarTitle() {
 		return "Ìû×Ó¼ÇÂ¼";

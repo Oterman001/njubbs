@@ -21,6 +21,7 @@ import android.widget.TextView;
 import com.oterman.njubbs.BaseApplication;
 import com.oterman.njubbs.R;
 import com.oterman.njubbs.activity.LoginActivity;
+import com.oterman.njubbs.activity.ManageAccountsActivity;
 import com.oterman.njubbs.activity.MyTopicHisActivity;
 import com.oterman.njubbs.activity.SettingActivity;
 import com.oterman.njubbs.activity.expore.FriendsActivity;
@@ -33,6 +34,7 @@ import com.oterman.njubbs.utils.LogUtil;
 import com.oterman.njubbs.utils.MyToast;
 import com.oterman.njubbs.utils.ThreadManager;
 import com.oterman.njubbs.utils.UiUtils;
+import com.umeng.analytics.MobclickAgent;
 
 @SuppressLint("NewApi")
 public class AboutMeFragment extends Fragment implements OnClickListener {
@@ -115,7 +117,17 @@ public class AboutMeFragment extends Fragment implements OnClickListener {
 		tvUnlogin = (TextView) rootView.findViewById(R.id.tv_unlogin);// 未登录视图
 		llUserContainer = (ViewGroup) rootView
 				.findViewById(R.id.user_container);// 登陆视图
-
+		
+		llUserContainer.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				//跳转到切换账号页面
+				Intent accountIntent=new Intent(getActivity(),ManageAccountsActivity.class);
+				startActivity(accountIntent);
+				
+			}
+		});
+		
 		if (BaseApplication.getCookie() != null
 				&& BaseApplication.getLogedUser() != null) {// 已登录状态登陆
 			llUserContainer.setVisibility(View.VISIBLE);
@@ -239,7 +251,7 @@ public class AboutMeFragment extends Fragment implements OnClickListener {
 				+ userInfo.biaoxian));
 		tvTotalVisit.setText(Html.fromHtml(getResources().getString(
 				R.string.totalVisit2)
-				+ userInfo.totalVisit + "次"));
+				+ userInfo.totalVisit.trim() + "次"));
 	}
 
 	// 检查是否有新的站内
@@ -279,6 +291,9 @@ public class AboutMeFragment extends Fragment implements OnClickListener {
 		case R.id.btn_login://点击登陆注销按钮
 			if (BaseApplication.getCookie() != null&& BaseApplication.getLogedUser() != null) {// 当前为登陆状态，注销
 				BaseApplication.setCookie(null);
+				//友盟登出统计
+				MobclickAgent.onProfileSignOff();
+				
 				MyToast.toast("注销成功");
 				BaseApplication.setLogedUser(null);
 				updateViews();

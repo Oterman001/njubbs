@@ -9,7 +9,7 @@
     <string name="nickname"><![CDATA[ <font color=\'grey\'>昵称：</font> ]]></string>
     <string name="xingzuo"><![CDATA[<font color="grey">星座：</font>]]></string>
     <string name="jingyan"><![CDATA[<font color="grey">经验：</font>]]></string>
-    <string name="biaoxian"><![CDATA[<font color="grey">表现：</font>]]></string>
+    <string name="biaoxian"><![CDATA[<font color="grey">表现值：</font>]]></string>
     <string name="life"><![CDATA[<font color="grey">生命力：</font>]]></string>
     <string name="totalVisit"><![CDATA[<font color="grey">上站次数：</font>]]></string>
     <string name="totalPub"><![CDATA[<font color="grey">发文章数：</font>]]></string>
@@ -21,7 +21,7 @@
     <string name="nickname2"><![CDATA[ <font color=\'white\'>昵称：</font> ]]></string>
     <string name="xingzuo2"><![CDATA[<font color="white">星座：</font>]]></string>
     <string name="jingyan2"><![CDATA[<font color="white">经验：</font>]]></string>
-    <string name="biaoxian2"><![CDATA[<font color="white">表现：</font>]]></string>
+    <string name="biaoxian2"><![CDATA[<font color="white">表现值：</font>]]></string>
     <string name="life2"><![CDATA[<font color="white">生命力：</font>]]></string>
      <string name="totalVisit2"><![CDATA[<font color="white">上站次数：</font>]]></string>
     <string name="qianmingdang2"><![CDATA[<font color="white">签名档：</font>]]></string>

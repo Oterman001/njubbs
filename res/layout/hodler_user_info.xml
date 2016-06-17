@@ -1,33 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/rl_user_container"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:clickable="true"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content" >
 
     <!-- android:background="@color/main_green" -->
-
+	<!--用户id  -->
     <TextView
         android:id="@+id/tv_user_id"
         style="@style/about_me_user_detail" />
-
+	<!--昵称  -->
     <TextView
         android:id="@+id/tv_user_nickname"
         style="@style/about_me_user_detail"
         android:layout_below="@id/tv_user_id" />
 
+    <!--表现值  -->
     <TextView
         android:id="@+id/tv_user_biaoxianzhi"
         style="@style/about_me_user_detail"
         android:layout_alignParentRight="true"
+        android:layout_marginRight="10dp"
         android:layout_below="@id/tv_user_id" />
-
+	<!--经验  -->
     <TextView
         android:id="@+id/tv_user_jingyan"
         style="@style/about_me_user_detail"
         android:layout_below="@id/tv_user_nickname" />
 
     <!-- 生命力 -->
-
     <TextView
         android:id="@+id/tv_user_shengmingli"
         style="@style/about_me_user_detail"

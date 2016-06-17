@@ -17,6 +17,7 @@ import android.widget.ListView;
 
 import com.oterman.njubbs.R;
 import com.oterman.njubbs.activity.MyActionBarActivity;
+import com.umeng.analytics.MobclickAgent;
 
 public class ColleagesActivity extends MyActionBarActivity{
 	private ListView lvColleages;
@@ -41,6 +42,9 @@ public class ColleagesActivity extends MyActionBarActivity{
 		
 		dataMap.put("天地人大（人大）", "http://www.tdrd.org/nForum/#!default");
 		list.add("天地人大（人大）");
+		
+		dataMap.put("北邮人论坛（北邮）", "http://bbs.cloud.icybee.cn/");
+		list.add("北邮人论坛（北邮）");
 		
 		dataMap.put("珞珈山水（武大）", "http://bbs.whu.edu.cn/");
 		list.add("珞珈山水（武大）");
@@ -69,6 +73,23 @@ public class ColleagesActivity extends MyActionBarActivity{
 //		list.addAll(dataMap.keySet());
 	}
 	private ColleageAdapter adapter;
+	
+	
+	
+	@Override
+	protected void onResume() {
+		// TODO Auto-generated method stub
+		super.onResume();
+		MobclickAgent.onResume(this);
+	}
+	
+	@Override
+	protected void onPause() {
+		// TODO Auto-generated method stub
+		super.onPause();
+		MobclickAgent.onPause(this);
+	}
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);

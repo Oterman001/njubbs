@@ -97,7 +97,16 @@ public class TopicDetailProtocol  extends BaseProtocol<TopicDetailInfo>{
 		
 		content=content.replaceAll("\\[/*uid\\]", "").trim();
 		//[1;35mSent From ÄÏ´óÐ¡°ÙºÏ  by MI NOTE LTE[m
-		content=content.replaceAll("\\[1;35m", "<font color='purple'>").replaceAll("\\[m", "</font>");
+//		content=content.replaceAll("\\[1;35m", "<font color='purple'>").replaceAll("\\[m", "</font>");
+		
+		
+		content=content.replaceAll("*\\[1;37m", "<font color='black'>").replaceAll("\\[m", "</font>");
+		content=content.replaceAll("*\\[1;31m", "<font color=\"#E00000\">").replaceAll("\\[m", "</font>");
+		content=content.replaceAll("*\\[1;32m", "<font color=\"#008000\">").replaceAll("\\[m", "</font>");
+		content=content.replaceAll("*\\[1;33m", "<font color=\"#808000\">").replaceAll("\\[m", "</font>");
+		content=content.replaceAll("*\\[1;34m", "<font color=\"#0000FF\">").replaceAll("\\[m", "</font>");
+		content=content.replaceAll("*\\[1;35m", "<font color='#D000D0'>").replaceAll("\\[m", "</font>");
+		content=content.replaceAll("*\\[1;36m", "<font color=\"#33A0A0\">").replaceAll("\\[m", "</font>");
 		
 		content=content.replaceAll("\\[.*?m", "");
 		
@@ -126,8 +135,24 @@ public class TopicDetailProtocol  extends BaseProtocol<TopicDetailInfo>{
 		content=UiUtils.deleteNewLineMark(content);
 		
 		content=content.replaceAll("\\[/*uid\\]", "").trim();
+		
 		//[1;35mSent From ÄÏ´óÐ¡°ÙºÏ  by MI NOTE LTE[m
+		
+//		content=content.replaceAll("\\[1;37m", "<font color='black'>").replaceAll("\\[m", "</font>");
+//		content=content.replaceAll("\\[1;31m", "<font color=\"#E00000\">").replaceAll("\\[m", "</font>");
+//		content=content.replaceAll("\\[1;32m", "<font color=\"#008000\">").replaceAll("\\[m", "</font>");
+//		content=content.replaceAll("\\[1;33m", "<font color=\"#808000\">").replaceAll("\\[m", "</font>");
+//		content=content.replaceAll("\\[1;34m", "<font color=\"#0000FF\">").replaceAll("\\[m", "</font>");
+//		content=content.replaceAll("\\[1;35m", "<font color='purple'>").replaceAll("\\[m", "</font>");
+//		content=content.replaceAll("\\[1;36m", "<font color=\"#33A0A0\">").replaceAll("\\[m", "</font>");
+		
+		content=content.replaceAll("\\[1;37m", "<font color='black'>").replaceAll("\\[m", "</font>");
+		content=content.replaceAll("\\[1;31m", "<font color=\"red\">").replaceAll("\\[m", "</font>");
+		content=content.replaceAll("\\[1;32m", "<font color=\"#green\">").replaceAll("\\[m", "</font>");
+		content=content.replaceAll("\\[1;33m", "<font color=\"#808000\">").replaceAll("\\[m", "</font>");
+		content=content.replaceAll("\\[1;34m", "<font color=\"blue\">").replaceAll("\\[m", "</font>");
 		content=content.replaceAll("\\[1;35m", "<font color='purple'>").replaceAll("\\[m", "</font>");
+		content=content.replaceAll("\\[1;36m", "<font color=\"#33A0A0\">").replaceAll("\\[m", "</font>");
 		
 		content=content.replaceAll("\\[.*?m", "");
 		
@@ -139,7 +164,17 @@ public class TopicDetailProtocol  extends BaseProtocol<TopicDetailInfo>{
 		TopicDetailInfo info=new TopicDetailInfo(author, floorth+"", pubTime, content, loadMoreUrl,replyUrl);
 		list.add(info);
 	}
-	
+	/*
+	 [1;37m¹þ¹þ¹þ[m  #000000
+	[1;31m¹þ¹þ¹þ[m  #E00000
+	[1;32m¹þ¹þ¹þ[m  #008000
+	[1;33m¹þ¹þ¹þ[m  #808000
+	[1;34m¹þ¹þ¹þ[m  #0000FF
+	[1;35m¹þ¹þ¹þ[m  #D000D0
+	[1;36m¹þ¹þ¹þ[m  #33A0A0
+	 * 
+	 * 	
+	 */	
 	  public static String ToSBC(String input) { 
 	        char c[] = input.toCharArray(); 
 	        for (int i = 0; i < c.length; i++) { 

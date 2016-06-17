@@ -46,6 +46,7 @@ import com.oterman.njubbs.utils.TopicUtils;
 import com.oterman.njubbs.utils.UiUtils;
 import com.oterman.njubbs.view.MyTagHandler;
 import com.oterman.njubbs.view.URLImageParser;
+import com.umeng.analytics.MobclickAgent;
 /**
  * ·¢Õ¾ÄÚÐÅ
  * @author oterman
@@ -65,6 +66,20 @@ public class MailNewActivity extends MyActionBarActivity implements
 	boolean isVisbilityFace=false;
 	private MailInfo mailInfo;
 
+	@Override
+	protected void onResume() {
+		// TODO Auto-generated method stub
+		super.onResume();
+		MobclickAgent.onResume(this);
+	}
+	
+	@Override
+	protected void onPause() {
+		// TODO Auto-generated method stub
+		super.onPause();
+		MobclickAgent.onPause(this);
+	}
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);

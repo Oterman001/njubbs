@@ -37,10 +37,9 @@
         android:layout_below="@id/tv_board_topic_item_title"
         android:layout_marginLeft="10dp"
         android:layout_toRightOf="@id/tv_board_topic_item_author"
-        android:drawableLeft="@drawable/ic_item_comment2"
-        android:drawablePadding="0dp"
+        android:drawablePadding="2dp"
         android:text="40" />
-
+<!--  android:drawableLeft="@drawable/ic_item_comment2"  -->
     <!-- 时间 -->
 
     <TextView

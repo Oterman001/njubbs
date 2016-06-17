@@ -45,6 +45,7 @@ import com.oterman.njubbs.utils.MyToast;
 import com.oterman.njubbs.utils.SPutils;
 import com.oterman.njubbs.utils.ThreadManager;
 import com.oterman.njubbs.utils.UiUtils;
+import com.umeng.analytics.MobclickAgent;
 
 @SuppressLint("NewApi")
 public class LoginActivity extends MyActionBarActivity  implements OnClickListener {
@@ -58,6 +59,19 @@ public class LoginActivity extends MyActionBarActivity  implements OnClickListen
 	private UserInfo userInfo=BaseApplication.getLogedUser();
 
 	private  ActionBar actionBar;
+	
+	
+	@Override
+	protected void onResume() {
+		super.onResume();
+		MobclickAgent.onResume(this);
+	}
+	
+	@Override
+	protected void onPause() {
+		super.onPause();
+		MobclickAgent.onPause(this);
+	}
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -146,6 +160,15 @@ public class LoginActivity extends MyActionBarActivity  implements OnClickListen
 						SPutils.saveToSP("id", id);
 						SPutils.saveToSP("pwd", pwd);
 						
+						String ids = SPutils.getFromSP("ids");
+						String temp = id + "#" + pwd;
+						if (!ids.contains(temp)) {// 不包含
+							// 保存
+							ids = ids + temp + ";";
+							SPutils.saveToSP("ids", ids);
+						}
+						
+						
 						//处理cookie 获取用户信息
 						BaseApplication.handleCookie(result);
 						
@@ -154,8 +177,12 @@ public class LoginActivity extends MyActionBarActivity  implements OnClickListen
 						userInfo=protocol.getUserInfoFromServer(id);
 						BaseApplication.setLogedUser(userInfo);
 						
+						//登陆统计
+						MobclickAgent.onProfileSignIn(id);
+						
 						//提示登陆成功
 						logOk();
+						
 						
 					}else if(result.contains("登录间隔过密")){//登陆间隔过密
 						loginFailed("登录间隔不能少于10秒！",false);
@@ -177,7 +204,6 @@ public class LoginActivity extends MyActionBarActivity  implements OnClickListen
 						}
 					});
 				}
-
 			}
 
 			private void logOk() {
@@ -211,8 +237,6 @@ public class LoginActivity extends MyActionBarActivity  implements OnClickListen
 				});
 			}
 		});
-		
-		
 	}
 	
 	

@@ -26,5 +26,7 @@
 	<classpathentry kind="lib" path="libs/ShareSDK-Wechat-Favorite-2.7.2.jar"/>
 	<classpathentry kind="lib" path="libs/ShareSDK-Wechat-Moments-2.7.2.jar"/>
 	<classpathentry kind="lib" path="libs/ShareSDK-YouDao-2.7.2.jar"/>
+	<classpathentry kind="lib" path="libs/umeng-analytics-v6.0.1.jar"/>
+	<classpathentry kind="lib" path="libs/utdid4all-1.0.4.jar"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>

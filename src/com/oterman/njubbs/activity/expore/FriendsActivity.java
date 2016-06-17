@@ -39,6 +39,7 @@ import com.oterman.njubbs.utils.MyToast;
 import com.oterman.njubbs.utils.ThreadManager;
 import com.oterman.njubbs.view.LoadingView.LoadingState;
 import com.oterman.njubbs.view.MySwipeRefreshLayout;
+import com.umeng.analytics.MobclickAgent;
 
 public class FriendsActivity extends BaseActivity implements OnClickListener, OnRefreshListener{
 
@@ -56,7 +57,19 @@ public class FriendsActivity extends BaseActivity implements OnClickListener, On
 		ibAddFriend.setVisibility(View.VISIBLE);
 		ibAddFriend.setOnClickListener(this);
 	}
+	@Override
+	protected void onResume() {
+		// TODO Auto-generated method stub
+		super.onResume();
+		MobclickAgent.onResume(this);
+	}
 	
+	@Override
+	protected void onPause() {
+		// TODO Auto-generated method stub
+		super.onPause();
+		MobclickAgent.onPause(this);
+	}
 	@Override
 	protected CharSequence getBarTitle() {
 		return "ÎÒµÄºÃÓÑ";

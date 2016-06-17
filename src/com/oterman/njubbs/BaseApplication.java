@@ -1,18 +1,21 @@
 package com.oterman.njubbs;
 
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
-import java.util.List;
+import java.lang.reflect.Method;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
-import android.media.audiofx.LoudnessEnhancer;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Handler;
 import android.text.TextUtils;
 
@@ -28,18 +31,19 @@ import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.QueueProcessingType;
 import com.nostra13.universalimageloader.core.download.BaseImageDownloader;
 import com.oterman.njubbs.activity.LoginActivity;
-import com.oterman.njubbs.bean.BoardInfo;
 import com.oterman.njubbs.bean.UserInfo;
 import com.oterman.njubbs.db.BoardDao;
 import com.oterman.njubbs.protocol.AllBoardProtocol;
 import com.oterman.njubbs.protocol.CheckNewMailProtocol;
 import com.oterman.njubbs.protocol.UserProtocol;
 import com.oterman.njubbs.utils.Constants;
+import com.oterman.njubbs.utils.DeLog;
 import com.oterman.njubbs.utils.LogUtil;
 import com.oterman.njubbs.utils.MyToast;
 import com.oterman.njubbs.utils.SPutils;
 import com.oterman.njubbs.utils.ThreadManager;
 import com.oterman.njubbs.utils.UiUtils;
+import com.umeng.analytics.MobclickAgent;
 
 public class BaseApplication extends Application {
 
@@ -54,10 +58,17 @@ public class BaseApplication extends Application {
 	private static int newMailCount = -1;
 	public static boolean myTopicUpdated=false;//标记我的帖子更新过
 	public static boolean myReplyUpdate=false;//标记我的回帖更新过
-
+	
+	
 	@Override
 	public void onCreate() {
 		super.onCreate();
+		//统计
+		MobclickAgent.setDebugMode(true);
+		
+		
+		System.out.println("设备信息："+DeLog.getDeviceInfo(this));
+		
 		application = this;
 		mainTid = android.os.Process.myTid();
 		handler = new Handler();
@@ -210,16 +221,29 @@ public class BaseApplication extends Application {
 				// 保存起来
 				SPutils.saveToSP("id", id);
 				SPutils.saveToSP("pwd", pwd);
+				
+				String ids = SPutils.getFromSP("ids");
+				String temp = id + "#" + pwd;
+				if (!ids.contains(temp)) {// 不包含
+					// 保存
+					ids = ids + temp + ";";
+					SPutils.saveToSP("ids", ids);
+				}
+				
 				// 处理cookie
 				String cookie = handleCookie(result);
 				if (cookie != null) {
 					// 更新用户数据
 					updateUserInfo();
+					
+					//友盟账号登陆统计
+					MobclickAgent.onProfileSignIn(id);
+					
 					// 回到主线程，提示登陆成功
 					autoLogInOk(result);
 					return handleCookie(result);
 				}
-			} else {// 登陆失败
+			} else {// 登陆失败   没有判断具体情况
 				autoLoginFailed("自动登陆失败,请手动登录！");
 			}
 

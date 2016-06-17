@@ -37,6 +37,7 @@ import com.oterman.njubbs.protocol.QueryTopicProtocol;
 import com.oterman.njubbs.utils.LogUtil;
 import com.oterman.njubbs.utils.MyToast;
 import com.oterman.njubbs.utils.ThreadManager;
+import com.umeng.analytics.MobclickAgent;
 
 @SuppressLint("NewApi")
 public  class FindTopicActivity extends FragmentActivity {
@@ -54,7 +55,19 @@ public  class FindTopicActivity extends FragmentActivity {
 	private QueryTopicProtocol protocol;
 	
 	private int count=0;
-
+	@Override
+	protected void onResume() {
+		// TODO Auto-generated method stub
+		super.onResume();
+		MobclickAgent.onResume(this);
+	}
+	
+	@Override
+	protected void onPause() {
+		// TODO Auto-generated method stub
+		super.onPause();
+		MobclickAgent.onPause(this);
+	}
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		// 更改状态栏的颜色

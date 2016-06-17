@@ -5,6 +5,16 @@
     android:orientation="vertical" >
 
     <LinearLayout
+         android:layout_marginTop="@dimen/space_30"
+        android:id="@+id/ll_accounts"
+        style="@style/option_item_rl"
+        >
+        <TextView
+            style="@style/option_item_text"
+            android:text="账号管理" />
+    </LinearLayout>
+    
+    <LinearLayout
         android:id="@+id/ll_post_tail"
         style="@style/option_item_rl"
         android:layout_marginTop="@dimen/space_30" >

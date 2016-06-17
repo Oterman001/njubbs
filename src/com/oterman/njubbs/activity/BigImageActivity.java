@@ -25,6 +25,7 @@ import com.oterman.njubbs.dialog.WaitDialog;
 import com.oterman.njubbs.utils.LogUtil;
 import com.oterman.njubbs.utils.MyToast;
 import com.oterman.njubbs.utils.ThreadManager;
+import com.umeng.analytics.MobclickAgent;
 @SuppressLint("NewApi")
 public class BigImageActivity  extends MyActionBarActivity implements OnClickListener {
 
@@ -37,6 +38,19 @@ public class BigImageActivity  extends MyActionBarActivity implements OnClickLis
 	private Bitmap bitmap;
 	private String imgurl;
 
+	
+	@Override
+	protected void onPause() {
+		super.onPause();
+		MobclickAgent.onPause(this);
+	}
+	
+	@Override
+	protected void onResume() {
+		super.onResume();
+		MobclickAgent.onResume(this);
+	}
+	
 	@Override
 	protected void onCreate(@Nullable Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);

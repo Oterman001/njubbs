@@ -100,6 +100,7 @@ import com.oterman.njubbs.utils.UiUtils;
 import com.oterman.njubbs.view.LoadingView.LoadingState;
 import com.oterman.njubbs.view.MyTagHandler;
 import com.oterman.njubbs.view.URLImageParser;
+import com.umeng.analytics.MobclickAgent;
 
 @SuppressLint("NewApi")
 public class TopicDetailActivity extends BaseActivity implements
@@ -120,6 +121,20 @@ public class TopicDetailActivity extends BaseActivity implements
 	private WaitDialog waitDialog;
 	SelectFaceHelper mFaceHelper;
 
+	@Override
+	protected void onResume() {
+		super.onResume();
+		
+		MobclickAgent.onResume(this);
+	}
+	
+	@Override
+	protected void onPause() {
+		super.onPause();
+		
+		MobclickAgent.onPause(this);
+	}
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -601,7 +616,7 @@ public class TopicDetailActivity extends BaseActivity implements
 						}
 						
 						// 回帖提醒，给楼主发站内信
-						if (!"no".equals(mailto_louzhu)) {
+						if ("yes".equals(mailto_louzhu)) {
 							// 检查是否为楼主自己回帖，自己回帖时， 不提醒
 							handleSendMailToLouzhu(content);
 						}

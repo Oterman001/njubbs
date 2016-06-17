@@ -42,6 +42,7 @@ import com.oterman.njubbs.utils.LogUtil;
 import com.oterman.njubbs.utils.SPutils;
 import com.oterman.njubbs.utils.ThreadManager;
 import com.oterman.njubbs.view.LoadingView.LoadingState;
+import com.umeng.analytics.MobclickAgent;
 
 @SuppressLint("NewApi")
 public  class MyTopicActivity extends BaseActivity {
@@ -59,10 +60,18 @@ public  class MyTopicActivity extends BaseActivity {
 	}
 	
 	@Override
+	protected void onPause() {
+		// TODO Auto-generated method stub
+		super.onPause();
+		MobclickAgent.onPause(this);
+	}
+	@Override
 	protected void onResume() {
 		super.onResume();
 		intent=getIntent();
 		author = intent.getStringExtra("author");
+		
+		MobclickAgent.onResume(this);
 	}
 	
 	//º”‘ÿ ˝æ›
