@@ -24,6 +24,10 @@ public class UserProtocol {
 			doc = Jsoup.connect(Constants.getUserUrl(userId)).get();
 			if (doc.select("td").size() != 0) {
 				String result = doc.select("td").get(0).text();
+				
+				//´¦ÀíÐÔ±ð
+				String result2=result.substring(0,result.indexOf("µ½±¾Õ¾Ò»ÓÎ"));
+				
 				result = result.replaceAll("\\[.*?m", "");
 
 				/*
@@ -66,6 +70,15 @@ public class UserProtocol {
 						info.isOnline = true;
 					} else {
 						info.isOnline = false;
+					}
+					
+					if(result2.contains("1;36m")){//ÄÐ
+						info.gender="ÄÐ";
+					}else if(result2.contains("1;35m")){//Å®
+						info.gender="Å®";
+					}else{//Î´Öª
+						System.out.println("ÐÔ±ð£ºÎ´Öª");
+						info.gender="Î´Öª";
 					}
 					LogUtil.d("´ÓÍøÉÏ»ñÈ¡ÓÃ»§Êý¾Ý£º"+info.id);
 					return info;

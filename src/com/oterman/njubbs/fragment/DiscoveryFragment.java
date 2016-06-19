@@ -18,7 +18,7 @@ import com.oterman.njubbs.activity.expore.FindBoardActivity;
 import com.oterman.njubbs.activity.expore.FindTopicActivity;
 import com.oterman.njubbs.activity.expore.FindTopicTotalActivity;
 import com.oterman.njubbs.activity.expore.FriendsActivity;
-import com.oterman.njubbs.activity.expore.MyTopicActivity;
+import com.oterman.njubbs.activity.expore.TopicHisActivity;
 import com.oterman.njubbs.activity.mail.MailNewActivity;
 import com.oterman.njubbs.activity.mail.MailSpecialActivity;
 import com.oterman.njubbs.utils.MyToast;

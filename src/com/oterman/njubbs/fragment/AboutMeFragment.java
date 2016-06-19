@@ -25,7 +25,7 @@ import com.oterman.njubbs.activity.ManageAccountsActivity;
 import com.oterman.njubbs.activity.MyTopicHisActivity;
 import com.oterman.njubbs.activity.SettingActivity;
 import com.oterman.njubbs.activity.expore.FriendsActivity;
-import com.oterman.njubbs.activity.expore.MyTopicActivity;
+import com.oterman.njubbs.activity.expore.TopicHisActivity;
 import com.oterman.njubbs.activity.mail.MailBoxActicity;
 import com.oterman.njubbs.bean.UserInfo;
 import com.oterman.njubbs.protocol.CheckNewMailProtocol;

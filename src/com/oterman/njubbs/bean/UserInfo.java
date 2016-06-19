@@ -25,6 +25,9 @@ public class UserInfo implements Serializable{
 	public String biaoxian;
 	public String life;
 	public boolean isOnline;
+	
+	public String gender;
+	
 	public UserInfo() {
 		super();
 		// TODO Auto-generated constructor stub
@@ -46,6 +49,8 @@ public class UserInfo implements Serializable{
 		this.life = life;
 		this.isOnline = isOnline;
 	}
+
+	
 	@Override
 	public String toString() {
 		return "UserInfo [id=" + id + ", nickname=" + nickname
@@ -53,8 +58,28 @@ public class UserInfo implements Serializable{
 				+ ", xingzuo=" + xingzuo + ", lastVisitTime=" + lastVisitTime
 				+ ", lastVistiIP=" + lastVistiIP + ", jingyan=" + jingyan
 				+ ", biaoxian=" + biaoxian + ", life=" + life + ", isOnline="
-				+ isOnline + "]";
+				+ isOnline + ", gender=" + gender + "]";
 	}
+	
+	public UserInfo(String id, String nickname, String totalVisit,
+			String totalPub, String xingzuo, String lastVisitTime,
+			String lastVistiIP, String jingyan, String biaoxian, String life,
+			boolean isOnline, String gender) {
+		super();
+		this.id = id;
+		this.nickname = nickname;
+		this.totalVisit = totalVisit;
+		this.totalPub = totalPub;
+		this.xingzuo = xingzuo;
+		this.lastVisitTime = lastVisitTime;
+		this.lastVistiIP = lastVistiIP;
+		this.jingyan = jingyan;
+		this.biaoxian = biaoxian;
+		this.life = life;
+		this.isOnline = isOnline;
+		this.gender = gender;
+	}
+	
 	
 	
 	

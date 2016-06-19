@@ -10,7 +10,7 @@
     <Button
         android:id="@+id/btn_author_detail"
         style="@style/options_btn_style"
-        android:text="查看作者信息" />
+        android:text="作者信息" />
 
     <View
         android:layout_width="fill_parent"
@@ -21,7 +21,7 @@
     <Button
         android:id="@+id/btn_topic_his"
         style="@style/options_btn_style"
-        android:text="查看作者发帖" />
+        android:text="作者发帖记录" />
 
     <View
         android:layout_width="fill_parent"

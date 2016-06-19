@@ -45,7 +45,7 @@ import com.oterman.njubbs.view.LoadingView.LoadingState;
 import com.umeng.analytics.MobclickAgent;
 
 @SuppressLint("NewApi")
-public  class MyTopicActivity extends BaseActivity {
+public  class TopicHisActivity extends BaseActivity {
 
 	private List<TopicInfo> topicList;
 	private TopicAdapter adapter;
@@ -83,7 +83,7 @@ public  class MyTopicActivity extends BaseActivity {
 		if(author==null||TextUtils.isEmpty(author)){
 			author=SPutils.getFromSP("id");
 			if(author==null||TextUtils.isEmpty(author)){
-				BaseApplication.autoLogin(MyTopicActivity.this, true);
+				BaseApplication.autoLogin(TopicHisActivity.this, true);
 				finish();
 			}
 		}
@@ -119,14 +119,6 @@ public  class MyTopicActivity extends BaseActivity {
 				@Override
 				public void onItemClick(AdapterView<?> parent, View view,
 						int position, long id) {
-					
-					
-//					TopicInfo topicInfo = topicList.get(position);
-//					//MyToast.toast("position:"+position+"	:"+topicInfo.toString());
-//					Intent intent=new Intent(getApplicationContext(),TopicDetailActivity.class);
-//					intent.putExtra("topicInfo", topicInfo);
-//					startActivity(intent);
-					
 					
 					//判断点击的是否为回帖
 					TopicInfo topicInfo = topicList.get(position);

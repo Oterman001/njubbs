@@ -4,7 +4,6 @@
     android:layout_height="fill_parent"
     android:background="#00ff0000"
      >
-
     <!-- android:descendantFocusability="blocksDescendants" -->
     <TextView
         android:id="@+id/tv_topic_re_title"
@@ -73,7 +72,5 @@
         android:text="完整帖子阅读"
         android:textColor="#fff"
         android:textSize="18sp" />
-    
-    
 
 </RelativeLayout>

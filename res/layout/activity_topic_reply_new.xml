@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" >
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="match_parent"
+        android:background="#00ff0000" >
+
+        <TextView
+            android:id="@+id/tv_topic_re_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#BBD0D0E0"
+            android:minHeight="30dp"
+            android:padding="8dp"
+            android:text="这是标题"
+            android:textColor="#000"
+            android:textSize="20sp" />
+
+        <View
+            android:id="@+id/view_div"
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:layout_below="@id/tv_topic_re_title"
+            android:background="@color/list_divider_color" />
+
+        <TextView
+            android:id="@+id/tv_topic_re_author"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@id/view_div"
+            android:layout_marginLeft="8dp"
+            android:layout_marginTop="5dp"
+            android:ellipsize="middle"
+            android:maxEms="15"
+            android:singleLine="true"
+            android:text="Oterman"
+            android:textColor="#7000"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/tv_topic_re_content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tv_topic_re_author"
+            android:layout_marginBottom="5dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginTop="5dp"
+            android:text="这是回复内容"
+            android:textColor="#000"
+            android:textSize="17sp" />
+
+        <TextView
+            android:id="@+id/tv_topic_re_pubtime"
+            style="@style/item_topten_style"
+            android:layout_below="@id/tv_topic_re_content"
+            android:layout_marginLeft="8dp"
+            android:text="2016-02-02 18:50"
+            android:textSize="14sp" />
+    </RelativeLayout>
+    
+    </ScrollView>
+
+    <Button
+        android:id="@+id/btn_read_all"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:background="@drawable/login_bg_selector"
+        android:text="完整帖子阅读"
+        android:textColor="#fff"
+        android:textSize="18sp" />
+
+</LinearLayout>

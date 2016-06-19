@@ -107,6 +107,7 @@ public class TopicUtils {
 						activity.startActivityForResult(intent, 100);
 					}
 				});
+		
 		builder.setPositiveButton("È·¶¨", new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {

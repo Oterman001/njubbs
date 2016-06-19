@@ -43,7 +43,7 @@ public class SettingByAuthorDialog {
 		tvDesc=(TextView) view.findViewById(R.id.tv_desc);
 		cbCheck = (CheckBox) view.findViewById(R.id.cb_check);
 		
-		tvDesc.setText("快捷搜索时，按作者默认搜索999天以内的内容，且搜索的标题不包含Re。");
+		tvDesc.setText("快捷搜索时，按作者默认搜索999天以内的内容，且搜索的标题包含Re。");
 		etContent.setHint("请输入天数");
 		
 		//读取保存的值
@@ -66,7 +66,7 @@ public class SettingByAuthorDialog {
 				cbCheck.setChecked(false);
 			}
 		}else{//没有设置  默认不包含
-			cbCheck.setChecked(false);
+			cbCheck.setChecked(true);
 		}
 		
 		builder.setView(view);

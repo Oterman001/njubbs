@@ -91,6 +91,7 @@ public class QueryTopicProtocol {
 	public List<TopicInfo> queryByAuthor(String author) {
 		return loadFromServer(author);
 	}
+	
 	/**
 	 * 处理按照作者查询时的参数
 	 * @param author
@@ -100,10 +101,10 @@ public class QueryTopicProtocol {
 		Map<String, String> map=new HashMap<>();
 		
 		String byauthor_re = SPutils.getFromSP("byauthor_re");
-		if("yes".equals(byauthor_re)){//包含re
-			map.put("title3", "");//不包含
-		}else{//不包含re
+		if("no".equals(byauthor_re)){//包含re
 			map.put("title3", "Re");//不包含
+		}else{//不包含re
+			map.put("title3", "");//不包含
 		}
 		map.put("flag", "1");//
 		map.put("day", "0");//开始

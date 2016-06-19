@@ -1,32 +1,18 @@
 package com.oterman.njubbs.activity;
 
-import java.util.List;
-
 import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.ActionBar.LayoutParams;
-import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.view.View;
-import android.view.ViewGroup;
+import android.view.View.OnClickListener;
 import android.view.Window;
 import android.view.WindowManager;
-import android.view.View.OnClickListener;
-import android.widget.BaseAdapter;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import com.oterman.njubbs.R;
-import com.oterman.njubbs.bean.TopicDetailInfo;
-import com.oterman.njubbs.protocol.TopicDetailProtocol;
-import com.oterman.njubbs.utils.LogUtil;
-import com.oterman.njubbs.utils.MyToast;
-import com.oterman.njubbs.utils.UiUtils;
 import com.oterman.njubbs.view.LoadingView;
 import com.oterman.njubbs.view.LoadingView.LoadingState;
 

@@ -94,7 +94,7 @@ public class TopicReplyActivity  extends BaseActivity implements OnClickListener
 	@Override
 	public View createSuccessView() {
 		
-		View rootView=View.inflate(this, R.layout.activity_topic_reply, null);
+		View rootView=View.inflate(this, R.layout.activity_topic_reply_new, null);
 		
 		tvAuthor = (TextView) rootView.findViewById(R.id.tv_topic_re_author);
 		tvTitle = (TextView) rootView.findViewById(R.id.tv_topic_re_title);

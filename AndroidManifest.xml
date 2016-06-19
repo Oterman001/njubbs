@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.oterman.njubbs"
-    android:versionCode="3"
-    android:versionName="1.2" >
-
+    android:versionCode="4"
+    android:versionName="1.3" >
+    
     <uses-sdk
         android:minSdkVersion="14"
         android:targetSdkVersion="21" />
@@ -20,8 +20,10 @@
     <uses-permission android:name="android.permission.GET_TASKS" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    
     <uses-permission android:name="android.permission.MANAGE_ACCOUNTS" />
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
@@ -34,17 +36,16 @@
         android:theme="@style/my_theme" >
         <uses-library android:name="android.test.runner" />
 
-
         <activity
             android:name="com.oterman.njubbs.activity.MainActivity_new"
             android:label="@string/app_name"
             android:theme="@style/myindicatorStyle" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        
         <activity
             android:name="com.oterman.njubbs.activity.topic.TopicDetailActivity"
             android:windowSoftInputMode="adjustResize|stateHidden" >
@@ -95,7 +96,7 @@
         <activity android:name="com.oterman.njubbs.activity.expore.FindBoardActivity" />
         <activity android:name="com.oterman.njubbs.activity.expore.FindTopicActivity" />
         <activity android:name="com.oterman.njubbs.activity.expore.FindTopicTotalActivity" />
-        <activity android:name="com.oterman.njubbs.activity.expore.MyTopicActivity" />
+        <activity android:name="com.oterman.njubbs.activity.expore.TopicHisActivity" />
         <activity android:name="com.oterman.njubbs.activity.SettingActivity" />
         <activity
             android:name="com.oterman.njubbs.activity.mail.MailSpecialActivity"
@@ -104,8 +105,7 @@
         <activity
             android:name="com.oterman.njubbs.activity.MyTopicHisActivity"
             android:theme="@style/myindicatorStyle" />
-        
-        <activity android:name="com.oterman.njubbs.activity.ManageAccountsActivity"/>
+        <activity android:name="com.oterman.njubbs.activity.ManageAccountsActivity" />
 
         <!-- 分享 -->
         <activity
@@ -137,17 +137,14 @@
             android:exported="true"
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
-        
         <!-- 友盟统计 -->
         <meta-data
             android:name="UMENG_APPKEY"
             android:value="5761728967e58e93ff002626" >
         </meta-data>
-        
         <meta-data
             android:name="UMENG_CHANNEL"
             android:value="BaiDuYun" />
-        
     </application>
 
 </manifest>

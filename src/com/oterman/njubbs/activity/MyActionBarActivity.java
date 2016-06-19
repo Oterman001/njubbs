@@ -3,18 +3,16 @@ package com.oterman.njubbs.activity;
 import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.ActionBar.LayoutParams;
-import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.Window;
 import android.view.WindowManager;
-import android.view.View.OnClickListener;
 import android.widget.TextView;
 
 import com.oterman.njubbs.R;
-import com.oterman.njubbs.bean.TopicInfo;
 
 @SuppressLint("NewApi")
 public abstract class MyActionBarActivity extends FragmentActivity {
@@ -34,10 +32,9 @@ public abstract class MyActionBarActivity extends FragmentActivity {
 			window.setStatusBarColor(this.getResources()
 					.getColor(R.color.green));
 		}
-
 		//¥¶¿ÌactionBar
 		initActionBar();
-
+		
 	}
 
 	private void initActionBar() {

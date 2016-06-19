@@ -3,6 +3,7 @@ package com.oterman.njubbs.holders;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.text.Html;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -140,7 +141,6 @@ public class UserDetailHolder implements OnClickListener {
 								@Override
 								public void onFailure(HttpException error,
 										String msg) {
-
 								}
 							});
 				}else{
@@ -153,13 +153,40 @@ public class UserDetailHolder implements OnClickListener {
 					@Override
 					public void run() {
 						if (info != null) {
-							String html = "<font color='purple' size='22px'>"
-									+ info.id
-									+ "</font><font size='16px' color='grey'>详细信息</font>";
+							
+							String html =null;
+							Drawable drawable=null;
+							
+							if("男".equals(info.gender)){
+								drawable=context.getResources().getDrawable(R.drawable.widget_gender_man);
+								drawable.setBounds(0,0,drawable.getMinimumWidth(),drawable.getMinimumHeight());
+								tvId.setCompoundDrawables(drawable, null, null, null);
+								
+								html = "<font color='#33A0A0' size='22px'>"
+										+ info.id
+										+ "</font><font size='16px' color='grey'>详细信息</font>";
+							}else if("女".equals(info.gender)){
+								drawable=context.getResources().getDrawable(R.drawable.widget_gender_woman);
+								
+								drawable.setBounds(0,0,drawable.getMinimumWidth(),drawable.getMinimumHeight());
+								tvId.setCompoundDrawables(drawable, null, null, null);
+								
+								 html = "<font color='#D000D0' size='22px'>"
+										+ info.id
+										+ "</font><font size='16px' color='grey'>详细信息</font>";
+							}else{
+								drawable=context.getResources().getDrawable(R.drawable.ic_person);
+								drawable.setBounds(0,0,drawable.getMinimumWidth(),drawable.getMinimumHeight());
+								tvId.setCompoundDrawables(drawable, null, null, null);
+								
+								 html = "<font color='black' size='22px'>"
+										+ info.id
+										+ "</font><font size='16px' color='grey'>详细信息</font>";
+							}
 
 							// tvId.setText(info.id+"详细信息");
 							tvId.setText(Html.fromHtml(html));
-
+							
 							if (info.nickname != null) {
 								tvNickname.setText(Html.fromHtml(UiUtils
 										.getString(R.string.nickname)

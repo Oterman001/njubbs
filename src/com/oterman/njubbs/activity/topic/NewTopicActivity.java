@@ -109,6 +109,37 @@ public class NewTopicActivity extends MyActionBarActivity implements
 		
 		//初始化数据
 		tvTail.setText(SPutils.getTailNoColor());
+
+		String tailColor = SPutils.getFromSP("tail_color");
+		if(TextUtils.isEmpty(tailColor)){//默认颜色  紫色
+			tvTail.setTextColor(0xFFD000D0);
+		}else{
+			switch (tailColor.trim()) {
+			case "color_1":
+				tvTail.setTextColor(0xFF000000);//白色
+				break;
+			case "color_2":
+				tvTail.setTextColor(0xFFE00000);
+				break;
+			case "color_3":
+				tvTail.setTextColor(0xFF008000);
+				break;
+			case "color_4":
+				tvTail.setTextColor(0xFF808000);
+				break;
+			case "color_5":
+				tvTail.setTextColor(0xFF0000FF);
+				break;
+			case "color_6":
+				tvTail.setTextColor(0xFFD000D0);
+				break;
+			case "color_7":
+				tvTail.setTextColor(0xFF33A0A0);
+				break;
+			default:
+				break;
+			}
+		}
 		
 		ibSmiley = (ImageButton) this.findViewById(R.id.iv_pic);
 		

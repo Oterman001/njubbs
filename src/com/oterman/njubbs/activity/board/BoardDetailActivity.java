@@ -43,7 +43,7 @@ import com.lidroid.xutils.http.client.HttpRequest.HttpMethod;
 import com.oterman.njubbs.BaseApplication;
 import com.oterman.njubbs.R;
 import com.oterman.njubbs.activity.BaseActivity;
-import com.oterman.njubbs.activity.expore.MyTopicActivity;
+import com.oterman.njubbs.activity.expore.TopicHisActivity;
 import com.oterman.njubbs.activity.mail.MailNewActivity;
 import com.oterman.njubbs.activity.topic.NewTopicActivity;
 import com.oterman.njubbs.activity.topic.TopicDetailActivity;
@@ -378,7 +378,7 @@ public class BoardDetailActivity extends BaseActivity {
 			public void onQueryTopicHis() {
 				dialog.dismiss();
 				String author = topicInfo.author;
-				Intent intent=new Intent(getApplicationContext(),MyTopicActivity.class);
+				Intent intent=new Intent(getApplicationContext(),TopicHisActivity.class);
 				intent.putExtra("author", author);
 				startActivity(intent);
 			}

@@ -76,7 +76,7 @@ import com.oterman.njubbs.BaseApplication;
 import com.oterman.njubbs.R;
 import com.oterman.njubbs.activity.BaseActivity;
 import com.oterman.njubbs.activity.board.BoardDetailActivity;
-import com.oterman.njubbs.activity.expore.MyTopicActivity;
+import com.oterman.njubbs.activity.expore.TopicHisActivity;
 import com.oterman.njubbs.activity.mail.MailNewActivity;
 import com.oterman.njubbs.activity.topic.TopicDetailActivity.TopicDetailAdapter.ViewHolder;
 import com.oterman.njubbs.bean.TopicDetailInfo;
@@ -404,7 +404,7 @@ public class TopicDetailActivity extends BaseActivity implements
 						ModifyReplyActivity.class);
 				detailInfo.title = originTopicInfo.title;
 				intent.putExtra("topicDetailInfo", detailInfo);
-				startActivityForResult(intent, 100);
+				startActivityForResult(intent, 200);
 
 			}
 
@@ -433,7 +433,7 @@ public class TopicDetailActivity extends BaseActivity implements
 				optionsDialog.dismiss();
 				// String author = topicInfo.author;
 				Intent intent = new Intent(getApplicationContext(),
-						MyTopicActivity.class);
+						TopicHisActivity.class);
 				intent.putExtra("author", author);
 				startActivity(intent);
 			}
@@ -904,7 +904,7 @@ public class TopicDetailActivity extends BaseActivity implements
 			Intent intent = new Intent(
 					Intent.ACTION_PICK,
 					android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-			this.startActivityForResult(intent, 200);
+			this.startActivityForResult(intent, 100);
 
 			break;
 
@@ -1053,9 +1053,9 @@ public class TopicDetailActivity extends BaseActivity implements
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
-		if (requestCode == 100) {// 修改回帖成功后跳转 刷新
+		if (requestCode == 200) {// 修改回帖成功后跳转 刷新
 			updateModifiedViews();
-		} else if (requestCode == 200&&data!=null) {//从图库选中图片返回
+		} else if (requestCode == 100&&data!=null) {//从图库选中图片返回
 			// 从intent中得到选中图片的路径
 			String picturePath = TopicUtils.getPicPathFromUri(TopicDetailActivity.this, data);
 			// 展示选中的图片,上传逻辑包含在其中

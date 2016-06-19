@@ -37,7 +37,7 @@ import com.lidroid.xutils.http.client.HttpRequest.HttpMethod;
 import com.oterman.njubbs.BaseApplication;
 import com.oterman.njubbs.R;
 import com.oterman.njubbs.activity.BaseActivity;
-import com.oterman.njubbs.activity.expore.MyTopicActivity;
+import com.oterman.njubbs.activity.expore.TopicHisActivity;
 import com.oterman.njubbs.bean.MailInfo;
 import com.oterman.njubbs.dialog.WaitDialog;
 import com.oterman.njubbs.holders.OptionsDialogHolder;
@@ -206,7 +206,7 @@ public class MailBoxActicity extends BaseActivity implements OnClickListener {
 //							MyToast.toast("查询" + mailInfo.author + "的发帖记录");
 							dialog.dismiss();
 							String author = mailInfo.author;
-							Intent intent=new Intent(MailBoxActicity.this,MyTopicActivity.class);
+							Intent intent=new Intent(MailBoxActicity.this,TopicHisActivity.class);
 							intent.putExtra("author", author);
 							startActivity(intent);
 						}
